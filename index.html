@@ -19,12 +19,24 @@
         display: block;
         cursor: crosshair;
       }
+
+      #cursor {
+        display: block;
+        cursor: none;
+        z-index: 1;
+        background: transparent;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+      }
     </style>
     <script type="module" src="./index.mjs">
     </script>
   </head>
   <body>
     <canvas id="canvas">
+    </canvas>
+    <canvas id="cursor">
     </canvas>
   </body>
 </html>

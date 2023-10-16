@@ -1,18 +1,24 @@
-import { getCanvas, setCanvasSizeByViewport } from "./dom.mjs";
+import { getCanvas, getCursorCanvas, setCanvasSizeByViewport } from "./dom.mjs";
 import { createState, TOOLS, COLOR } from "./state/state.mjs";
-import { setTool, setColor, setNextColor, setPreviousColor } from "./state/actions.mjs";
+import { setTool, setColor, setNextColor, setPreviousColor, setCursor } from "./state/actions.mjs";
+import { initializeCursor } from "./cursor.mjs";
 
 function attachResizeListeners() {
   const canvas = getCanvas();
+  const cursorCanvas = getCursorCanvas();
 
   setCanvasSizeByViewport(canvas);
+  setCanvasSizeByViewport(cursorCanvas);
 
   window.addEventListener('resize', () => {
     setCanvasSizeByViewport(canvas);
+    setCanvasSizeByViewport(cursorCanvas);
   });
 }
 
 function attachDrawingListeners(state) {
+  initializeCursor({ state });
+
   const currentTool = state.get(state => state.tool);
 
   if (currentTool) {
@@ -49,6 +55,14 @@ function attachKeyboardListeners(state) {
 
 export function boot() {
   const state = createState();
+
+  const cursorCanvas = getCursorCanvas();
+  const rect = cursorCanvas.getBoundingClientRect();
+
+  setCursor({
+    x: rect.width / 2,
+    y: rect.height / 2,
+  }, { state });
 
   attachResizeListeners();
   attachDrawingListeners(state);

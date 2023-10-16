@@ -46,3 +46,9 @@ export function setPreviousColor({ state }) {
 
   setColor(nextColor, { state });
 }
+
+export function setCursor(cursor, { state }) {
+  state.set(state => ({
+    cursor,
+  }));
+}

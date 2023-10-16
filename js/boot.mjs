@@ -1,6 +1,16 @@
 import { getCanvas, getCursorCanvas, setCanvasSizeByViewport } from "./dom.mjs";
 import { createState, TOOLS, COLOR } from "./state/state.mjs";
-import { setTool, setColor, setNextColor, setPreviousColor, setCursor } from "./state/actions.mjs";
+import {
+  setTool,
+  setColor,
+  setNextColor,
+  setPreviousColor,
+  setCursor,
+  moveCursorUp,
+  moveCursorDown,
+  moveCursorLeft,
+  moveCursorRight,
+} from "./state/actions.mjs";
 import { initializeCursor } from "./cursor.mjs";
 
 function attachResizeListeners() {
@@ -46,6 +56,18 @@ function attachKeyboardListeners(state) {
         break;
       case 'z':
         setPreviousColor({ state });
+        break;
+      case 'ArrowUp':
+        moveCursorUp({ state });
+        break;
+      case 'ArrowDown':
+        moveCursorDown({ state });
+        break;
+      case 'ArrowLeft':
+        moveCursorLeft({ state });
+        break;
+      case 'ArrowRight':
+        moveCursorRight({ state });
         break;
       default:
         break;

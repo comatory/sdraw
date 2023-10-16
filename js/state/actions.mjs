@@ -1,3 +1,4 @@
+import { drawCursor } from "../cursor.mjs";
 import { activatePen } from "../tools/pen.mjs";
 import { TOOLS, COLOR_LIST } from "./state.mjs";
 import { storeTool, storeColor } from "./storage.mjs";
@@ -51,4 +52,44 @@ export function setCursor(cursor, { state }) {
   state.set(state => ({
     cursor,
   }));
+}
+
+export function moveCursorUp({ state }) {
+  const cursor = state.get(state => state.cursor);
+  const nextCursor = {
+    ...cursor,
+    y: cursor.y - 1,
+  }
+  setCursor(nextCursor, { state });
+  drawCursor(nextCursor.x, nextCursor.y);
+}
+
+export function moveCursorDown({ state }) {
+  const cursor = state.get(state => state.cursor);
+  const nextCursor = {
+    ...cursor,
+    y: cursor.y + 1,
+  }
+  setCursor(nextCursor, { state });
+  drawCursor(nextCursor.x, nextCursor.y);
+}
+
+export function moveCursorLeft({ state }) {
+  const cursor = state.get(state => state.cursor);
+  const nextCursor = {
+    ...cursor,
+    x: cursor.x - 1,
+  }
+  setCursor(nextCursor, { state });
+  drawCursor(nextCursor.x, nextCursor.y);
+}
+
+export function moveCursorRight({ state }) {
+  const cursor = state.get(state => state.cursor);
+  const nextCursor = {
+    ...cursor,
+    x: cursor.x + 1,
+  }
+  setCursor(nextCursor, { state });
+  drawCursor(nextCursor.x, nextCursor.y);
 }

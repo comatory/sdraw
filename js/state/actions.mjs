@@ -54,41 +54,41 @@ export function setCursor(cursor, { state }) {
   }));
 }
 
-export function moveCursorUp({ state }) {
+export function moveCursorUp(length, { state }) {
   const cursor = state.get(state => state.cursor);
   const nextCursor = {
     ...cursor,
-    y: cursor.y - 1,
+    y: cursor.y - length,
   }
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
 
-export function moveCursorDown({ state }) {
+export function moveCursorDown(length, { state }) {
   const cursor = state.get(state => state.cursor);
   const nextCursor = {
     ...cursor,
-    y: cursor.y + 1,
+    y: cursor.y + length,
   }
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
 
-export function moveCursorLeft({ state }) {
+export function moveCursorLeft(length, { state }) {
   const cursor = state.get(state => state.cursor);
   const nextCursor = {
     ...cursor,
-    x: cursor.x - 1,
+    x: cursor.x - length,
   }
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
 
-export function moveCursorRight({ state }) {
+export function moveCursorRight(length, { state }) {
   const cursor = state.get(state => state.cursor);
   const nextCursor = {
     ...cursor,
-    x: cursor.x + 1,
+    x: cursor.x + length,
   }
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);

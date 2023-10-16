@@ -43,6 +43,9 @@ function attachDrawingListeners(state) {
 }
 
 function attachKeyboardListeners(state) {
+  let acceleration = null;
+  let accelerationTimer = null;
+
   window.addEventListener('keydown', (event) => {
     switch (event.key) {
       case 'p':
@@ -58,21 +61,45 @@ function attachKeyboardListeners(state) {
         setPreviousColor({ state });
         break;
       case 'ArrowUp':
-        moveCursorUp({ state });
-        break;
       case 'ArrowDown':
-        moveCursorDown({ state });
-        break;
       case 'ArrowLeft':
-        moveCursorLeft({ state });
-        break;
       case 'ArrowRight':
-        moveCursorRight({ state });
+        if (accelerationTimer) {
+          window.clearTimeout(accelerationTimer);
+        }
+
+        acceleration = {
+          key: event.key,
+          acceleration: acceleration && acceleration.key === event.key ? acceleration.acceleration + 1 : 1,
+        }
+
+        handleMovementKeys(event, state, acceleration);
+        accelerationTimer = window.setTimeout(() => {
+          acceleration = null;
+        }, 50);
         break;
       default:
         break;
     }
   });
+}
+
+function handleMovementKeys(event, state, acceleration) {
+  const length = acceleration && acceleration.key === event.key ? acceleration.acceleration : 1;
+  switch (event.key) {
+    case 'ArrowUp':
+      moveCursorUp(length, { state });
+      break;
+    case 'ArrowDown':
+      moveCursorDown(length, { state });
+      break;
+    case 'ArrowLeft':
+      moveCursorLeft(length, { state });
+      break;
+    case 'ArrowRight':
+      moveCursorRight(length, { state });
+      break;
+  }
 }
 
 export function boot() {

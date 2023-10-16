@@ -1,6 +1,6 @@
 import { getCanvas, setCanvasSizeByViewport } from "./dom.mjs";
-import { createState, TOOLS } from "./state/state.mjs";
-import { setTool } from "./state/actions.mjs";
+import { createState, TOOLS, COLOR } from "./state/state.mjs";
+import { setTool, setColor, setNextColor, setPreviousColor } from "./state/actions.mjs";
 
 function attachResizeListeners() {
   const canvas = getCanvas();
@@ -15,11 +15,15 @@ function attachResizeListeners() {
 function attachDrawingListeners(state) {
   const currentTool = state.get(state => state.tool);
 
-  if (!currentTool) {
-    return;
+  if (currentTool) {
+    setTool(currentTool, { state });
   }
 
-  setTool(currentTool, { state });
+  const currentColor = state.get(state => state.color);
+
+  if (currentColor) {
+    setColor(currentColor, { state });
+  }
 }
 
 function attachKeyboardListeners(state) {
@@ -30,6 +34,13 @@ function attachKeyboardListeners(state) {
         break;
       case 'f':
         setTool(TOOLS.FILL, { state });
+        break;
+      case 'a':
+        setNextColor({ state });
+        break;
+      case 'z':
+        setPreviousColor({ state });
+        break;
       default:
         break;
     }

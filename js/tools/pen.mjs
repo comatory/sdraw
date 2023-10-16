@@ -2,8 +2,9 @@ import { getCanvas } from "../dom.mjs";
 
 const ctx = getCanvas().getContext('2d');
 
-export function activatePen() {
+export function activatePen({ state }) {
   let inProgress = false;
+  let color = state.get(state => state.color);
 
   function mouseDown() {
     inProgress = true;
@@ -23,7 +24,7 @@ export function activatePen() {
 
     ctx.lineWidth = 5;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = color;
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -34,7 +35,19 @@ export function activatePen() {
   window.addEventListener('mouseup', mouseUp);
   window.addEventListener('mousemove', mouseMove);
 
+  function updateColor(state) {
+    if (state.color === color) {
+      return;
+    }
+
+    color = state.color;
+  }
+
+  state.addListener(updateColor);
+
   return function dispose() {
+    state.removeListener(updateColor)
+
     window.removeEventListener('mousedown', mouseDown);
     window.removeEventListener('mouseup', mouseUp);
     window.removeEventListener('mousemove', mouseMove);

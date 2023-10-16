@@ -1,19 +1,55 @@
-export const TOOLS = {
+import { loadTool, loadColor } from './storage.mjs';
+
+export const TOOLS = Object.freeze({
   PEN: Symbol('pen'),
   FILL: Symbol('fill'),
-}
+})
 
-const DEFAULT_TOOL = TOOLS.PEN;
+export const COLOR = Object.freeze({
+  RED: '#ff0000 ',
+  ORANGE: '#ff8200',
+  YELLOW: '#fffb00 ',
+  LIME: '#00fb00',
+  GREEN: '#008242',
+  AZURE: '#00fbff',
+  BLUE: '#0000ff',
+  BURGUNDY: '#c64121',
+  BROWN: '#846100',
+  PEACH: '#ffc384',
+  PINK: '#c600c6',
+  BLACK: '#000000',
+  GRAY: '#848284',
+  SILVER: '#c6c3c6',
+  WHITE: '#fffbff',
+})
 
-function loadTool() {
-  return window.sessionStorage.getItem('tool') || DEFAULT_TOOL;
-}
+export const COLOR_LIST = Object.freeze([
+  COLOR.BLACK,
+  COLOR.RED,
+  COLOR.ORANGE,
+  COLOR.YELLOW,
+  COLOR.LIME,
+  COLOR.GREEN,
+  COLOR.AZURE,
+  COLOR.BLUE,
+  COLOR.BURGUNDY,
+  COLOR.BROWN,
+  COLOR.PEACH,
+  COLOR.PINK,
+  COLOR.GRAY,
+  COLOR.SILVER,
+  COLOR.WHITE,
+]);
+
+export const DEFAULT_TOOL = TOOLS.PEN;
+export const DEFAULT_COLOR = COLOR.BLACK;
 
 export function createState() {
   const callbacks = [];
 
   let state = {
     tool: loadTool(),
+    color: loadColor(),
   }
 
   function addListener(callback) {
@@ -31,7 +67,7 @@ export function createState() {
   }
 
   function emit() {
-    for (const callback in callbacks) {
+    for (const callback of callbacks) {
       callback(state);
     }
   }
@@ -57,5 +93,6 @@ export function createState() {
     emit,
     get,
     set,
+    _callbacks: callbacks,
   }
 }

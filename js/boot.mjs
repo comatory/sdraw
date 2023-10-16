@@ -13,6 +13,8 @@ import {
 } from "./state/actions.mjs";
 import { initializeCursor } from "./cursor.mjs";
 
+const MAXIMUM_CURSOR_ACCERATION = 20;
+
 function attachResizeListeners() {
   const canvas = getCanvas();
   const cursorCanvas = getCursorCanvas();
@@ -85,7 +87,7 @@ function attachKeyboardListeners(state) {
 }
 
 function handleMovementKeys(event, state, acceleration) {
-  const length = acceleration && acceleration.key === event.key ? acceleration.acceleration : 1;
+  const length = Math.min(acceleration && acceleration.key === event.key ? acceleration.acceleration : 1, MAXIMUM_CURSOR_ACCERATION);
   switch (event.key) {
     case 'ArrowUp':
       moveCursorUp(length, { state });

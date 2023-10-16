@@ -1,5 +1,5 @@
 import { getCanvas, setCanvasSizeByViewport } from "./dom.mjs";
-import { state, TOOLS } from "./state/state.mjs";
+import { createState, TOOLS } from "./state/state.mjs";
 import { setTool } from "./state/actions.mjs";
 
 function attachResizeListeners() {
@@ -12,24 +12,24 @@ function attachResizeListeners() {
   });
 }
 
-function attachDrawingListeners() {
+function attachDrawingListeners(state) {
   const currentTool = state.get(state => state.tool);
 
   if (!currentTool) {
     return;
   }
 
-  setTool(currentTool);
+  setTool(currentTool, { state });
 }
 
-function attachKeyboardListeners() {
+function attachKeyboardListeners(state) {
   window.addEventListener('keydown', (event) => {
     switch (event.key) {
       case 'p':
-        setTool(TOOLS.PEN);
+        setTool(TOOLS.PEN, { state });
         break;
       case 'f':
-        setTool(TOOLS.FILL);
+        setTool(TOOLS.FILL, { state });
       default:
         break;
     }
@@ -37,7 +37,9 @@ function attachKeyboardListeners() {
 }
 
 export function boot() {
+  const state = createState();
+
   attachResizeListeners();
-  attachDrawingListeners();
-  attachKeyboardListeners();
+  attachDrawingListeners(state);
+  attachKeyboardListeners(state);
 }

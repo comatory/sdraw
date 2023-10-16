@@ -1,9 +1,9 @@
-import { state, TOOLS } from "../state/state.mjs";
 import { activatePen } from "../tools/pen.mjs";
+import { TOOLS } from "./state.mjs";
 
 let disposeCallback;
 
-export function setTool(tool) {
+export function setTool(tool, { state }) {
   if (disposeCallback) {
     disposeCallback();
   }

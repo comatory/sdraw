@@ -1,5 +1,4 @@
 import { getCanvas } from "../dom.mjs";
-import { state } from "../state/state.mjs";
 
 const ctx = getCanvas().getContext('2d');
 

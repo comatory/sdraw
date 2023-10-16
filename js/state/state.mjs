@@ -9,7 +9,7 @@ function loadTool() {
   return window.sessionStorage.getItem('tool') || DEFAULT_TOOL;
 }
 
-function createState() {
+export function createState() {
   const callbacks = [];
 
   let state = {
@@ -59,5 +59,3 @@ function createState() {
     set,
   }
 }
-
-export const state = createState();

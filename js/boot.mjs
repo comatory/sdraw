@@ -105,6 +105,8 @@ function handleMovementKeys(event, state, acceleration) {
 export function boot() {
   const state = createState();
 
+  attachResizeListeners();
+
   const cursorCanvas = getCursorCanvas();
   const rect = cursorCanvas.getBoundingClientRect();
 
@@ -112,8 +114,6 @@ export function boot() {
     x: rect.width / 2,
     y: rect.height / 2,
   }, { state });
-
-  attachResizeListeners();
   attachDrawingListeners(state);
   attachKeyboardListeners(state);
 }

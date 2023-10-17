@@ -4,7 +4,7 @@ import {
   setPreviousColor,
   moveCursor,
 } from "../state/actions.mjs";
-import { TOOLS } from '../state/state.mjs'
+import { TOOLS } from "../state/state.mjs";
 
 const MAXIMUM_CURSOR_ACCERATION = 20;
 const NO_KEYS_PRESSED = Object.freeze({
@@ -53,31 +53,15 @@ export function attachKeyboardListeners(state) {
   window.addEventListener("keyup", (event) => {
     switch (event.key) {
       case "ArrowUp":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'up',
-          false,
-        );
+        keysPressed = produceMovementKeysPressed(keysPressed, "up", false);
         break;
       case "ArrowDown":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'down',
-          false,
-        );
+        keysPressed = produceMovementKeysPressed(keysPressed, "down", false);
         break;
       case "ArrowLeft":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'left',
-          false,
-        );
+        keysPressed = produceMovementKeysPressed(keysPressed, "left", false);
       case "ArrowRight":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'right',
-          false,
-        );
+        keysPressed = produceMovementKeysPressed(keysPressed, "right", false);
         break;
       default:
         break;
@@ -85,47 +69,37 @@ export function attachKeyboardListeners(state) {
   });
 
   window.addEventListener("keydown", (event) => {
+    if (event.key === "p") {
+      setTool(TOOLS.PEN, { state });
+    } else if (event.key === "f") {
+      setTool(TOOLS.FILL, { state });
+    } else if (event.key === "a") {
+      setNextColor({ state });
+    } else if (event.key === "z") {
+      setPreviousColor({ state });
+    }
+
+    if (
+      event.key !== "ArrowUp" &&
+      event.key !== "ArrowDown" &&
+      event.key !== "ArrowLeft" &&
+      event.key !== "ArrowRight"
+    ) {
+      return;
+    }
+
     switch (event.key) {
-      case "p":
-        setTool(TOOLS.PEN, { state });
-        break;
-      case "f":
-        setTool(TOOLS.FILL, { state });
-        break;
-      case "a":
-        setNextColor({ state });
-        break;
-      case "z":
-        setPreviousColor({ state });
-        break;
       case "ArrowUp":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'up',
-          true,
-        );
+        keysPressed = produceMovementKeysPressed(keysPressed, "up", true);
         break;
       case "ArrowDown":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'down',
-          true,
-        );
+        keysPressed = produceMovementKeysPressed(keysPressed, "down", true);
         break;
       case "ArrowLeft":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'left',
-          true,
-        );
+        keysPressed = produceMovementKeysPressed(keysPressed, "left", true);
         break;
       case "ArrowRight":
-        keysPressed = produceMovementKeysPressed(
-          keysPressed,
-          'right',
-          true,
-        );
-        break;
+        keysPressed = produceMovementKeysPressed(keysPressed, "right", true);
         break;
       default:
         break;

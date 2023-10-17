@@ -1,0 +1,30 @@
+{
+  "name": "sdraw",
+  "version": "0.1.0",
+  "description": "Simple drawing application for kids, can be controlled via mouse, keyboard or gamepad.",
+  "private": true,
+  "main": "index.mjs",
+  "scripts": {
+    "test": "test",
+    "start": "./server.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comatory/sdraw.git"
+  },
+  "keywords": [
+    "draw",
+    "web",
+    "mouse",
+    "keyboard",
+    "gamepad",
+    "html",
+    "kid"
+  ],
+  "author": "Ondřej Synáček <ondrej@synacek.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comatory/sdraw/issues"
+  },
+  "homepage": "https://github.com/comatory/sdraw#readme"
+}

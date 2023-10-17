@@ -38,7 +38,7 @@ export function createCursorFromGamepad(gamepad, prevCursor, multiplier) {
     nextCursor.y += axis3 * multiplier;
   }
   if (Math.ceil(axis4) !== 0) {
-    nextCursor.x -= axis4 * multiplier;
+    nextCursor.x += axis4 * multiplier;
   }
 
   return {

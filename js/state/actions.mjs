@@ -81,3 +81,9 @@ export function moveCursor({
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
+
+export function setGamepadIndex(index, { state }) {
+  state.set((state) => ({
+    gamepad: index,
+  }));
+}

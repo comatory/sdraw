@@ -50,6 +50,7 @@ export function createState() {
   let state = {
     tool: loadTool(),
     color: loadColor(),
+    gamepad: null,
   };
 
   function addListener(callback) {

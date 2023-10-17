@@ -6,6 +6,7 @@ import {
   setCursor,
 } from "./state/actions.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
+import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
 
 function attachResizeListeners() {
@@ -54,4 +55,5 @@ export function boot() {
   );
   attachDrawingListeners(state);
   attachKeyboardListeners(state);
+  attachGamepadListeners(state);
 }

@@ -1,11 +1,19 @@
 import { setCursor } from "./state/actions.mjs";
 import { COLOR } from "./state/state.mjs";
 import { getCursorCanvas } from "./dom.mjs";
+import {
+  getGamepad,
+  createCursorFromGamepad,
+  isGamepadDirectionPressed,
+} from "./controls/gamepad.mjs";
 
 const ctx = getCursorCanvas().getContext("2d");
 
 const CURSOR_SIZE = 20;
 const SET_CURSOR_DELAY_IN_MS = 500;
+const BASE_GAMEPAD_ACCELERATION_MULTIPLIER = 1.0;
+const MAX_GAMEPAD_ACCELERATION_MULTIPLIER = 8.0;
+const GAMEPAD_ACCELERATION_MULTIPLIER_DELAY_IN_MS = 300;
 
 export function drawCursor(x, y) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -38,7 +46,7 @@ export function initializeCursor({ state }) {
 
   function drawCursorOnMouseMove(event) {
     if (setCursorTimer) {
-      window.clearTimeout(setCursorTimer)
+      window.clearTimeout(setCursorTimer);
     }
 
     const rect = canvas.getBoundingClientRect();
@@ -52,13 +60,62 @@ export function initializeCursor({ state }) {
     }, SET_CURSOR_DELAY_IN_MS);
   }
 
+  let prevGamepadCursor = {
+    x: cursor.x,
+    y: cursor.y,
+  };
+  let gamepadAccelerationMultiplier = BASE_GAMEPAD_ACCELERATION_MULTIPLIER;
+  let gamepadAccelerationInterval = null;
+
+  function drawCursorOnGamepadMove() {
+    const gamepad = getGamepad(state);
+
+    if (gamepad) {
+      const gamepadCursor = createCursorFromGamepad(
+        gamepad,
+        prevGamepadCursor,
+        gamepadAccelerationMultiplier
+      );
+      prevGamepadCursor = gamepadCursor;
+
+      const { x, y } = gamepadCursor;
+      drawCursor(x, y);
+
+      gamepadAccelerationMultiplier = Math.min(
+        gamepadAccelerationMultiplier + 0.08,
+        MAX_GAMEPAD_ACCELERATION_MULTIPLIER
+      );
+    }
+
+    requestAnimationFrame(drawCursorOnGamepadMove);
+  }
+
+  gamepadAccelerationInterval = window.setInterval(() => {
+    const gamepad = getGamepad(state);
+
+    if (!gamepad) {
+      return;
+    }
+
+    const isPressingDirection = isGamepadDirectionPressed(gamepad);
+
+    if (!isPressingDirection) {
+      gamepadAccelerationMultiplier = BASE_GAMEPAD_ACCELERATION_MULTIPLIER;
+    }
+  }, 500);
+
+  requestAnimationFrame(drawCursorOnGamepadMove);
   window.addEventListener("mousemove", drawCursorOnMouseMove);
 
   return function dispose() {
+    cancelAnimationFrame(drawCursorOnGamepadMove);
+    if (gamepadAccelerationInterval) {
+      window.clearInterval(gamepadAccelerationInterval);
+    }
     window.removeEventListener("mousemove", drawCursorOnMouseMove);
 
     if (setCursorTimer) {
-      window.clearTimeout(setCursorTimer)
+      window.clearTimeout(setCursorTimer);
     }
   };
 }

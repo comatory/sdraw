@@ -4,6 +4,7 @@ import { TOOLS, COLOR_LIST } from "./state.mjs";
 import { storeTool, storeColor } from "./storage.mjs";
 
 let disposeCallback;
+const MAXIMUM_CURSOR_ACCERATION = 20;
 
 export function setTool(tool, { state }) {
   if (disposeCallback) {
@@ -58,42 +59,25 @@ export function setCursor(cursor, { state }) {
   }));
 }
 
-export function moveCursorUp(length, { state }) {
-  const cursor = state.get((state) => state.cursor);
-  const nextCursor = {
-    ...cursor,
-    y: cursor.y - length,
-  };
-  setCursor(nextCursor, { state });
-  drawCursor(nextCursor.x, nextCursor.y);
-}
+export function moveCursor({
+  acceleration,
+  state,
+  keysPressed,
+}) {
+  const length = Math.min(
+    acceleration && acceleration.key === event.key
+      ? acceleration.acceleration
+      : 1,
+    MAXIMUM_CURSOR_ACCERATION
+  );
 
-export function moveCursorDown(length, { state }) {
   const cursor = state.get((state) => state.cursor);
   const nextCursor = {
     ...cursor,
-    y: cursor.y + length,
+    x: cursor.x + ((keysPressed.right ? 1 + length : 0) + (keysPressed.left ? -1 - length : 0)),
+    y: cursor.y + ((keysPressed.down ? 1 + length : 0) + (keysPressed.up ? -1 - length : 0)),
   };
-  setCursor(nextCursor, { state });
-  drawCursor(nextCursor.x, nextCursor.y);
-}
 
-export function moveCursorLeft(length, { state }) {
-  const cursor = state.get((state) => state.cursor);
-  const nextCursor = {
-    ...cursor,
-    x: cursor.x - length,
-  };
-  setCursor(nextCursor, { state });
-  drawCursor(nextCursor.x, nextCursor.y);
-}
-
-export function moveCursorRight(length, { state }) {
-  const cursor = state.get((state) => state.cursor);
-  const nextCursor = {
-    ...cursor,
-    x: cursor.x + length,
-  };
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }

@@ -3,17 +3,10 @@ import { createState, TOOLS, COLOR } from "./state/state.mjs";
 import {
   setTool,
   setColor,
-  setNextColor,
-  setPreviousColor,
   setCursor,
-  moveCursorUp,
-  moveCursorDown,
-  moveCursorLeft,
-  moveCursorRight,
 } from "./state/actions.mjs";
+import { attachKeyboardListeners } from "./controls/keyboard.mjs";
 import { initializeCursor } from "./cursor.mjs";
-
-const MAXIMUM_CURSOR_ACCERATION = 20;
 
 function attachResizeListeners() {
   const canvas = getCanvas();
@@ -41,74 +34,6 @@ function attachDrawingListeners(state) {
 
   if (currentColor) {
     setColor(currentColor, { state });
-  }
-}
-
-function attachKeyboardListeners(state) {
-  let acceleration = null;
-  let accelerationTimer = null;
-
-  window.addEventListener("keydown", (event) => {
-    switch (event.key) {
-      case "p":
-        setTool(TOOLS.PEN, { state });
-        break;
-      case "f":
-        setTool(TOOLS.FILL, { state });
-        break;
-      case "a":
-        setNextColor({ state });
-        break;
-      case "z":
-        setPreviousColor({ state });
-        break;
-      case "ArrowUp":
-      case "ArrowDown":
-      case "ArrowLeft":
-      case "ArrowRight":
-        if (accelerationTimer) {
-          window.clearTimeout(accelerationTimer);
-        }
-
-        acceleration = {
-          key: event.key,
-          acceleration:
-            acceleration && acceleration.key === event.key
-              ? acceleration.acceleration + 1
-              : 1,
-        };
-
-        handleMovementKeys(event, state, acceleration);
-        accelerationTimer = window.setTimeout(() => {
-          acceleration = null;
-        }, 50);
-        break;
-      default:
-        break;
-    }
-  });
-}
-
-function handleMovementKeys(event, state, acceleration) {
-  const length = Math.min(
-    acceleration && acceleration.key === event.key
-      ? acceleration.acceleration
-      : 1,
-    MAXIMUM_CURSOR_ACCERATION,
-  );
-  switch (event.key) {
-    case "ArrowUp":
-      moveCursorUp(length, { state });
-      break;
-    case "ArrowDown":
-      moveCursorDown(length, { state });
-      break;
-    case "ArrowLeft":
-      moveCursorLeft(length, { state });
-      break;
-    case "ArrowRight":
-      moveCursorRight(length, { state });
-      break;
   }
 }
 

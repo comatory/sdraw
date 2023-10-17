@@ -4,6 +4,7 @@ import {
   setPreviousColor,
   moveCursor,
 } from "../state/actions.mjs";
+import { TOOLS } from '../state/state.mjs'
 
 const MAXIMUM_CURSOR_ACCERATION = 20;
 const NO_KEYS_PRESSED = Object.freeze({

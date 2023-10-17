@@ -1,5 +1,5 @@
 import { getCanvas, getCursorCanvas, setCanvasSizeByViewport } from "./dom.mjs";
-import { createState, TOOLS, COLOR } from "./state/state.mjs";
+import { createState, COLOR } from "./state/state.mjs";
 import {
   setTool,
   setColor,

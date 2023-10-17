@@ -6,7 +6,8 @@
   "main": "index.mjs",
   "scripts": {
     "test": "test",
-    "start": "./server.sh"
+    "start": "./server.sh",
+    "format": "prettier . --write"
   },
   "repository": {
     "type": "git",
@@ -26,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/comatory/sdraw/issues"
   },
-  "homepage": "https://github.com/comatory/sdraw#readme"
+  "homepage": "https://github.com/comatory/sdraw#readme",
+  "devDependencies": {
+    "prettier": "^3.0.3"
+  }
 }

@@ -22,7 +22,7 @@ function attachResizeListeners() {
   setCanvasSizeByViewport(canvas);
   setCanvasSizeByViewport(cursorCanvas);
 
-  window.addEventListener('resize', () => {
+  window.addEventListener("resize", () => {
     setCanvasSizeByViewport(canvas);
     setCanvasSizeByViewport(cursorCanvas);
   });
@@ -31,13 +31,13 @@ function attachResizeListeners() {
 function attachDrawingListeners(state) {
   initializeCursor({ state });
 
-  const currentTool = state.get(state => state.tool);
+  const currentTool = state.get((state) => state.tool);
 
   if (currentTool) {
     setTool(currentTool, { state });
   }
 
-  const currentColor = state.get(state => state.color);
+  const currentColor = state.get((state) => state.color);
 
   if (currentColor) {
     setColor(currentColor, { state });
@@ -48,32 +48,35 @@ function attachKeyboardListeners(state) {
   let acceleration = null;
   let accelerationTimer = null;
 
-  window.addEventListener('keydown', (event) => {
+  window.addEventListener("keydown", (event) => {
     switch (event.key) {
-      case 'p':
+      case "p":
         setTool(TOOLS.PEN, { state });
         break;
-      case 'f':
+      case "f":
         setTool(TOOLS.FILL, { state });
         break;
-      case 'a':
+      case "a":
         setNextColor({ state });
         break;
-      case 'z':
+      case "z":
         setPreviousColor({ state });
         break;
-      case 'ArrowUp':
-      case 'ArrowDown':
-      case 'ArrowLeft':
-      case 'ArrowRight':
+      case "ArrowUp":
+      case "ArrowDown":
+      case "ArrowLeft":
+      case "ArrowRight":
         if (accelerationTimer) {
           window.clearTimeout(accelerationTimer);
         }
 
         acceleration = {
           key: event.key,
-          acceleration: acceleration && acceleration.key === event.key ? acceleration.acceleration + 1 : 1,
-        }
+          acceleration:
+            acceleration && acceleration.key === event.key
+              ? acceleration.acceleration + 1
+              : 1,
+        };
 
         handleMovementKeys(event, state, acceleration);
         accelerationTimer = window.setTimeout(() => {
@@ -87,18 +90,23 @@ function attachKeyboardListeners(state) {
 }
 
 function handleMovementKeys(event, state, acceleration) {
-  const length = Math.min(acceleration && acceleration.key === event.key ? acceleration.acceleration : 1, MAXIMUM_CURSOR_ACCERATION);
+  const length = Math.min(
+    acceleration && acceleration.key === event.key
+      ? acceleration.acceleration
+      : 1,
+    MAXIMUM_CURSOR_ACCERATION,
+  );
   switch (event.key) {
-    case 'ArrowUp':
+    case "ArrowUp":
       moveCursorUp(length, { state });
       break;
-    case 'ArrowDown':
+    case "ArrowDown":
       moveCursorDown(length, { state });
       break;
-    case 'ArrowLeft':
+    case "ArrowLeft":
       moveCursorLeft(length, { state });
       break;
-    case 'ArrowRight':
+    case "ArrowRight":
       moveCursorRight(length, { state });
       break;
   }
@@ -112,10 +120,13 @@ export function boot() {
   const cursorCanvas = getCursorCanvas();
   const rect = cursorCanvas.getBoundingClientRect();
 
-  setCursor({
-    x: rect.width / 2,
-    y: rect.height / 2,
-  }, { state });
+  setCursor(
+    {
+      x: rect.width / 2,
+      y: rect.height / 2,
+    },
+    { state },
+  );
   attachDrawingListeners(state);
   attachKeyboardListeners(state);
 }

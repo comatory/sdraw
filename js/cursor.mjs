@@ -1,7 +1,7 @@
 import { COLOR } from "./state/state.mjs";
 import { getCursorCanvas } from "./dom.mjs";
 
-const ctx = getCursorCanvas().getContext('2d');
+const ctx = getCursorCanvas().getContext("2d");
 
 const CURSOR_SIZE = 20;
 
@@ -9,7 +9,7 @@ export function drawCursor(x, y) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   ctx.lineWidth = 5;
-  ctx.lineCap = 'round';
+  ctx.lineCap = "round";
   ctx.strokeStyle = COLOR.BLACK;
 
   ctx.beginPath();
@@ -27,7 +27,7 @@ export function initializeCursor({ state }) {
   // TODO cursor shape based on active tool
 
   const canvas = getCursorCanvas();
-  const cursor = state.get(state => state.cursor);
+  const cursor = state.get((state) => state.cursor);
   const x = cursor.x;
   const y = cursor.y;
 
@@ -41,9 +41,9 @@ export function initializeCursor({ state }) {
     drawCursor(x - rect.left, y - rect.top);
   }
 
-  window.addEventListener('mousemove', drawCursorOnMouseMove);
+  window.addEventListener("mousemove", drawCursorOnMouseMove);
 
   return function dispose() {
-    window.removeEventListener('mousemove', drawCursorOnMouseMove);
-  }
+    window.removeEventListener("mousemove", drawCursorOnMouseMove);
+  };
 }

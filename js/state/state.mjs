@@ -1,27 +1,27 @@
-import { loadTool, loadColor } from './storage.mjs';
+import { loadTool, loadColor } from "./storage.mjs";
 
 export const TOOLS = Object.freeze({
-  PEN: Symbol('pen'),
-  FILL: Symbol('fill'),
-})
+  PEN: Symbol("pen"),
+  FILL: Symbol("fill"),
+});
 
 export const COLOR = Object.freeze({
-  RED: '#ff0000 ',
-  ORANGE: '#ff8200',
-  YELLOW: '#fffb00 ',
-  LIME: '#00fb00',
-  GREEN: '#008242',
-  AZURE: '#00fbff',
-  BLUE: '#0000ff',
-  BURGUNDY: '#c64121',
-  BROWN: '#846100',
-  PEACH: '#ffc384',
-  PINK: '#c600c6',
-  BLACK: '#000000',
-  GRAY: '#848284',
-  SILVER: '#c6c3c6',
-  WHITE: '#fffbff',
-})
+  RED: "#ff0000 ",
+  ORANGE: "#ff8200",
+  YELLOW: "#fffb00 ",
+  LIME: "#00fb00",
+  GREEN: "#008242",
+  AZURE: "#00fbff",
+  BLUE: "#0000ff",
+  BURGUNDY: "#c64121",
+  BROWN: "#846100",
+  PEACH: "#ffc384",
+  PINK: "#c600c6",
+  BLACK: "#000000",
+  GRAY: "#848284",
+  SILVER: "#c6c3c6",
+  WHITE: "#fffbff",
+});
 
 export const COLOR_LIST = Object.freeze([
   COLOR.BLACK,
@@ -50,7 +50,7 @@ export function createState() {
   let state = {
     tool: loadTool(),
     color: loadColor(),
-  }
+  };
 
   function addListener(callback) {
     callbacks.push(callback);
@@ -60,7 +60,7 @@ export function createState() {
     const index = callbacks.indexOf(callback);
 
     if (index === -1) {
-      throw new Error('Callback not found')
+      throw new Error("Callback not found");
     }
 
     callbacks.splice(index, 1);
@@ -82,7 +82,7 @@ export function createState() {
     state = {
       ...state,
       ...nextState,
-    }
+    };
 
     emit();
   }
@@ -94,5 +94,5 @@ export function createState() {
     get,
     set,
     _callbacks: callbacks,
-  }
+  };
 }

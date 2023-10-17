@@ -1,10 +1,10 @@
 import { getCanvas } from "../dom.mjs";
 
-const ctx = getCanvas().getContext('2d');
+const ctx = getCanvas().getContext("2d");
 
 export function activatePen({ state }) {
   let inProgress = false;
-  let color = state.get(state => state.color);
+  let color = state.get((state) => state.color);
 
   function mouseDown() {
     inProgress = true;
@@ -23,7 +23,7 @@ export function activatePen({ state }) {
     const y = event.clientY;
 
     ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
+    ctx.lineCap = "round";
     ctx.strokeStyle = color;
 
     ctx.lineTo(x, y);
@@ -31,9 +31,9 @@ export function activatePen({ state }) {
     ctx.moveTo(x, y);
   }
 
-  window.addEventListener('mousedown', mouseDown);
-  window.addEventListener('mouseup', mouseUp);
-  window.addEventListener('mousemove', mouseMove);
+  window.addEventListener("mousedown", mouseDown);
+  window.addEventListener("mouseup", mouseUp);
+  window.addEventListener("mousemove", mouseMove);
 
   function updateColor(state) {
     if (state.color === color) {
@@ -46,13 +46,12 @@ export function activatePen({ state }) {
   state.addListener(updateColor);
 
   return function dispose() {
-    state.removeListener(updateColor)
+    state.removeListener(updateColor);
 
-    window.removeEventListener('mousedown', mouseDown);
-    window.removeEventListener('mouseup', mouseUp);
-    window.removeEventListener('mousemove', mouseMove);
-  }
+    window.removeEventListener("mousedown", mouseDown);
+    window.removeEventListener("mouseup", mouseUp);
+    window.removeEventListener("mousemove", mouseMove);
+  };
 }
 
-export function drawWithFill() {
-}
+export function drawWithFill() {}

@@ -11,13 +11,13 @@ export function setTool(tool, { state }) {
     disposeCallback = null;
   }
 
-  state.set(state => ({
+  state.set((state) => ({
     tool,
   }));
 
   storeTool(tool);
 
-  switch (state.get(state => state.tool)) {
+  switch (state.get((state) => state.tool)) {
     case TOOLS.PEN:
       disposeCallback = activatePen({ state });
       break;
@@ -27,7 +27,7 @@ export function setTool(tool, { state }) {
 }
 
 export function setColor(color, { state }) {
-  state.set(state => ({
+  state.set((state) => ({
     color,
   }));
 
@@ -35,61 +35,65 @@ export function setColor(color, { state }) {
 }
 
 export function setNextColor({ state }) {
-  const currentColor = state.get(state => state.color);
-  const nextColor = COLOR_LIST.at((COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length);
+  const currentColor = state.get((state) => state.color);
+  const nextColor = COLOR_LIST.at(
+    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length,
+  );
 
   setColor(nextColor, { state });
 }
 
 export function setPreviousColor({ state }) {
-  const currentColor = state.get(state => state.color);
-  const nextColor = COLOR_LIST.at((COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length);
+  const currentColor = state.get((state) => state.color);
+  const nextColor = COLOR_LIST.at(
+    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length,
+  );
 
   setColor(nextColor, { state });
 }
 
 export function setCursor(cursor, { state }) {
-  state.set(state => ({
+  state.set((state) => ({
     cursor,
   }));
 }
 
 export function moveCursorUp(length, { state }) {
-  const cursor = state.get(state => state.cursor);
+  const cursor = state.get((state) => state.cursor);
   const nextCursor = {
     ...cursor,
     y: cursor.y - length,
-  }
+  };
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
 
 export function moveCursorDown(length, { state }) {
-  const cursor = state.get(state => state.cursor);
+  const cursor = state.get((state) => state.cursor);
   const nextCursor = {
     ...cursor,
     y: cursor.y + length,
-  }
+  };
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
 
 export function moveCursorLeft(length, { state }) {
-  const cursor = state.get(state => state.cursor);
+  const cursor = state.get((state) => state.cursor);
   const nextCursor = {
     ...cursor,
     x: cursor.x - length,
-  }
+  };
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
 
 export function moveCursorRight(length, { state }) {
-  const cursor = state.get(state => state.cursor);
+  const cursor = state.get((state) => state.cursor);
   const nextCursor = {
     ...cursor,
     x: cursor.x + length,
-  }
+  };
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }

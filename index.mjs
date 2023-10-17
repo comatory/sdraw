@@ -1,3 +1,3 @@
-import { boot } from './js/boot.mjs';
+import { boot } from "./js/boot.mjs";
 
-document.addEventListener('DOMContentLoaded', boot);
+document.addEventListener("DOMContentLoaded", boot);

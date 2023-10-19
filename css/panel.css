@@ -1,0 +1,6 @@
+#panel {
+  height: 160px;
+  width: 100%;
+  background-color: gainsboro;
+  box-shadow: inset 0px 4px 0px silver;
+}

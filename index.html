@@ -4,37 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <title>sdraw</title>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        padding: 0px;
-        margin: 0px;
-        height: 100vh;
-        width: 100vw;
-      }
-
-      #canvas {
-        display: block;
-        cursor: crosshair;
-      }
-
-      #cursor {
-        display: block;
-        cursor: none;
-        z-index: 1;
-        background: transparent;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-      }
-    </style>
     <script type="module" src="./index.mjs"></script>
+    <link rel="stylesheet" href="./css/main.css" />
   </head>
   <body>
-    <canvas id="canvas"> </canvas>
     <canvas id="cursor"> </canvas>
+    <main>
+      <canvas id="canvas" width="100%" height="auto"> </canvas>
+      <section id="panel"></section>
+    </main>
   </body>
 </html>

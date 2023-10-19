@@ -1,4 +1,4 @@
-import { getCanvas, getCursorCanvas, setCanvasSizeByViewport } from "./dom.mjs";
+import { getCanvas, getCursorCanvas, setCanvasSizeByViewport, setCanvasSizeWithoutPanel } from "./dom.mjs";
 import { createState, COLOR } from "./state/state.mjs";
 import {
   setTool,
@@ -13,12 +13,12 @@ function attachResizeListeners() {
   const canvas = getCanvas();
   const cursorCanvas = getCursorCanvas();
 
-  setCanvasSizeByViewport(canvas);
   setCanvasSizeByViewport(cursorCanvas);
+  setCanvasSizeWithoutPanel(canvas);
 
   window.addEventListener("resize", () => {
-    setCanvasSizeByViewport(canvas);
     setCanvasSizeByViewport(cursorCanvas);
+    setCanvasSizeWithoutPanel(canvas);
   });
 }
 

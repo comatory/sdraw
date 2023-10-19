@@ -3,4 +3,22 @@
   width: 100%;
   background-color: gainsboro;
   box-shadow: inset 0px 4px 0px silver;
+  padding: 8px;
+}
+
+.panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-bottom: 8px;
+}
+
+.panel-row button {
+  margin-right: 8px;
+  width: 30px;
+  height: 30px;
+}
+
+.panel-row button.active {
+  outline: 1px solid purple;
 }

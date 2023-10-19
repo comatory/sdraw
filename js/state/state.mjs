@@ -5,6 +5,11 @@ export const TOOLS = Object.freeze({
   FILL: Symbol("fill"),
 });
 
+export const TOOL_LIST = Object.freeze([
+  TOOLS.PEN,
+  TOOLS.FILL,
+]);
+
 export const COLOR = Object.freeze({
   RED: "#ff0000 ",
   ORANGE: "#ff8200",
@@ -67,9 +72,9 @@ export function createState() {
     callbacks.splice(index, 1);
   }
 
-  function emit() {
+  function emit(nextState, prevState) {
     for (const callback of callbacks) {
-      callback(state);
+      callback(nextState, prevState);
     }
   }
 
@@ -78,14 +83,16 @@ export function createState() {
   }
 
   function set(fn) {
-    const nextState = fn(state);
+    const nextPartialState = fn(state);
 
-    state = {
+    const nextState = {
       ...state,
-      ...nextState,
+      ...nextPartialState,
     };
 
-    emit();
+    emit(nextState, state);
+
+    state = nextState;
   }
 
   return {

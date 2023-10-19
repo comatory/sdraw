@@ -6,6 +6,18 @@ export function getCursorCanvas() {
   return document.getElementById("cursor");
 }
 
+export function getPanelTools() {
+  return document.getElementById("tools");
+}
+
+export function getPanelColors() {
+  return document.getElementById("colors");
+}
+
+export function getPanel() {
+  return document.getElementById("panel");
+}
+
 function getPanelBounds() {
   const panel = document.getElementById("panel");
   return panel.getBoundingClientRect();

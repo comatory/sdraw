@@ -35,8 +35,8 @@ export function activatePen({ state }) {
   window.addEventListener("mouseup", mouseUp);
   window.addEventListener("mousemove", mouseMove);
 
-  function updateColor(state) {
-    if (state.color === color) {
+  function updateColor(state, prevState) {
+    if (state.color === prevState.color) {
       return;
     }
 

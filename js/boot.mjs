@@ -1,10 +1,12 @@
-import { getCanvas, getCursorCanvas, setCanvasSizeByViewport, setCanvasSizeWithoutPanel } from "./dom.mjs";
-import { createState, COLOR } from "./state/state.mjs";
 import {
-  setTool,
-  setColor,
-  setCursor,
-} from "./state/actions.mjs";
+  getCanvas,
+  getCursorCanvas,
+  setCanvasSizeByViewport,
+  setCanvasSizeWithoutPanel,
+} from "./dom.mjs";
+import { createToolPanel, createColorPanel, attachPanelListeners } from './ui/panel.mjs';
+import { createState, COLOR } from "./state/state.mjs";
+import { setTool, setColor, setCursor } from "./state/actions.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
 import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
@@ -51,9 +53,14 @@ export function boot() {
       x: rect.width / 2,
       y: rect.height / 2,
     },
-    { state },
+    { state }
   );
+
   attachDrawingListeners(state);
   attachKeyboardListeners(state);
   attachGamepadListeners(state);
+
+  createToolPanel({ state });
+  createColorPanel({ state });
+  attachPanelListeners();
 }

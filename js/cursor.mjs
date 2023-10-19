@@ -105,14 +105,14 @@ export function initializeCursor({ state }) {
   }, 500);
 
   requestAnimationFrame(drawCursorOnGamepadMove);
-  window.addEventListener("mousemove", drawCursorOnMouseMove);
+  canvas.addEventListener("mousemove", drawCursorOnMouseMove);
 
   return function dispose() {
     cancelAnimationFrame(drawCursorOnGamepadMove);
     if (gamepadAccelerationInterval) {
       window.clearInterval(gamepadAccelerationInterval);
     }
-    window.removeEventListener("mousemove", drawCursorOnMouseMove);
+    canvas.removeEventListener("mousemove", drawCursorOnMouseMove);
 
     if (setCursorTimer) {
       window.clearTimeout(setCursorTimer);

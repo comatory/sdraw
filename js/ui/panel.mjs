@@ -28,19 +28,23 @@ function getPanelButtonByCoordinates(x, y) {
   }
 }
 
+function activatePanelButtonOnCoordinates(x, y) {
+  const button = getPanelButtonByCoordinates(x, y);
+
+  if (!button) {
+    return;
+  }
+
+  button.click();
+}
+
 export function attachPanelListeners({ state }) {
   window.addEventListener("click", (event) => {
     if (!isCursorWithinPanelBounds(event.clientX, event.clientY)) {
       return;
     }
 
-    const button = getPanelButtonByCoordinates(event.clientX, event.clientY);
-
-    if (!button) {
-      return;
-    }
-
-    button.click();
+    activatePanelButtonOnCoordinates(event.clientX, event.clientY);
   });
 
   window.addEventListener("keydown", (event) => {
@@ -50,17 +54,7 @@ export function attachPanelListeners({ state }) {
 
     const cursor = state.get((state) => state.cursor);
 
-    if (!isCursorWithinPanelBounds(cursor.x, cursor.y)) {
-      return;
-    }
-
-    const button = getPanelButtonByCoordinates(cursor.x, cursor.y);
-
-    if (!button) {
-      return;
-    }
-
-    button.click();
+    activatePanelButtonOnCoordinates(cursor.x, cursor.y);
   });
 }
 
@@ -109,7 +103,6 @@ export function createToolPanel({ state }) {
   if (selectedTool) {
     updateActivatedButton(tools, selectedTool.description);
   }
-
 }
 
 export function createColorPanel({ state }) {
@@ -142,5 +135,4 @@ export function createColorPanel({ state }) {
   if (selectedColor) {
     updateActivatedButton(colors, selectedColor);
   }
-
 }

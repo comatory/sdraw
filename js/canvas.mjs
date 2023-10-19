@@ -5,7 +5,6 @@ export function prepareCanvasRestoration(canvas) {
   image.src = dataUri;
 
   return function restoreCanvas() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(image, 0, 0);
   }
 }

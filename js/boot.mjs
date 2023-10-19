@@ -62,5 +62,5 @@ export function boot() {
 
   createToolPanel({ state });
   createColorPanel({ state });
-  attachPanelListeners();
+  attachPanelListeners({ state });
 }

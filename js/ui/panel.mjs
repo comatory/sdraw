@@ -2,7 +2,7 @@ import { TOOL_LIST, COLOR_LIST } from "../state/state.mjs";
 import { setTool, setColor } from "../state/actions.mjs";
 import { getPanel, getPanelTools, getPanelColors } from "../dom.mjs";
 
-function isClickWithinPanelBounds(x, y) {
+function isCursorWithinPanelBounds(x, y) {
   const panel = getPanel();
   const rect = panel.getBoundingClientRect();
 
@@ -28,13 +28,33 @@ function getPanelButtonByCoordinates(x, y) {
   }
 }
 
-export function attachPanelListeners() {
+export function attachPanelListeners({ state }) {
   window.addEventListener("click", (event) => {
-    if (!isClickWithinPanelBounds(event.clientX, event.clientY)) {
+    if (!isCursorWithinPanelBounds(event.clientX, event.clientY)) {
       return;
     }
 
     const button = getPanelButtonByCoordinates(event.clientX, event.clientY);
+
+    if (!button) {
+      return;
+    }
+
+    button.click();
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    const cursor = state.get((state) => state.cursor);
+
+    if (!isCursorWithinPanelBounds(cursor.x, cursor.y)) {
+      return;
+    }
+
+    const button = getPanelButtonByCoordinates(cursor.x, cursor.y);
 
     if (!button) {
       return;

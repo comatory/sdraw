@@ -4,6 +4,7 @@ import {
   setCanvasSizeByViewport,
   setCanvasSizeWithoutPanel,
 } from "./dom.mjs";
+import { prepareCanvasRestoration } from "./canvas.mjs";
 import { createToolPanel, createColorPanel, attachPanelListeners } from './ui/panel.mjs';
 import { createState, COLOR } from "./state/state.mjs";
 import { setTool, setColor, setCursor } from "./state/actions.mjs";
@@ -19,8 +20,12 @@ function attachResizeListeners() {
   setCanvasSizeWithoutPanel(canvas);
 
   window.addEventListener("resize", () => {
+    const restoreCanvas = prepareCanvasRestoration(canvas);
+
     setCanvasSizeByViewport(cursorCanvas);
     setCanvasSizeWithoutPanel(canvas);
+
+    restoreCanvas();
   });
 }
 

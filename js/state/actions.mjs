@@ -1,5 +1,6 @@
 import { drawCursor } from "../cursor.mjs";
 import { activatePen } from "../tools/pen.mjs";
+import { activateFill } from '../tools/fill.mjs';
 import { TOOLS, COLOR_LIST } from "./state.mjs";
 import { storeTool, storeColor } from "./storage.mjs";
 
@@ -21,6 +22,9 @@ export function setTool(tool, { state }) {
   switch (state.get((state) => state.tool)) {
     case TOOLS.PEN:
       disposeCallback = activatePen({ state });
+      break;
+    case TOOLS.FILL:
+      disposeCallback = activateFill({ state });
       break;
     default:
       break;

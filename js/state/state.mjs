@@ -11,9 +11,9 @@ export const TOOL_LIST = Object.freeze([
 ]);
 
 export const COLOR = Object.freeze({
-  RED: "#ff0000 ",
+  RED: "#ff0000",
   ORANGE: "#ff8200",
-  YELLOW: "#fffb00 ",
+  YELLOW: "#fffb00",
   LIME: "#00fb00",
   GREEN: "#008242",
   AZURE: "#00fbff",

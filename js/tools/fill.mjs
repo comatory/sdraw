@@ -1,4 +1,5 @@
 import { getCanvas } from "../dom.mjs";
+import { isWithinCanvasBounds } from "../canvas.mjs";
 
 function hexToRGB(h) {
   let r = 0,
@@ -18,7 +19,7 @@ function hexToRGB(h) {
     b = "0x" + h[5] + h[6];
   }
 
-  return new Uint8ClampedArray([r, g, b, 255]);
+  return new Uint8ClampedArray([+r, +g, +b]);
 }
 
 function getPixel(imageData, x, y) {
@@ -78,6 +79,10 @@ export function activateFill({ state }) {
     const color = state.get((state) => state.color);
     const x = event.clientX;
     const y = event.clientY;
+
+    if (!isWithinCanvasBounds(x, y)) {
+      return;
+    }
 
     floodFill(ctx, x, y, hexToRGB(color));
   }

@@ -1,10 +1,11 @@
-import { getCanvas } from "../dom.mjs";
+import { getCanvas, getCursorCanvas } from "../dom.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 
 function hexToRGB(h) {
   let r = 0,
     g = 0,
     b = 0;
+  const a = 255;
 
   // 3 digits
   if (h.length == 4) {
@@ -19,7 +20,7 @@ function hexToRGB(h) {
     b = "0x" + h[5] + h[6];
   }
 
-  return new Uint8ClampedArray([+r, +g, +b]);
+  return [+r, +g, +b, a];
 }
 
 function getPixel(imageData, x, y) {
@@ -36,13 +37,14 @@ function setPixel(imageData, x, y, color) {
   imageData.data[offset + 0] = color[0];
   imageData.data[offset + 1] = color[1];
   imageData.data[offset + 2] = color[2];
-  imageData.data[offset + 3] = color[0];
+  imageData.data[offset + 3] = color[3];
 }
 
 function colorsMatch(a, b) {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
 }
 
+// taken from SO: https://stackoverflow.com/a/56221940/3056783
 function floodFill(ctx, x, y, fillColor) {
   // read the pixels in the canvas
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -74,6 +76,7 @@ function floodFill(ctx, x, y, fillColor) {
 
 export function activateFill({ state }) {
   const ctx = getCanvas().getContext("2d");
+  const cursorCanvas = getCursorCanvas();
 
   function mouseClick(event) {
     const color = state.get((state) => state.color);
@@ -87,9 +90,9 @@ export function activateFill({ state }) {
     floodFill(ctx, x, y, hexToRGB(color));
   }
 
-  window.addEventListener("click", mouseClick);
+  cursorCanvas.addEventListener("click", mouseClick);
 
   return function dispose() {
-    window.removeEventListener("click", mouseClick);
+    cursorCanvas.removeEventListener("click", mouseClick);
   };
 }

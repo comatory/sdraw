@@ -1,7 +1,13 @@
-import { DEFAULT_TOOL, DEFAULT_COLOR } from "./state.mjs";
+import { DEFAULT_TOOL, DEFAULT_COLOR, TOOLS } from "./state.mjs";
 
 export function loadTool() {
-  return window.sessionStorage.getItem("tool") || DEFAULT_TOOL;
+  const storedValue = window.sessionStorage.getItem("tool") 
+
+  if (!storedValue) {
+    return DEFAULT_TOOL;
+  }
+
+  return Object.values(TOOLS).find((tool) => tool.description === storedValue) ?? DEFAULT_TOOL;
 }
 
 export function loadColor() {

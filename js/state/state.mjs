@@ -3,11 +3,13 @@ import { loadTool, loadColor } from "./storage.mjs";
 export const TOOLS = Object.freeze({
   PEN: Symbol("pen"),
   FILL: Symbol("fill"),
+  CAM: Symbol("cam"),
 });
 
 export const TOOL_LIST = Object.freeze([
   TOOLS.PEN,
   TOOLS.FILL,
+  TOOLS.CAM,
 ]);
 
 export const COLOR = Object.freeze({

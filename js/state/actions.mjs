@@ -1,13 +1,14 @@
 import { drawCursor } from "../cursor.mjs";
 import { activatePen } from "../tools/pen.mjs";
 import { activateFill } from '../tools/fill.mjs';
+import { activateCam } from "../tools/cam.mjs";
 import { TOOLS, COLOR_LIST } from "./state.mjs";
 import { storeTool, storeColor } from "./storage.mjs";
 
 let disposeCallback;
 const MAXIMUM_CURSOR_ACCERATION = 20;
 
-export function setTool(tool, { state }) {
+export async function setTool(tool, { state }) {
   if (disposeCallback) {
     disposeCallback();
     disposeCallback = null;
@@ -25,6 +26,9 @@ export function setTool(tool, { state }) {
       break;
     case TOOLS.FILL:
       disposeCallback = activateFill({ state });
+      break;
+    case TOOLS.CAM:
+      disposeCallback = await activateCam({ state });
       break;
     default:
       break;

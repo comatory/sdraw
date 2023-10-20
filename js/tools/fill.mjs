@@ -90,9 +90,22 @@ export function activateFill({ state }) {
     floodFill(ctx, x, y, hexToRGB(color));
   }
 
+  function keyDown(event) {
+    if (event.code !== 'Space') {
+      return;
+    }
+
+    const cursor = state.get((state) => state.cursor);
+    const color = state.get((state) => state.color);
+
+    floodFill(ctx, cursor.x, cursor.y, hexToRGB(color));
+  }
+
   cursorCanvas.addEventListener("click", mouseClick);
+  window.addEventListener("keydown", keyDown);
 
   return function dispose() {
     cursorCanvas.removeEventListener("click", mouseClick);
+    window.removeEventListener("keydown", keyDown);
   };
 }

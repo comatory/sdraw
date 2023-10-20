@@ -5,12 +5,17 @@ import {
   setCanvasSizeWithoutPanel,
 } from "./dom.mjs";
 import { prepareCanvasRestoration } from "./canvas.mjs";
-import { createToolPanel, createColorPanel, attachPanelListeners } from './ui/panel.mjs';
+import {
+  createToolPanel,
+  createColorPanel,
+  attachPanelListeners,
+} from "./ui/panel.mjs";
 import { createState, COLOR } from "./state/state.mjs";
 import { setTool, setColor, setCursor } from "./state/actions.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
 import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
+import { throttle } from "./util.mjs";
 
 function attachResizeListeners() {
   const canvas = getCanvas();
@@ -19,14 +24,18 @@ function attachResizeListeners() {
   setCanvasSizeByViewport(cursorCanvas);
   setCanvasSizeWithoutPanel(canvas);
 
-  window.addEventListener("resize", () => {
+  function handleWindowResize() {
     const restoreCanvas = prepareCanvasRestoration(canvas);
 
     setCanvasSizeByViewport(cursorCanvas);
     setCanvasSizeWithoutPanel(canvas);
 
     restoreCanvas();
-  });
+  }
+
+  const throttledWindowResize = throttle(handleWindowResize, 5000);
+
+  window.addEventListener("resize", throttledWindowResize);
 }
 
 function attachDrawingListeners(state) {

@@ -73,6 +73,8 @@ export function attachKeyboardListeners(state) {
       setTool(TOOLS.PEN, { state });
     } else if (event.key === "f") {
       setTool(TOOLS.FILL, { state });
+    } else if (event.key === 'c') {
+      setTool(TOOLS.CAM, { state });
     } else if (event.key === "a") {
       setNextColor({ state });
     } else if (event.key === "z") {

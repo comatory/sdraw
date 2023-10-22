@@ -4,12 +4,14 @@ export const TOOLS = Object.freeze({
   PEN: Symbol("pen"),
   FILL: Symbol("fill"),
   CAM: Symbol("cam"),
+  STAMP: Symbol("stamp"),
 });
 
 export const TOOL_LIST = Object.freeze([
   TOOLS.PEN,
   TOOLS.FILL,
   TOOLS.CAM,
+  TOOLS.STAMP,
 ]);
 
 export const COLOR = Object.freeze({

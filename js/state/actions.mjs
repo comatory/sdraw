@@ -2,6 +2,7 @@ import { drawCursor } from "../cursor.mjs";
 import { activatePen } from "../tools/pen.mjs";
 import { activateFill } from '../tools/fill.mjs';
 import { activateCam } from "../tools/cam.mjs";
+import { activateStamp } from "../tools/stamp.mjs";
 import { TOOLS, COLOR_LIST } from "./state.mjs";
 import { storeTool, storeColor } from "./storage.mjs";
 
@@ -30,6 +31,8 @@ export async function setTool(tool, { state }) {
     case TOOLS.CAM:
       disposeCallback = await activateCam({ state });
       break;
+    case TOOLS.STAMP:
+      disposeCallback = activateStamp({ state });
     default:
       break;
   }

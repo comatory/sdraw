@@ -6,15 +6,15 @@ export const TOOLS = Object.freeze({
     activeVariant: null,
     variants: [
       {
-        id: Symbol('pen-stroke-width-1'),
+        id: Symbol("pen-stroke-width-1"),
         value: 1,
       },
       {
-        id: Symbol('pen-stroke-width-2'),
+        id: Symbol("pen-stroke-width-2"),
         value: 5,
       },
       {
-        id: Symbol('pen-stroke-width-3'),
+        id: Symbol("pen-stroke-width-3"),
         value: 9,
       },
     ],
@@ -29,10 +29,10 @@ export const TOOLS = Object.freeze({
     activeVariant: null,
     variants: [
       {
-        id: Symbol('cam-take-photo'),
+        id: Symbol("cam-take-photo"),
       },
       {
-        id: Symbol('cam-cancel'),
+        id: Symbol("cam-cancel"),
       },
     ],
   },
@@ -41,11 +41,11 @@ export const TOOLS = Object.freeze({
     activeVariant: null,
     variants: [
       {
-        id: Symbol('stamp-star'),
-        value: 'star.svg',
+        id: Symbol("stamp-star"),
+        value: "star.svg",
       },
     ],
-  }
+  },
 });
 
 export const TOOL_LIST = Object.freeze([

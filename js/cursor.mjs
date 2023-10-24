@@ -13,7 +13,6 @@ const CURSOR_SIZE = 20;
 const SET_CURSOR_DELAY_IN_MS = 500;
 const BASE_GAMEPAD_ACCELERATION_MULTIPLIER = 1.0;
 const MAX_GAMEPAD_ACCELERATION_MULTIPLIER = 4.0;
-const GAMEPAD_ACCELERATION_MULTIPLIER_DELAY_IN_MS = 300;
 
 export function drawCursor(x, y) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -37,7 +36,7 @@ export function initializeCursor({ state }) {
   // TODO cursor shape based on active tool
 
   const canvas = getCursorCanvas();
-  const cursor = state.get((state) => state.cursor);
+  const cursor = state.get((prevState) => prevState.cursor);
   const x = cursor.x;
   const y = cursor.y;
   let setCursorTimer = null;
@@ -50,13 +49,12 @@ export function initializeCursor({ state }) {
     }
 
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX;
-    const y = event.clientY;
+    const { clientX, clientY } = event;
 
-    drawCursor(x - rect.left, y - rect.top);
+    drawCursor(clientX - rect.left, clientY - rect.top);
 
     setCursorTimer = window.setTimeout(() => {
-      setCursor({ x, y }, { state });
+      setCursor({ x: clientX, y: clientY }, { state });
     }, SET_CURSOR_DELAY_IN_MS);
   }
 
@@ -74,16 +72,15 @@ export function initializeCursor({ state }) {
       const gamepadCursor = createCursorFromGamepad(
         gamepad,
         prevGamepadCursor,
-        gamepadAccelerationMultiplier
+        gamepadAccelerationMultiplier,
       );
       prevGamepadCursor = gamepadCursor;
 
-      const { x, y } = gamepadCursor;
-      drawCursor(x, y);
+      drawCursor(gamepadCursor.x, gamepadCursor.y);
 
       gamepadAccelerationMultiplier = Math.min(
         gamepadAccelerationMultiplier + 0.08,
-        MAX_GAMEPAD_ACCELERATION_MULTIPLIER
+        MAX_GAMEPAD_ACCELERATION_MULTIPLIER,
       );
     }
 

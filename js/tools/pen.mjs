@@ -1,11 +1,10 @@
 import { getCanvas } from "../dom.mjs";
-import { TOOLS } from "../state/state.mjs";
 
 const ctx = getCanvas().getContext("2d");
 
 export function activatePen({ state, variant }) {
   let inProgress = false;
-  let color = state.get((state) => state.color);
+  let color = state.get((prevState) => prevState.color);
   let isHoldingSpacebar = false;
 
   function draw(x, y) {
@@ -30,7 +29,6 @@ export function activatePen({ state, variant }) {
   function mouseMove(event) {
     if (!inProgress) return;
 
-    const rect = getCanvas().getBoundingClientRect();
     const x = event.clientX;
     const y = event.clientY;
 
@@ -63,16 +61,16 @@ export function activatePen({ state, variant }) {
   window.addEventListener("keydown", keyDown);
   window.addEventListener("keyup", keyUp);
 
-  function updateColor(state, prevState) {
-    if (state.color === prevState.color) {
+  function updateColor(nextState, prevState) {
+    if (nextState.color === prevState.color) {
       return;
     }
 
-    color = state.color;
+    color = nextState.color;
   }
 
-  function updatePath(state, prevState) {
-    if (state.cursor === prevState.cursor || !isHoldingSpacebar) {
+  function updatePath(nextState, prevState) {
+    if (nextState.cursor === prevState.cursor || !isHoldingSpacebar) {
       return;
     }
 
@@ -80,11 +78,11 @@ export function activatePen({ state, variant }) {
       return;
     }
 
-    draw(state.cursor.x, state.cursor.y);
+    draw(nextState.cursor.x, nextState.cursor.y);
   }
 
   state.addListener(updateColor);
-  state.addListener(updatePath); 
+  state.addListener(updatePath);
 
   return function dispose() {
     state.removeListener(updateColor);
@@ -97,5 +95,3 @@ export function activatePen({ state, variant }) {
     window.removeEventListener("keyup", keyUp);
   };
 }
-
-export function drawWithFill() {}

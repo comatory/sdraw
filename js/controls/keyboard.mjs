@@ -6,7 +6,6 @@ import {
 } from "../state/actions.mjs";
 import { TOOLS } from "../state/state.mjs";
 
-const MAXIMUM_CURSOR_ACCERATION = 20;
 const NO_KEYS_PRESSED = Object.freeze({
   up: false,
   down: false,
@@ -22,9 +21,9 @@ function clearAccelerationTimer(timer) {
   window.clearTimeout(timer);
 }
 
-function setAccelerationTimer(acceleration) {
+function setAccelerationTimer(value) {
   return window.setTimeout(() => {
-    acceleration = null;
+    value = null;
   }, 50);
 }
 
@@ -60,6 +59,7 @@ export function attachKeyboardListeners(state) {
         break;
       case "ArrowLeft":
         keysPressed = produceMovementKeysPressed(keysPressed, "left", false);
+        break;
       case "ArrowRight":
         keysPressed = produceMovementKeysPressed(keysPressed, "right", false);
         break;
@@ -73,9 +73,9 @@ export function attachKeyboardListeners(state) {
       setTool(TOOLS.PEN, { state });
     } else if (event.key === "f") {
       setTool(TOOLS.FILL, { state });
-    } else if (event.key === 'c') {
+    } else if (event.key === "c") {
       setTool(TOOLS.CAM, { state });
-    } else if (event.key === 's') {
+    } else if (event.key === "s") {
       setTool(TOOLS.STAMP, { state });
     } else if (event.key === "a") {
       setNextColor({ state });

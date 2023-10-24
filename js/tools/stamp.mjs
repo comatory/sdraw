@@ -16,7 +16,7 @@ export function activateStamp({ state }) {
 
   function drawStamp(x, y, stamp) {
     const url = `/img/stamps/${stamp}`;
-    const color = state.get((state) => state.color);
+    const color = state.get((prevState) => prevState.color);
 
     window
       .fetch(url)

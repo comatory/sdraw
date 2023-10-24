@@ -11,7 +11,7 @@ import {
   createColorPanel,
   attachPanelListeners,
 } from "./ui/panel.mjs";
-import { createState, COLOR } from "./state/state.mjs";
+import { createState } from "./state/state.mjs";
 import { setTool, setColor, setCursor } from "./state/actions.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
 import { attachGamepadListeners } from "./controls/gamepad.mjs";
@@ -44,13 +44,13 @@ function attachResizeListeners() {
 function attachDrawingListeners(state) {
   initializeCursor({ state });
 
-  const currentTool = state.get((state) => state.tool);
+  const currentTool = state.get((prevState) => prevState.tool);
 
   if (currentTool) {
     setTool(currentTool, { state });
   }
 
-  const currentColor = state.get((state) => state.color);
+  const currentColor = state.get((prevState) => prevState.color);
 
   if (currentColor) {
     setColor(currentColor, { state });
@@ -70,7 +70,7 @@ export function boot() {
       x: rect.width / 2,
       y: rect.height / 2,
     },
-    { state }
+    { state },
   );
 
   attachDrawingListeners(state);

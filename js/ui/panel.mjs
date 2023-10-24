@@ -56,7 +56,7 @@ export function attachPanelListeners({ state }) {
       return;
     }
 
-    const cursor = state.get((state) => state.cursor);
+    const cursor = state.get((prevState) => prevState.cursor);
 
     activatePanelButtonOnCoordinates(cursor.x, cursor.y);
   });
@@ -110,7 +110,7 @@ function buildToolVariants(tool, state) {
         delete listeners[button.dataset.value];
 
         button.remove();
-      }
+      },
     );
 
     if (Object.keys(listeners).length > 0) {
@@ -155,7 +155,7 @@ export function createToolPanel({ state }) {
 
         setTool(tool, { state });
       },
-      true
+      true,
     );
 
     button.dataset.value = tool.id.description;
@@ -164,7 +164,7 @@ export function createToolPanel({ state }) {
     tools.appendChild(button);
   });
 
-  const selectedTool = state.get((state) => state.tool);
+  const selectedTool = state.get((prevState) => prevState.tool);
 
   if (selectedTool) {
     updateActivatedButton(tools, selectedTool.id.description);
@@ -178,12 +178,12 @@ export function createToolPanel({ state }) {
 export function createColorPanel({ state }) {
   const colors = getPanelColors();
 
-  state.addListener((state, prevState) => {
-    if (state.color === prevState.color) {
+  state.addListener((nextState, prevState) => {
+    if (nextState.color === prevState.color) {
       return;
     }
 
-    updateActivatedButton(colors, state.color);
+    updateActivatedButton(colors, nextState.color);
   });
 
   COLOR_LIST.forEach((color) => {
@@ -200,7 +200,7 @@ export function createColorPanel({ state }) {
     colors.appendChild(button);
   });
 
-  const selectedColor = state.get((state) => state.color);
+  const selectedColor = state.get((prevState) => prevState.color);
 
   if (selectedColor) {
     updateActivatedButton(colors, selectedColor);

@@ -56,16 +56,16 @@ function floodFill(ctx, x, y, fillColor) {
   if (!colorsMatch(targetColor, fillColor)) {
     const pixelsToCheck = [x, y];
     while (pixelsToCheck.length > 0) {
-      const y = pixelsToCheck.pop();
-      const x = pixelsToCheck.pop();
+      const currentY = pixelsToCheck.pop();
+      const currentX = pixelsToCheck.pop();
 
-      const currentColor = getPixel(imageData, x, y);
+      const currentColor = getPixel(imageData, currentX, currentY);
       if (colorsMatch(currentColor, targetColor)) {
-        setPixel(imageData, x, y, fillColor);
-        pixelsToCheck.push(x + 1, y);
-        pixelsToCheck.push(x - 1, y);
-        pixelsToCheck.push(x, y + 1);
-        pixelsToCheck.push(x, y - 1);
+        setPixel(imageData, currentX, currentY, fillColor);
+        pixelsToCheck.push(currentX + 1, currentY);
+        pixelsToCheck.push(currentX - 1, currentY);
+        pixelsToCheck.push(currentX, currentY + 1);
+        pixelsToCheck.push(currentX, currentY - 1);
       }
     }
 
@@ -79,7 +79,7 @@ export function activateFill({ state }) {
   const cursorCanvas = getCursorCanvas();
 
   function mouseClick(event) {
-    const color = state.get((state) => state.color);
+    const color = state.get((prevState) => prevState.color);
     const x = event.clientX;
     const y = event.clientY;
 
@@ -91,12 +91,12 @@ export function activateFill({ state }) {
   }
 
   function keyDown(event) {
-    if (event.code !== 'Space') {
+    if (event.code !== "Space") {
       return;
     }
 
-    const cursor = state.get((state) => state.cursor);
-    const color = state.get((state) => state.color);
+    const cursor = state.get((prevState) => prevState.cursor);
+    const color = state.get((prevState) => prevState.color);
 
     floodFill(ctx, cursor.x, cursor.y, hexToRGB(color));
   }

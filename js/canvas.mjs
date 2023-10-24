@@ -8,7 +8,7 @@ export function prepareCanvasRestoration(canvas) {
 
   return function restoreCanvas() {
     context.drawImage(image, 0, 0);
-  }
+  };
 }
 
 export function isWithinCanvasBounds(x, y) {

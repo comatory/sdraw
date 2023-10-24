@@ -1,15 +1,15 @@
-import { getCam, getCanvas } from '../dom.mjs'
+import { getCam, getCanvas } from "../dom.mjs";
 
 function getVideoStream() {
   return navigator.mediaDevices.getUserMedia({ video: true });
 }
 
-export async function activateCam({ state }) {
+export async function activateCam() {
   const cam = getCam();
-  cam.style.display = 'block';
+  cam.style.display = "block";
 
   function closeCam() {
-    cam.style.display = 'none';
+    cam.style.display = "none";
     cam.pause();
     cam.currentTime = 0;
   }
@@ -21,13 +21,13 @@ export async function activateCam({ state }) {
     cam.srcObject = stream;
     cam.play();
   } catch (err) {
-    alert('Could not activate camera');
+    alert("Could not activate camera");
     return closeCam();
   }
 
   return function dispose() {
     const canvas = getCanvas();
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     ctx.drawImage(cam, 0, 0, canvas.width, canvas.height);
     if (!stream) {
       return;
@@ -40,5 +40,5 @@ export async function activateCam({ state }) {
     stream = null;
 
     closeCam();
-  }
+  };
 }

@@ -5,13 +5,13 @@ export function attachGamepadListeners(state) {
     setGamepadIndex(event.gamepad.index, { state });
   });
 
-  window.addEventListener("gamepaddisconnected", (event) => {
+  window.addEventListener("gamepaddisconnected", () => {
     setGamepadIndex(null, { state });
   });
 }
 
 export function getGamepad(state) {
-  const gamepadIndex = state.get((state) => state.gamepad);
+  const gamepadIndex = state.get((prevState) => prevState.gamepad);
 
   if (gamepadIndex === null) {
     return null;

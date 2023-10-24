@@ -7,7 +7,8 @@
   "scripts": {
     "test": "test",
     "start": "./server.sh",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "lint": "eslint . --ext .js,.mjs"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
   },
   "homepage": "https://github.com/comatory/sdraw#readme",
   "devDependencies": {
+    "eslint": "^8.52.0",
     "prettier": "^3.0.3"
   }
 }

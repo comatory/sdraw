@@ -1,14 +1,15 @@
 import { getCanvas } from "../dom.mjs";
+import { TOOLS } from "../state/state.mjs";
 
 const ctx = getCanvas().getContext("2d");
 
-export function activatePen({ state }) {
+export function activatePen({ state, variant }) {
   let inProgress = false;
   let color = state.get((state) => state.color);
   let isHoldingSpacebar = false;
 
   function draw(x, y) {
-    ctx.lineWidth = 5;
+    ctx.lineWidth = variant?.value ?? 5;
     ctx.lineCap = "round";
     ctx.strokeStyle = color;
 

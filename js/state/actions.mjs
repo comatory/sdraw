@@ -9,30 +9,30 @@ import { storeTool, storeColor } from "./storage.mjs";
 let disposeCallback;
 const MAXIMUM_CURSOR_ACCERATION = 20;
 
-export async function setTool(tool, { state }) {
+export async function setTool(tool, { state, variant }) {
   if (disposeCallback) {
     disposeCallback();
     disposeCallback = null;
   }
 
   state.set((state) => ({
-    tool,
+    tool: { ...tool },
   }));
 
   storeTool(tool);
 
-  switch (state.get((state) => state.tool)) {
-    case TOOLS.PEN:
-      disposeCallback = activatePen({ state });
+  switch (state.get((state) => state.tool.id)) {
+    case TOOLS.PEN.id:
+      disposeCallback = activatePen({ state, variant });
       break;
-    case TOOLS.FILL:
+    case TOOLS.FILL.id:
       disposeCallback = activateFill({ state });
       break;
-    case TOOLS.CAM:
-      disposeCallback = await activateCam({ state });
+    case TOOLS.CAM.id:
+      disposeCallback = await activateCam({ state, variant });
       break;
-    case TOOLS.STAMP:
-      disposeCallback = activateStamp({ state });
+    case TOOLS.STAMP.id:
+      disposeCallback = activateStamp({ state, variant });
     default:
       break;
   }

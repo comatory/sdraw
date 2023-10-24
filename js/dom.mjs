@@ -10,6 +10,10 @@ export function getPanelTools() {
   return document.getElementById("tools");
 }
 
+export function getPanelToolVariants() {
+  return document.getElementById("variants");
+}
+
 export function getPanelColors() {
   return document.getElementById("colors");
 }

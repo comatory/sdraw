@@ -1,10 +1,51 @@
 import { loadTool, loadColor } from "./storage.mjs";
 
 export const TOOLS = Object.freeze({
-  PEN: Symbol("pen"),
-  FILL: Symbol("fill"),
-  CAM: Symbol("cam"),
-  STAMP: Symbol("stamp"),
+  PEN: {
+    id: Symbol("pen"),
+    activeVariant: null,
+    variants: [
+      {
+        id: Symbol('pen-stroke-width-1'),
+        value: 1,
+      },
+      {
+        id: Symbol('pen-stroke-width-2'),
+        value: 5,
+      },
+      {
+        id: Symbol('pen-stroke-width-3'),
+        value: 9,
+      },
+    ],
+  },
+  FILL: {
+    id: Symbol("fill"),
+    activeVariant: null,
+    variants: [],
+  },
+  CAM: {
+    id: Symbol("cam"),
+    activeVariant: null,
+    variants: [
+      {
+        id: Symbol('cam-take-photo'),
+      },
+      {
+        id: Symbol('cam-cancel'),
+      },
+    ],
+  },
+  STAMP: {
+    id: Symbol("stamp"),
+    activeVariant: null,
+    variants: [
+      {
+        id: Symbol('stamp-star'),
+        value: 'star.svg',
+      },
+    ],
+  }
 });
 
 export const TOOL_LIST = Object.freeze([

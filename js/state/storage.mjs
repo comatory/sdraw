@@ -7,7 +7,7 @@ export function loadTool() {
     return DEFAULT_TOOL;
   }
 
-  return Object.values(TOOLS).find((tool) => tool.description === storedValue) ?? DEFAULT_TOOL;
+  return Object.values(TOOLS).find((tool) => tool.id.description === storedValue) ?? DEFAULT_TOOL;
 }
 
 export function loadColor() {
@@ -15,7 +15,7 @@ export function loadColor() {
 }
 
 export function storeTool(tool) {
-  window.sessionStorage.setItem("tool", tool.description);
+  window.sessionStorage.setItem("tool", tool.id.description);
 }
 
 export function storeColor(color) {

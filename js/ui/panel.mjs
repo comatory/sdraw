@@ -1,6 +1,11 @@
 import { TOOL_LIST, COLOR_LIST } from "../state/state.mjs";
 import { setTool, setColor } from "../state/actions.mjs";
-import { getPanel, getPanelTools, getPanelColors } from "../dom.mjs";
+import {
+  getPanel,
+  getPanelTools,
+  getPanelColors,
+  getPanelToolVariants,
+} from "../dom.mjs";
 
 function isCursorWithinPanelBounds(x, y, rect) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
@@ -69,15 +74,72 @@ function updateActivatedButton(buttonContainer, value) {
   });
 }
 
+function buildToolVariants(tool, state) {
+  const variantsContainer = getPanelToolVariants();
+
+  const listeners = {};
+
+  tool.variants.forEach((variant) => {
+    const button = document.createElement("button");
+
+    function onClick() {
+      setTool(tool, { state, variant });
+    }
+
+    button.addEventListener("click", onClick);
+
+    button.dataset.value = variant.id.description;
+    button.innerText = variant.id.description;
+
+    variantsContainer.appendChild(button);
+
+    listeners[button.dataset.value] = onClick;
+  });
+
+  return function dispose() {
+    Array.from(variantsContainer.querySelectorAll("button")).forEach(
+      (button) => {
+        const callback = listeners[button.dataset.value];
+
+        if (!callback) {
+          throw new Error("No callback registered!");
+        }
+
+        button.removeEventListener("click", callback);
+
+        delete listeners[button.dataset.value];
+
+        button.remove();
+      }
+    );
+
+    if (Object.keys(listeners).length > 0) {
+      throw new Error("Not all listeners were removed!");
+    }
+
+    variantsContainer.innerHTML = "";
+  };
+}
+
 export function createToolPanel({ state }) {
   const tools = getPanelTools();
+  let disposeVariantsCallback = null;
 
-  state.addListener((state, prevState) => {
-    if (state.tool === prevState.tool) {
+  state.addListener((updatedState, prevState) => {
+    if (updatedState.tool === prevState.tool) {
       return;
     }
 
-    updateActivatedButton(tools, state.tool.description);
+    if (disposeVariantsCallback) {
+      disposeVariantsCallback();
+      disposeVariantsCallback = null;
+    }
+
+    updateActivatedButton(tools, updatedState.tool.id.description);
+
+    if (updatedState.tool.variants) {
+      disposeVariantsCallback = buildToolVariants(updatedState.tool, state);
+    }
   });
 
   TOOL_LIST.forEach((tool) => {
@@ -86,13 +148,18 @@ export function createToolPanel({ state }) {
     button.addEventListener(
       "click",
       () => {
+        if (disposeVariantsCallback) {
+          disposeVariantsCallback();
+          disposeVariantsCallback = null;
+        }
+
         setTool(tool, { state });
       },
       true
     );
 
-    button.dataset.value = tool.description;
-    button.innerText = tool.description;
+    button.dataset.value = tool.id.description;
+    button.innerText = tool.id.description;
 
     tools.appendChild(button);
   });
@@ -100,7 +167,11 @@ export function createToolPanel({ state }) {
   const selectedTool = state.get((state) => state.tool);
 
   if (selectedTool) {
-    updateActivatedButton(tools, selectedTool.description);
+    updateActivatedButton(tools, selectedTool.id.description);
+
+    if (selectedTool.variants) {
+      disposeVariantsCallback = buildToolVariants(selectedTool, state);
+    }
   }
 }
 

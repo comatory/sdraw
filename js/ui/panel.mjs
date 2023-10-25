@@ -6,6 +6,7 @@ import {
   getPanelColors,
   getPanelToolVariants,
 } from "../dom.mjs";
+import { loadIcon } from "../tools/load-icon.mjs";
 
 function isCursorWithinPanelBounds(x, y, rect) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
@@ -110,7 +111,7 @@ function buildToolVariants(tool, state) {
         delete listeners[button.dataset.value];
 
         button.remove();
-      },
+      }
     );
 
     if (Object.keys(listeners).length > 0) {
@@ -155,11 +156,19 @@ export function createToolPanel({ state }) {
 
         setTool(tool, { state });
       },
-      true,
+      true
     );
 
     button.dataset.value = tool.id.description;
-    button.innerText = tool.id.description;
+
+    loadIcon(tool.id.description)
+      .then((icon) => {
+        button.innerHTML = icon;
+      })
+      .catch((error) => {
+        console.error(error);
+        button.innerText = tool.id.description;
+      });
 
     tools.appendChild(button);
   });

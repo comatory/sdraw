@@ -90,7 +90,15 @@ function buildToolVariants(tool, state) {
     button.addEventListener("click", onClick);
 
     button.dataset.value = variant.id.description;
-    button.innerText = variant.id.description;
+
+    loadIcon(variant.iconUrl)
+      .then((icon) => {
+        button.innerHTML = icon;
+      })
+      .catch((error) => {
+        console.error(error);
+        button.innerText = variant.id.description;
+      });
 
     variantsContainer.appendChild(button);
 
@@ -161,7 +169,7 @@ export function createToolPanel({ state }) {
 
     button.dataset.value = tool.id.description;
 
-    loadIcon(tool.id.description)
+    loadIcon(tool.iconUrl)
       .then((icon) => {
         button.innerHTML = icon;
       })

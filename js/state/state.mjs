@@ -3,29 +3,35 @@ import { loadTool, loadColor } from "./storage.mjs";
 export const TOOLS = Object.freeze({
   PEN: {
     id: Symbol("pen"),
+    iconUrl: "img/tools/pen.svg",
     activeVariant: null,
     variants: [
       {
         id: Symbol("pen-stroke-width-1"),
+        iconUrl: "img/tools/pen-stroke-width-1.svg",
         value: 1,
       },
       {
         id: Symbol("pen-stroke-width-2"),
+        iconUrl: "img/tools/pen-stroke-width-2.svg",
         value: 5,
       },
       {
         id: Symbol("pen-stroke-width-3"),
+        iconUrl: "img/tools/pen-stroke-width-3.svg",
         value: 9,
       },
     ],
   },
   FILL: {
     id: Symbol("fill"),
+    iconUrl: "img/tools/fill.svg",
     activeVariant: null,
     variants: [],
   },
   CAM: {
     id: Symbol("cam"),
+    iconUrl: "img/tools/cam.svg",
     activeVariant: null,
     variants: [
       {
@@ -38,10 +44,12 @@ export const TOOLS = Object.freeze({
   },
   STAMP: {
     id: Symbol("stamp"),
+    iconUrl: "img/tools/stamp.svg",
     activeVariant: null,
     variants: [
       {
         id: Symbol("stamp-star"),
+        iconUrl: "img/stamps/star.svg",
         value: "star.svg",
       },
     ],

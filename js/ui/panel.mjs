@@ -85,6 +85,7 @@ function buildToolVariants(tool, state) {
 
     function onClick() {
       setTool(tool, { state, variant });
+      updateActivatedButton(variantsContainer, variant.id.description);
     }
 
     button.addEventListener("click", onClick);

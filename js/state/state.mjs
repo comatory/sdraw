@@ -4,7 +4,6 @@ export const TOOLS = Object.freeze({
   PEN: {
     id: Symbol("pen"),
     iconUrl: "img/tools/pen.svg",
-    activeVariant: null,
     variants: [
       {
         id: Symbol("pen-stroke-width-1"),
@@ -26,13 +25,11 @@ export const TOOLS = Object.freeze({
   FILL: {
     id: Symbol("fill"),
     iconUrl: "img/tools/fill.svg",
-    activeVariant: null,
     variants: [],
   },
   CAM: {
     id: Symbol("cam"),
     iconUrl: "img/tools/cam.svg",
-    activeVariant: null,
     variants: [
       {
         id: Symbol("cam-take-photo"),
@@ -45,7 +42,6 @@ export const TOOLS = Object.freeze({
   STAMP: {
     id: Symbol("stamp"),
     iconUrl: "img/tools/stamp.svg",
-    activeVariant: null,
     variants: [
       {
         id: Symbol("stamp-star"),

@@ -1,6 +1,6 @@
 import { getCanvas } from "../dom.mjs";
-
-export const DEFAULT_STAMPS = Object.freeze(["star.svg"]);
+import { TOOLS } from "../state/state.mjs";
+import { isWithinCanvasBounds } from "../canvas.mjs";
 
 export function activateStamp({ state }) {
   const ctx = getCanvas().getContext("2d");
@@ -14,8 +14,7 @@ export function activateStamp({ state }) {
     image.src = dataUri;
   }
 
-  function drawStamp(x, y, stamp) {
-    const url = `/img/stamps/${stamp}`;
+  function drawStamp(x, y, url) {
     const color = state.get((prevState) => prevState.color);
 
     window
@@ -40,13 +39,22 @@ export function activateStamp({ state }) {
   }
 
   function mouseClick(event) {
-    // TODO: allow to select stamp
-    const activeStamp = DEFAULT_STAMPS[0];
+    const activeStamp = state.get((prevState) => prevState.activatedVariants.get(TOOLS.STAMP.id));
+
+    if (!activeStamp) {
+      return;
+    }
 
     const x = event.clientX;
     const y = event.clientY;
 
-    drawStamp(x, y, activeStamp);
+    if (!isWithinCanvasBounds(x, y)) {
+      return;
+    }
+
+    const stampUrl = activeStamp.iconUrl;
+
+    drawStamp(x, y, stampUrl);
   }
 
   window.addEventListener("click", mouseClick);

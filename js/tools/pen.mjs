@@ -8,7 +8,7 @@ export function activatePen({ state, variant }) {
   let isHoldingSpacebar = false;
 
   function draw(x, y) {
-    ctx.lineWidth = variant?.value ?? 5;
+    ctx.lineWidth = variant.value;
     ctx.lineCap = "round";
     ctx.strokeStyle = color;
 

@@ -80,6 +80,10 @@ function buildToolVariants(tool, state) {
 
   const listeners = {};
 
+  const activatedVariant = state.get((prevState) =>
+    prevState.activatedVariants.get(tool.id)
+  );
+
   tool.variants.forEach((variant) => {
     const button = document.createElement("button");
 
@@ -102,6 +106,10 @@ function buildToolVariants(tool, state) {
       });
 
     variantsContainer.appendChild(button);
+
+    if (variant.id === activatedVariant.id) {
+      updateActivatedButton(variantsContainer, variant.id.description);
+    }
 
     listeners[button.dataset.value] = onClick;
   });

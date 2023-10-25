@@ -16,14 +16,24 @@ export async function setTool(tool, { state, variant }) {
   }
 
   state.set(() => ({
-    tool: { ...tool },
+    tool,
   }));
+
+  const restoredVariant = !variant ?
+    state.get((prevState) => prevState.activatedVariants.get(tool.id))
+    : null;
+
+  const nextVariant = variant || restoredVariant;
+
+  if (nextVariant) {
+    activateVariant(tool, nextVariant, { state })
+  }
 
   storeTool(tool);
 
   switch (state.get((prevState) => prevState.tool.id)) {
     case TOOLS.PEN.id:
-      disposeCallback = activatePen({ state, variant });
+      disposeCallback = activatePen({ state, variant: nextVariant });
       break;
     case TOOLS.FILL.id:
       disposeCallback = activateFill({ state });
@@ -32,7 +42,7 @@ export async function setTool(tool, { state, variant }) {
       disposeCallback = await activateCam({ state, variant });
       break;
     case TOOLS.STAMP.id:
-      disposeCallback = activateStamp({ state, variant });
+      disposeCallback = activateStamp({ state, variant: nextVariant });
       break;
     default:
       break;
@@ -99,5 +109,19 @@ export function moveCursor({ acceleration, state, keysPressed }) {
 export function setGamepadIndex(index, { state }) {
   state.set(() => ({
     gamepad: index,
+  }));
+}
+
+function activateVariant(tool, variant, { state }) {
+  const activatedVariants = state.get(
+    (prevState) => prevState.activatedVariants,
+  );
+
+  const variants = new Map(activatedVariants);
+
+  variants.set(tool.id, variant);
+
+  state.set(() => ({
+    activatedVariants: variants,
   }));
 }

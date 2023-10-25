@@ -47,7 +47,11 @@ function attachDrawingListeners(state) {
   const currentTool = state.get((prevState) => prevState.tool);
 
   if (currentTool) {
-    setTool(currentTool, { state });
+    const activatedVariants = state.get(
+      (prevState) => prevState.activatedVariants,
+    );
+    const variant = activatedVariants.get(currentTool.id);
+    setTool(currentTool, { state, variant });
   }
 
   const currentColor = state.get((prevState) => prevState.color);

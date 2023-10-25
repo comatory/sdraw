@@ -98,11 +98,17 @@ export const COLOR_LIST = Object.freeze([
 export const DEFAULT_TOOL = TOOLS.PEN;
 export const DEFAULT_COLOR = COLOR.BLACK;
 
+const DEFAULT_TOOL_VARIANTS = new Map([
+  [TOOLS.PEN.id, TOOLS.PEN.variants[0]],
+  [TOOLS.STAMP.id, TOOLS.STAMP.variants[0]],
+])
+
 export function createState() {
   const callbacks = [];
 
   let state = {
     tool: loadTool(),
+    activatedVariants: DEFAULT_TOOL_VARIANTS,
     color: loadColor(),
     gamepad: null,
   };

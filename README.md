@@ -4,19 +4,26 @@ Simple drawing program aimed for kids with accessibility in mind.
 The program provides very simple functionality:
 
 * pen tool
-* bucket tool
+* bucket (fill) tool
 * stamps (with ability to load in custom ones)
 * photo capture
 
 The cursor can be controlled with mouse, keyboard or gamepad.
+
+<img width="300px" height="auto" src="./docs/lame.png" />
 
 ## Control mapping
 
 ### Keyboard
 
 - arrow keys for movement
-- ENTER for selecting buttons (tools, colors ...)
-- SPACE for activating tool (to draw with pen, you need to hold it)
+- `ENTER` for selecting buttons (tools, colors ...)
+- `SPACE` for activating tool (to draw with pen, you need to hold it)
+- `a`, `z` for cycling between colors
+- `p` activate pen tool
+- `f` activate bucket tool
+- `c` activate photo capture
+- `s` activate stamp tool
 
 ### Gamepad
 

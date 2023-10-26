@@ -14,6 +14,10 @@ export function getPanelToolVariants() {
   return document.getElementById("variants");
 }
 
+export function getPanelToolActions() {
+  return document.getElementById("actions");
+}
+
 export function getPanelColors() {
   return document.getElementById("colors");
 }

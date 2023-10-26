@@ -30,12 +30,14 @@ export const TOOLS = Object.freeze({
   CAM: {
     id: Symbol("cam"),
     iconUrl: "img/tools/cam.svg",
-    variants: [
+    actions: [
       {
         id: Symbol("cam-take-photo"),
+        iconUrl: "img/tools/cam-take-photo.svg",
       },
       {
         id: Symbol("cam-cancel"),
+        iconUrl: "img/tools/cam-cancel.svg",
       },
     ],
   },
@@ -111,6 +113,7 @@ export function createState() {
     activatedVariants: DEFAULT_TOOL_VARIANTS,
     color: loadColor(),
     gamepad: null,
+    photoMemorized: false,
   };
 
   function addListener(callback) {

@@ -1,10 +1,11 @@
 import { TOOL_LIST, COLOR_LIST } from "../state/state.mjs";
-import { setTool, setColor } from "../state/actions.mjs";
+import { setTool, setColor, takePhoto, removePhoto } from "../state/actions.mjs";
 import {
   getPanel,
   getPanelTools,
   getPanelColors,
   getPanelToolVariants,
+  getPanelToolActions,
 } from "../dom.mjs";
 import { loadIcon } from "../tools/load-icon.mjs";
 
@@ -75,6 +76,66 @@ function updateActivatedButton(buttonContainer, value) {
   });
 }
 
+function buildToolActions(tool, state) {
+  const actionsContainer = getPanelToolActions();
+
+  const listeners = {};
+
+  tool.actions.forEach((action) => {
+    const button = document.createElement("button");
+
+    function onCamTakePhotoClick() {
+      takePhoto({ state });
+    }
+
+    function onCamCancelClick() {
+      removePhoto({ state });
+    }
+
+    switch (action.id.description) {
+      case "cam-take-photo": {
+        listeners[action.id.description] = onCamTakePhotoClick;
+        button.addEventListener("click", onCamTakePhotoClick);
+        break;
+      }
+      case "cam-cancel": {
+        listeners[action.id.description] = onCamCancelClick;
+        button.addEventListener("click", onCamCancelClick);
+        break;
+      }
+    }
+
+    button.dataset.value = action.id.description;
+    button.innerText = action.id.description;
+
+    loadIcon(action.iconUrl)
+      .then((icon) => {
+        button.innerHTML = icon;
+      })
+      .catch((error) => {
+        console.error(error);
+        button.innerText = action.id.description;
+      });
+
+
+    actionsContainer.appendChild(button);
+  });
+
+  return function dispose() {
+    Array.from(actionsContainer.querySelectorAll("button")).forEach(
+      (button) => {
+        disposeCallback(button, listeners);
+
+        button.remove();
+      }
+    );
+
+    ensureCallbacksRemoved(listeners);
+
+    actionsContainer.innerHTML = "";
+  };
+}
+
 function buildToolVariants(tool, state) {
   const variantsContainer = getPanelToolVariants();
 
@@ -117,23 +178,13 @@ function buildToolVariants(tool, state) {
   return function dispose() {
     Array.from(variantsContainer.querySelectorAll("button")).forEach(
       (button) => {
-        const callback = listeners[button.dataset.value];
-
-        if (!callback) {
-          throw new Error("No callback registered!");
-        }
-
-        button.removeEventListener("click", callback);
-
-        delete listeners[button.dataset.value];
+        disposeCallback(button, listeners);
 
         button.remove();
       }
     );
 
-    if (Object.keys(listeners).length > 0) {
-      throw new Error("Not all listeners were removed!");
-    }
+    ensureCallbacksRemoved(listeners);
 
     variantsContainer.innerHTML = "";
   };
@@ -142,6 +193,7 @@ function buildToolVariants(tool, state) {
 export function createToolPanel({ state }) {
   const tools = getPanelTools();
   let disposeVariantsCallback = null;
+  let disposeActionsCallback = null;
 
   state.addListener((updatedState, prevState) => {
     if (updatedState.tool === prevState.tool) {
@@ -153,10 +205,19 @@ export function createToolPanel({ state }) {
       disposeVariantsCallback = null;
     }
 
+    if (disposeActionsCallback) {
+      disposeActionsCallback();
+      disposeActionsCallback = null;
+    }
+
     updateActivatedButton(tools, updatedState.tool.id.description);
 
     if (updatedState.tool.variants) {
       disposeVariantsCallback = buildToolVariants(updatedState.tool, state);
+    }
+
+    if (updatedState.tool.actions) {
+      disposeActionsCallback = buildToolActions(updatedState.tool, state);
     }
   });
 
@@ -169,6 +230,11 @@ export function createToolPanel({ state }) {
         if (disposeVariantsCallback) {
           disposeVariantsCallback();
           disposeVariantsCallback = null;
+        }
+
+        if (disposeActionsCallback) {
+          disposeActionsCallback();
+          disposeActionsCallback = null;
         }
 
         setTool(tool, { state });
@@ -197,6 +263,10 @@ export function createToolPanel({ state }) {
 
     if (selectedTool.variants) {
       disposeVariantsCallback = buildToolVariants(selectedTool, state);
+    }
+
+    if (selectedTool.actions) {
+      disposeActionsCallback = buildToolActions(selectedTool, state);
     }
   }
 }
@@ -231,4 +301,23 @@ export function createColorPanel({ state }) {
   if (selectedColor) {
     updateActivatedButton(colors, selectedColor);
   }
+}
+
+function disposeCallback(button, listeners) {
+  const callback = listeners[button.dataset.value];
+
+  if (!callback) {
+    throw new Error("No callback registered!");
+  }
+
+  button.removeEventListener("click", callback);
+
+  delete listeners[button.dataset.value];
+}
+
+function ensureCallbacksRemoved(listeners) {
+  if (Object.keys(listeners).length === 0) {
+    return;
+  }
+  throw new Error("Not all listeners were removed!");
 }

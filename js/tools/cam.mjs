@@ -1,18 +1,41 @@
-import { getCam, getCanvas } from "../dom.mjs";
+import { getCam } from "../dom.mjs";
 
 function getVideoStream() {
   return navigator.mediaDevices.getUserMedia({ video: true });
 }
 
-export async function activateCam() {
+export async function activateCam({ state }) {
   const cam = getCam();
-  cam.style.display = "block";
+
+  function hideCam() {
+    cam.style.display = "none";
+  }
+
+  function showCam() {
+    cam.style.display = "block";
+  }
+
+  showCam();
 
   function closeCam() {
-    cam.style.display = "none";
+    hideCam()
     cam.pause();
     cam.currentTime = 0;
   }
+
+  function onPhotoMemorizedChange(nextState, prevState) {
+    if (nextState.photoMemorized === prevState.photoMemorized) {
+      return;
+    }
+
+    if (nextState.photoMemorized) {
+      hideCam();
+    } else {
+      showCam();
+    }
+  }
+
+  state.addListener(onPhotoMemorizedChange);
 
   let stream = null;
 
@@ -26,9 +49,8 @@ export async function activateCam() {
   }
 
   return function dispose() {
-    const canvas = getCanvas();
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(cam, 0, 0, canvas.width, canvas.height);
+    state.removeListener(onPhotoMemorizedChange);
+
     if (!stream) {
       return;
     }

@@ -5,6 +5,7 @@ import { activateCam } from "../tools/cam.mjs";
 import { activateStamp } from "../tools/stamp.mjs";
 import { TOOLS, COLOR_LIST } from "./state.mjs";
 import { storeTool, storeColor } from "./storage.mjs";
+import { getCam, getCanvas } from "../dom.mjs";
 
 let disposeCallback;
 const MAXIMUM_CURSOR_ACCERATION = 20;
@@ -39,7 +40,7 @@ export async function setTool(tool, { state, variant }) {
       disposeCallback = activateFill({ state });
       break;
     case TOOLS.CAM.id:
-      disposeCallback = await activateCam({ state, variant });
+      disposeCallback = await activateCam({ state });
       break;
     case TOOLS.STAMP.id:
       disposeCallback = activateStamp({ state, variant: nextVariant });
@@ -124,4 +125,35 @@ function activateVariant(tool, variant, { state }) {
   state.set(() => ({
     activatedVariants: variants,
   }));
+}
+
+export function memorizePhoto({ state }) {
+  state.set(() => ({
+    photoMemorized: true,
+  }));
+}
+
+export function unsetPhoto({ state }) {
+  state.set(() => ({
+    photoMemorized: false,
+  }));
+}
+
+export function takePhoto({ state }) {
+  const cam = getCam();
+  const canvas = getCanvas();
+  const ctx = canvas.getContext("2d");
+
+  ctx.drawImage(cam, 0, 0, canvas.width, canvas.height);
+
+  memorizePhoto({ state });
+}
+
+export function removePhoto({ state }) {
+  const canvas = getCanvas();
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  unsetPhoto({ state });
 }

@@ -19,8 +19,10 @@
   z-index: 100;
   border: 10px solid red;
   background-color: transparent;
-  animation: semaphore var(--semaphore-animation-length) linear 0s 1 forwards,
-    flash var(--flash-animation-length) forwards var(--semaphore-animation-length);
+  animation:
+    semaphore var(--semaphore-animation-length) linear 0s 1 forwards,
+    flash var(--flash-animation-length) forwards
+      var(--semaphore-animation-length);
 }
 
 @keyframes semaphore {

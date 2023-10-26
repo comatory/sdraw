@@ -1,5 +1,10 @@
 import { TOOL_LIST, COLOR_LIST } from "../state/state.mjs";
-import { setTool, setColor, takePhoto, removePhoto } from "../state/actions.mjs";
+import {
+  setTool,
+  setColor,
+  takePhoto,
+  removePhoto,
+} from "../state/actions.mjs";
 import {
   getPanel,
   getPanelTools,
@@ -117,7 +122,6 @@ function buildToolActions(tool, state) {
         button.innerText = action.id.description;
       });
 
-
     actionsContainer.appendChild(button);
   });
 
@@ -127,7 +131,7 @@ function buildToolActions(tool, state) {
         disposeCallback(button, listeners);
 
         button.remove();
-      }
+      },
     );
 
     ensureCallbacksRemoved(listeners);
@@ -142,7 +146,7 @@ function buildToolVariants(tool, state) {
   const listeners = {};
 
   const activatedVariant = state.get((prevState) =>
-    prevState.activatedVariants.get(tool.id)
+    prevState.activatedVariants.get(tool.id),
   );
 
   tool.variants.forEach((variant) => {
@@ -181,7 +185,7 @@ function buildToolVariants(tool, state) {
         disposeCallback(button, listeners);
 
         button.remove();
-      }
+      },
     );
 
     ensureCallbacksRemoved(listeners);
@@ -239,7 +243,7 @@ export function createToolPanel({ state }) {
 
         setTool(tool, { state });
       },
-      true
+      true,
     );
 
     button.dataset.value = tool.id.description;

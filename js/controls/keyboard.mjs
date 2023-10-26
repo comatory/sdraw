@@ -55,7 +55,7 @@ export function attachKeyboardListeners(state) {
 
   window.addEventListener("keyup", (event) => {
     if (shouldBlockInteractions()) {
-      return
+      return;
     }
 
     switch (event.key) {
@@ -78,7 +78,7 @@ export function attachKeyboardListeners(state) {
 
   window.addEventListener("keydown", (event) => {
     if (shouldBlockInteractions()) {
-      return
+      return;
     }
 
     if (event.key === "p") {

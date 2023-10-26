@@ -39,7 +39,9 @@ export function activateStamp({ state }) {
   }
 
   function mouseClick(event) {
-    const activeStamp = state.get((prevState) => prevState.activatedVariants.get(TOOLS.STAMP.id));
+    const activeStamp = state.get((prevState) =>
+      prevState.activatedVariants.get(TOOLS.STAMP.id),
+    );
 
     if (!activeStamp) {
       return;

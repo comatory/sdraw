@@ -53,7 +53,7 @@ export function initializeCursor({ state }) {
     }
 
     if (shouldBlockInteractions()) {
-      return
+      return;
     }
 
     const rect = canvas.getBoundingClientRect();

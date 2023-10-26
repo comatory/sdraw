@@ -68,7 +68,7 @@ export function setColor(color, { state }) {
 export function setNextColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length
+    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length,
   );
 
   setColor(nextColor, { state });
@@ -77,7 +77,7 @@ export function setNextColor({ state }) {
 export function setPreviousColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length
+    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length,
   );
 
   setColor(nextColor, { state });
@@ -94,7 +94,7 @@ export function moveCursor({ acceleration, state, keysPressed }) {
     acceleration && acceleration.key === event.key
       ? acceleration.acceleration
       : 1,
-    MAXIMUM_CURSOR_ACCERATION
+    MAXIMUM_CURSOR_ACCERATION,
   );
 
   const cursor = state.get((prevState) => prevState.cursor);
@@ -122,7 +122,7 @@ export function setGamepadIndex(index, { state }) {
 
 function activateVariant(tool, variant, { state }) {
   const activatedVariants = state.get(
-    (prevState) => prevState.activatedVariants
+    (prevState) => prevState.activatedVariants,
   );
 
   const variants = new Map(activatedVariants);
@@ -150,7 +150,8 @@ export function takePhoto({ state }) {
   const cam = getCam();
   const canvas = getCanvas();
   const ctx = canvas.getContext("2d");
-  const countdownAnimationLength = getCountdownAnimationLengthInSeconds() * 1000;
+  const countdownAnimationLength =
+    getCountdownAnimationLengthInSeconds() * 1000;
   const flashAnimationLength = getFlashAnimationLengthInSeconds() * 1000;
 
   insertCountdown();

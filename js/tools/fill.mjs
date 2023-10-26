@@ -88,7 +88,7 @@ export function activateFill({ state }) {
 
   function mouseClick(event) {
     if (shouldBlockInteractions()) {
-      return
+      return;
     }
 
     const color = state.get((prevState) => prevState.color);
@@ -104,7 +104,7 @@ export function activateFill({ state }) {
 
   function keyDown(event) {
     if (shouldBlockInteractions()) {
-      return
+      return;
     }
 
     if (event.code !== "Space") {
@@ -129,7 +129,7 @@ export function activateFill({ state }) {
 
   function onBlockInteractionsChange(nextState, prevState) {
     if (nextState.blockedInteractions === prevState.blockedInteractions) {
-      return
+      return;
     }
 
     if (nextState.blockedInteractions) {
@@ -140,7 +140,7 @@ export function activateFill({ state }) {
   }
 
   const blockedInteractions = state.get(
-    (prevState) => prevState.blockedInteractions
+    (prevState) => prevState.blockedInteractions,
   );
 
   if (blockedInteractions) {
@@ -149,7 +149,7 @@ export function activateFill({ state }) {
     activateListeners();
   }
 
-  state.addListener(onBlockInteractionsChange)
+  state.addListener(onBlockInteractionsChange);
 
   return function dispose() {
     state.removeListener(onBlockInteractionsChange);

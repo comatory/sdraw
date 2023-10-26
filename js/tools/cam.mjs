@@ -18,7 +18,7 @@ export async function activateCam({ state }) {
   showCam();
 
   function closeCam() {
-    hideCam()
+    hideCam();
     cam.pause();
     cam.currentTime = 0;
   }

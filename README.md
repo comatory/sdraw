@@ -3,10 +3,10 @@
 Simple drawing program aimed for kids with accessibility in mind.
 The program provides very simple functionality:
 
-* pen tool
-* bucket (fill) tool
-* stamps (with ability to load in custom ones)
-* photo capture
+- pen tool
+- bucket (fill) tool
+- stamps (with ability to load in custom ones)
+- photo capture
 
 The cursor can be controlled with mouse, keyboard or gamepad.
 
@@ -46,5 +46,9 @@ chmod +x server.sh
 ```
 
 Or you can use any other dev server to load in `index.html` but it needs to be served over `http` (not `file://`) due to usage of ES modules.
+
+- `npm run start` alias for running dev server
+- `npm run format` formats files
+- `npm run lint` runs linter
 
 TODOs: https://github.com/users/comatory/projects/1

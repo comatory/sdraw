@@ -1,5 +1,6 @@
 import { getCanvas, getCursorCanvas } from "../dom.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
+import { blockInteractions, unblockInteractions } from "../state/actions.mjs";
 
 function hexToRGB(h) {
   let r = 0,
@@ -45,7 +46,8 @@ function colorsMatch(a, b) {
 }
 
 // taken from SO: https://stackoverflow.com/a/56221940/3056783
-function floodFill(ctx, x, y, fillColor) {
+function floodFill(ctx, x, y, fillColor, { state }) {
+  blockInteractions({ state });
   // read the pixels in the canvas
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -72,6 +74,8 @@ function floodFill(ctx, x, y, fillColor) {
     // put the data back
     ctx.putImageData(imageData, 0, 0);
   }
+
+  unblockInteractions({ state });
 }
 
 export function activateFill({ state }) {
@@ -95,7 +99,7 @@ export function activateFill({ state }) {
       return;
     }
 
-    floodFill(ctx, x, y, hexToRGB(color));
+    floodFill(ctx, x, y, hexToRGB(color), { state });
   }
 
   function keyDown(event) {
@@ -110,7 +114,7 @@ export function activateFill({ state }) {
     const cursor = state.get((prevState) => prevState.cursor);
     const color = state.get((prevState) => prevState.color);
 
-    floodFill(ctx, cursor.x, cursor.y, hexToRGB(color));
+    floodFill(ctx, cursor.x, cursor.y, hexToRGB(color), { state });
   }
 
   function activateListeners() {

@@ -43,9 +43,17 @@ export function initializeCursor({ state }) {
 
   drawCursor(x, y);
 
+  function shouldBlockInteractions() {
+    return state.get((prevState) => prevState.blockedInteractions);
+  }
+
   function drawCursorOnMouseMove(event) {
     if (setCursorTimer) {
       window.clearTimeout(setCursorTimer);
+    }
+
+    if (shouldBlockInteractions()) {
+      return
     }
 
     const rect = canvas.getBoundingClientRect();

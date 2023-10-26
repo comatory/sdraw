@@ -52,3 +52,31 @@ export function setVideoSizeByCanvasSize(canvas) {
   video.style.width = `${canvas.width}px`;
   video.style.height = `${canvas.height}px`;
 }
+
+export function insertCountdown() {
+  const countdown = document.createElement("div");
+  countdown.id = "countdown";
+
+  document.body.appendChild(countdown);
+}
+
+export function removeCountdown() {
+  const countdown = document.getElementById("countdown");
+  document.body.removeChild(countdown);
+}
+
+function getCSSVariableValue(name) {
+  return window.getComputedStyle(document.body).getPropertyValue(name);
+}
+
+export function getCountdownAnimationLengthInSeconds() {
+  const rawValue = getCSSVariableValue("--semaphore-animation-length");
+
+  return Number.parseFloat(rawValue, 10);
+}
+
+export function getFlashAnimationLengthInSeconds() {
+  const rawValue = getCSSVariableValue("--flash-animation-length");
+
+  return Number.parseFloat(rawValue, 10);
+}

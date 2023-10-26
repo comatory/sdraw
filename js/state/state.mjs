@@ -114,6 +114,7 @@ export function createState() {
     color: loadColor(),
     gamepad: null,
     photoMemorized: false,
+    blockedInteractions: false,
   };
 
   function addListener(callback) {
@@ -159,6 +160,5 @@ export function createState() {
     emit,
     get,
     set,
-    _callbacks: callbacks,
   };
 }

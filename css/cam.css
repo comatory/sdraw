@@ -1,6 +1,55 @@
+:root {
+  --semaphore-animation-length: 3s;
+  --flash-animation-length: 0.5s;
+}
+
 #cam {
   position: absolute;
   top: 0px;
   left: 0px;
   display: none;
+}
+
+#countdown {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  border: 10px solid red;
+  background-color: transparent;
+  animation: semaphore var(--semaphore-animation-length) linear 0s 1 forwards,
+    flash var(--flash-animation-length) forwards var(--semaphore-animation-length);
+}
+
+@keyframes semaphore {
+  0% {
+    border-color: red;
+  }
+  33% {
+    border-color: red;
+  }
+  34% {
+    border-color: yellow;
+  }
+  66% {
+    border-color: yellow;
+  }
+  67%,
+  100% {
+    border-color: green;
+  }
+}
+
+@keyframes flash {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: white;
+  }
+  100% {
+    background-color: transparent;
+  }
 }

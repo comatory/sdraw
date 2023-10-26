@@ -78,7 +78,15 @@ export function activateFill({ state }) {
   const ctx = getCanvas().getContext("2d");
   const cursorCanvas = getCursorCanvas();
 
+  function shouldBlockInteractions() {
+    return state.get((prevState) => prevState.blockedInteractions);
+  }
+
   function mouseClick(event) {
+    if (shouldBlockInteractions()) {
+      return
+    }
+
     const color = state.get((prevState) => prevState.color);
     const x = event.clientX;
     const y = event.clientY;
@@ -91,6 +99,10 @@ export function activateFill({ state }) {
   }
 
   function keyDown(event) {
+    if (shouldBlockInteractions()) {
+      return
+    }
+
     if (event.code !== "Space") {
       return;
     }
@@ -101,11 +113,42 @@ export function activateFill({ state }) {
     floodFill(ctx, cursor.x, cursor.y, hexToRGB(color));
   }
 
-  cursorCanvas.addEventListener("click", mouseClick);
-  window.addEventListener("keydown", keyDown);
+  function activateListeners() {
+    cursorCanvas.addEventListener("click", mouseClick);
+    window.addEventListener("keydown", keyDown);
+  }
 
-  return function dispose() {
+  function deactivateListeners() {
     cursorCanvas.removeEventListener("click", mouseClick);
     window.removeEventListener("keydown", keyDown);
+  }
+
+  function onBlockInteractionsChange(nextState, prevState) {
+    if (nextState.blockedInteractions === prevState.blockedInteractions) {
+      return
+    }
+
+    if (nextState.blockedInteractions) {
+      deactivateListeners();
+    } else {
+      activateListeners();
+    }
+  }
+
+  const blockedInteractions = state.get(
+    (prevState) => prevState.blockedInteractions
+  );
+
+  if (blockedInteractions) {
+    deactivateListeners();
+  } else {
+    activateListeners();
+  }
+
+  state.addListener(onBlockInteractionsChange)
+
+  return function dispose() {
+    state.removeListener(onBlockInteractionsChange);
+    deactivateListeners();
   };
 }

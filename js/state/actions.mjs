@@ -5,7 +5,14 @@ import { activateCam } from "../tools/cam.mjs";
 import { activateStamp } from "../tools/stamp.mjs";
 import { TOOLS, COLOR_LIST } from "./state.mjs";
 import { storeTool, storeColor } from "./storage.mjs";
-import { getCam, getCanvas } from "../dom.mjs";
+import {
+  getCam,
+  getCanvas,
+  insertCountdown,
+  removeCountdown,
+  getCountdownAnimationLengthInSeconds,
+  getFlashAnimationLengthInSeconds,
+} from "../dom.mjs";
 
 let disposeCallback;
 const MAXIMUM_CURSOR_ACCERATION = 20;
@@ -20,14 +27,14 @@ export async function setTool(tool, { state, variant }) {
     tool,
   }));
 
-  const restoredVariant = !variant ?
-    state.get((prevState) => prevState.activatedVariants.get(tool.id))
+  const restoredVariant = !variant
+    ? state.get((prevState) => prevState.activatedVariants.get(tool.id))
     : null;
 
   const nextVariant = variant || restoredVariant;
 
   if (nextVariant) {
-    activateVariant(tool, nextVariant, { state })
+    activateVariant(tool, nextVariant, { state });
   }
 
   storeTool(tool);
@@ -61,7 +68,7 @@ export function setColor(color, { state }) {
 export function setNextColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length,
+    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length
   );
 
   setColor(nextColor, { state });
@@ -70,7 +77,7 @@ export function setNextColor({ state }) {
 export function setPreviousColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length,
+    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length
   );
 
   setColor(nextColor, { state });
@@ -87,7 +94,7 @@ export function moveCursor({ acceleration, state, keysPressed }) {
     acceleration && acceleration.key === event.key
       ? acceleration.acceleration
       : 1,
-    MAXIMUM_CURSOR_ACCERATION,
+    MAXIMUM_CURSOR_ACCERATION
   );
 
   const cursor = state.get((prevState) => prevState.cursor);
@@ -115,7 +122,7 @@ export function setGamepadIndex(index, { state }) {
 
 function activateVariant(tool, variant, { state }) {
   const activatedVariants = state.get(
-    (prevState) => prevState.activatedVariants,
+    (prevState) => prevState.activatedVariants
   );
 
   const variants = new Map(activatedVariants);
@@ -143,10 +150,18 @@ export function takePhoto({ state }) {
   const cam = getCam();
   const canvas = getCanvas();
   const ctx = canvas.getContext("2d");
+  const countdownAnimationLength = getCountdownAnimationLengthInSeconds() * 1000;
+  const flashAnimationLength = getFlashAnimationLengthInSeconds() * 1000;
 
-  ctx.drawImage(cam, 0, 0, canvas.width, canvas.height);
+  insertCountdown();
+  blockInteractions({ state });
 
-  memorizePhoto({ state });
+  setTimeout(() => {
+    ctx.drawImage(cam, 0, 0, canvas.width, canvas.height);
+    memorizePhoto({ state });
+    removeCountdown();
+    unblockInteractions({ state });
+  }, countdownAnimationLength + flashAnimationLength);
 }
 
 export function removePhoto({ state }) {
@@ -156,4 +171,16 @@ export function removePhoto({ state }) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   unsetPhoto({ state });
+}
+
+export function blockInteractions({ state }) {
+  state.set(() => ({
+    blockedInteractions: true,
+  }));
+}
+
+export function unblockInteractions({ state }) {
+  state.set(() => ({
+    blockedInteractions: false,
+  }));
 }

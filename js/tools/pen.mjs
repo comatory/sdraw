@@ -55,11 +55,45 @@ export function activatePen({ state, variant }) {
     ctx.beginPath();
   }
 
-  window.addEventListener("mousedown", mouseDown);
-  window.addEventListener("mouseup", mouseUp);
-  window.addEventListener("mousemove", mouseMove);
-  window.addEventListener("keydown", keyDown);
-  window.addEventListener("keyup", keyUp);
+  function activateListeners() {
+    window.addEventListener("mousedown", mouseDown);
+    window.addEventListener("mouseup", mouseUp);
+    window.addEventListener("mousemove", mouseMove);
+    window.addEventListener("keydown", keyDown);
+    window.addEventListener("keyup", keyUp);
+  }
+
+  function deactivateListeners() {
+    window.removeEventListener("mousedown", mouseDown);
+    window.removeEventListener("mouseup", mouseUp);
+    window.removeEventListener("mousemove", mouseMove);
+    window.removeEventListener("keydown", keyDown);
+    window.removeEventListener("keyup", keyUp);
+  }
+
+  function onBlockInteractionsChange(nextState, prevState) {
+    if (nextState.blockedInteractions === prevState.blockedInteractions) {
+      return;
+    }
+
+    if (nextState.blockedInteractions) {
+      deactivateListeners();
+    } else {
+      activateListeners();
+    }
+  }
+
+  const blockInteractions = state.get(
+    (prevState) => prevState.blockedInteractions
+  );
+
+  state.addListener(onBlockInteractionsChange);
+
+  if (blockInteractions) {
+    deactivateListeners();
+  } else {
+    activateListeners();
+  }
 
   function updateColor(nextState, prevState) {
     if (nextState.color === prevState.color) {
@@ -85,13 +119,9 @@ export function activatePen({ state, variant }) {
   state.addListener(updatePath);
 
   return function dispose() {
+    state.removeListener(onBlockInteractionsChange);
     state.removeListener(updateColor);
     state.removeListener(updatePath);
-
-    window.removeEventListener("mousedown", mouseDown);
-    window.removeEventListener("mouseup", mouseUp);
-    window.removeEventListener("mousemove", mouseMove);
-    window.removeEventListener("keydown", keyDown);
-    window.removeEventListener("keyup", keyUp);
+    deactivateListeners();
   };
 }

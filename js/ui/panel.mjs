@@ -1,9 +1,10 @@
-import { TOOL_LIST, COLOR_LIST } from "../state/state.mjs";
+import { TOOLS, TOOL_LIST, COLOR_LIST } from "../state/state.mjs";
 import {
   setTool,
   setColor,
   takePhoto,
   removePhoto,
+  storeCustomVariant,
 } from "../state/actions.mjs";
 import {
   getPanel,
@@ -13,6 +14,7 @@ import {
   getPanelToolActions,
 } from "../dom.mjs";
 import { loadIcon } from "./load-icon.mjs";
+import { serializeSvg, createSvgFromBlob } from "./svg-utils.mjs";
 
 function isCursorWithinPanelBounds(x, y, rect) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
@@ -50,7 +52,13 @@ function activatePanelButtonOnCoordinates(x, y) {
     return;
   }
 
-  button.click();
+  // do not bubble event
+  const clickEvent = new MouseEvent("click", {
+    view: window,
+    bubbles: false,
+  });
+
+  button.dispatchEvent(clickEvent);
 }
 
 export function attachPanelListeners({ state }) {
@@ -131,7 +139,7 @@ function buildToolActions(tool, state) {
         disposeCallback(button, listeners);
 
         button.remove();
-      },
+      }
     );
 
     ensureCallbacksRemoved(listeners);
@@ -146,15 +154,92 @@ function buildToolVariants(tool, state) {
   const listeners = {};
 
   const activatedVariant = state.get((prevState) =>
-    prevState.activatedVariants.get(tool.id),
+    prevState.activatedVariants.get(tool.id)
   );
 
-  tool.variants.forEach((variant) => {
+  const customVariants = state.get(
+    (prevState) => prevState.customVariants.get(tool.id) ?? new Set()
+  );
+
+  [...tool.variants, ...customVariants].forEach((variant) => {
     const button = document.createElement("button");
 
-    function onClick() {
+    function defaultOnClick() {
       setTool(tool, { state, variant });
       updateActivatedButton(variantsContainer, variant.id.description);
+    }
+
+    function customStampOnClick() {
+      const fileInput = document.createElement("input");
+
+      function handleFileUpload(event) {
+        const file = event.target.files[0];
+        const failureEvent = new CustomEvent("stamp-custom-slot-failure");
+
+        if (!file) {
+          fileInput.dispatchEvent(failureEvent);
+          throw new Error("No file selected!");
+        }
+
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(img.src);
+          const svg = createSvgFromBlob(img.src);
+          button.innerHTML = serializeSvg(svg);
+          svg.remove();
+
+          fileInput.dispatchEvent(
+            new CustomEvent("stamp-custom-slot-success", {
+              detail: { svgString: button.innerHTML },
+            })
+          );
+        };
+        img.onerror = () => {
+          fileInput.dispatchEvent(failureEvent);
+        };
+
+        img.src = URL.createObjectURL(file);
+      }
+
+      fileInput.type = "file";
+      fileInput.accept = "image/svg+xml";
+      fileInput.style.display = "none";
+
+      fileInput.addEventListener("stamp-custom-slot-success", (event) => {
+        fileInput.removeEventListener("change", handleFileUpload);
+        fileInput.remove();
+
+        const updatedVariant = {
+          ...variant,
+          value: event.detail.svgString,
+        };
+        storeCustomVariant(tool, updatedVariant, { state });
+        setTool(tool, { state, variant: updatedVariant });
+        updateActivatedButton(variantsContainer, updatedVariant.id.description);
+      });
+      fileInput.addEventListener("stamp-custom-slot-failure", () => {
+        alert("Something went wrong with uploading the image!");
+      });
+      fileInput.addEventListener("change", handleFileUpload);
+
+      fileInput.click();
+    }
+
+    function onClick() {
+      switch (tool.id) {
+        case TOOLS.STAMP.id:
+          {
+            if (variant.value === null) {
+              customStampOnClick();
+            } else {
+              defaultOnClick();
+            }
+          }
+          break;
+        default:
+          defaultOnClick();
+          break;
+      }
     }
 
     button.addEventListener("click", onClick);
@@ -185,7 +270,7 @@ function buildToolVariants(tool, state) {
         disposeCallback(button, listeners);
 
         button.remove();
-      },
+      }
     );
 
     ensureCallbacksRemoved(listeners);
@@ -243,7 +328,7 @@ export function createToolPanel({ state }) {
 
         setTool(tool, { state });
       },
-      true,
+      true
     );
 
     button.dataset.value = tool.id.description;

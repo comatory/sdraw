@@ -1,6 +1,7 @@
 import { getCanvas } from "../dom.mjs";
 import { TOOLS } from "../state/state.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
+import { serializeSvg, deserializeSvg } from "../ui/svg-utils.mjs";
 
 export function activateStamp({ state }) {
   const ctx = getCanvas().getContext("2d");
@@ -14,22 +15,26 @@ export function activateStamp({ state }) {
     image.src = dataUri;
   }
 
-  function drawStamp(x, y, url) {
+  function drawStamp(x, y, stamp) {
     const color = state.get((prevState) => prevState.color);
 
+    if (stamp.value) {
+      placeStamp(x, y, stamp.value);
+      return;
+    }
+
     window
-      .fetch(url)
+      .fetch(stamp.iconUrl)
       .then((response) => response.text())
       .then((svg) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(svg, "image/svg+xml");
+        const doc = deserializeSvg(svg);
         const svgElement = doc.documentElement;
 
         Array.from(svgElement.querySelectorAll("path")).forEach((path) => {
           path.setAttribute("stroke", color);
         });
 
-        const serializedSvg = new XMLSerializer().serializeToString(svgElement);
+        const serializedSvg = serializeSvg(svgElement);
 
         placeStamp(x, y, serializedSvg);
       })
@@ -54,9 +59,7 @@ export function activateStamp({ state }) {
       return;
     }
 
-    const stampUrl = activeStamp.iconUrl;
-
-    drawStamp(x, y, stampUrl);
+    drawStamp(x, y, activeStamp);
   }
 
   window.addEventListener("click", mouseClick);

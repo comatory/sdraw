@@ -185,3 +185,17 @@ export function unblockInteractions({ state }) {
     blockedInteractions: false,
   }));
 }
+
+export function storeCustomVariant(tool, variant, { state }) {
+  const customVariants = state.get((prevState) => prevState.customVariants);
+  const toolVariants = new Set(customVariants.get(tool.id));
+
+  toolVariants.add(variant);
+
+  const nextCustomVariants = new Map(customVariants);
+  nextCustomVariants.set(tool.id, toolVariants);
+
+  state.set(() => ({
+    customVariants: nextCustomVariants,
+  }));
+}

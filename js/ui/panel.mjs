@@ -12,7 +12,7 @@ import {
   getPanelToolVariants,
   getPanelToolActions,
 } from "../dom.mjs";
-import { loadIcon } from "../tools/load-icon.mjs";
+import { loadIcon } from "./load-icon.mjs";
 
 function isCursorWithinPanelBounds(x, y, rect) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;

@@ -3,16 +3,19 @@ import { TOOLS } from "../state/state.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 import { serializeSvg, deserializeSvg } from "../ui/svg-utils.mjs";
 
+function createDataUri(data) {
+  return `data:image/svg+xml;base64,${window.btoa(data)}`;
+}
+
 export function activateStamp({ state }) {
   const ctx = getCanvas().getContext("2d");
 
   function placeStamp(x, y, data) {
-    const dataUri = `data:image/svg+xml;base64,${window.btoa(data)}`;
     const image = new Image();
     image.onload = () => {
       ctx.drawImage(image, x, y);
     };
-    image.src = dataUri;
+    image.src = data;
   }
 
   function drawStamp(x, y, stamp) {
@@ -36,7 +39,7 @@ export function activateStamp({ state }) {
 
         const serializedSvg = serializeSvg(svgElement);
 
-        placeStamp(x, y, serializedSvg);
+        placeStamp(x, y, createDataUri(serializedSvg));
       })
       .catch((error) => {
         alert(error);

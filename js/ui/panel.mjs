@@ -14,7 +14,7 @@ import {
   getPanelToolActions,
 } from "../dom.mjs";
 import { loadIcon } from "./load-icon.mjs";
-import { serializeSvg, createSvgFromBlob } from "./svg-utils.mjs";
+import { createSvgFromBlob, serializeSvg } from "./svg-utils.mjs";
 
 function isCursorWithinPanelBounds(x, y, rect) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
@@ -181,38 +181,39 @@ function buildToolVariants(tool, state) {
           throw new Error("No file selected!");
         }
 
-        const img = new Image();
-        img.onload = () => {
-          URL.revokeObjectURL(img.src);
-          const svg = createSvgFromBlob(img.src);
-          button.innerHTML = serializeSvg(svg);
-          svg.remove();
-
+        const fileReader = new FileReader();
+        fileReader.addEventListener("load", (fileEvent) => {
           fileInput.dispatchEvent(
             new CustomEvent("stamp-custom-slot-success", {
-              detail: { svgString: button.innerHTML },
+              detail: {
+                dataUri: fileEvent.srcElement.result,
+                svgString: serializeSvg(
+                  createSvgFromBlob(fileEvent.srcElement.result)
+                ),
+              },
             })
           );
-        };
-        img.onerror = () => {
+        });
+        fileReader.addEventListener("error", () => {
           fileInput.dispatchEvent(failureEvent);
-        };
+        });
 
-        img.src = URL.createObjectURL(file);
+        fileReader.readAsDataURL(file);
       }
 
       fileInput.type = "file";
       fileInput.accept = "image/svg+xml";
       fileInput.style.display = "none";
 
-      fileInput.addEventListener("stamp-custom-slot-success", (event) => {
+      fileInput.addEventListener("stamp-custom-slot-success", async (event) => {
         fileInput.removeEventListener("change", handleFileUpload);
         fileInput.remove();
 
         const updatedVariant = {
           ...variant,
-          value: event.detail.svgString,
+          value: event.detail.dataUri,
         };
+        button.innerHTML = event.detail.svgString;
         storeCustomVariant(tool, updatedVariant, { state });
         setTool(tool, { state, variant: updatedVariant });
         updateActivatedButton(variantsContainer, updatedVariant.id.description);

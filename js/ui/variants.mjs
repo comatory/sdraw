@@ -112,7 +112,7 @@ export function buildToolVariants(tool, state) {
           }
           break;
         default:
-          defaultOnClick();
+          defaultOnClick({ tool, variant, state });
           break;
       }
     }

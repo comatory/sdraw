@@ -1,4 +1,4 @@
-import { loadTool, loadColor } from "./storage.mjs";
+import { loadToolWithVariants, loadColor } from "./storage.mjs";
 
 export const TOOLS = Object.freeze({
   PEN: {
@@ -100,7 +100,7 @@ export const COLOR_LIST = Object.freeze([
 export const DEFAULT_TOOL = TOOLS.PEN;
 export const DEFAULT_COLOR = COLOR.BLACK;
 
-const DEFAULT_TOOL_VARIANTS = new Map([
+export const DEFAULT_TOOL_VARIANTS = new Map([
   [TOOLS.PEN.id, TOOLS.PEN.variants[0]],
   [TOOLS.STAMP.id, TOOLS.STAMP.variants[0]],
 ]);
@@ -141,11 +141,11 @@ const DEFAULT_CUSTOM_VARIANTS = new Map([
 export function createState() {
   const callbacks = [];
 
+  const { tool, activatedVariants } = loadToolWithVariants();
+
   let state = {
-    tool: loadTool(),
-    // TODO: load from storage
-    activatedVariants: DEFAULT_TOOL_VARIANTS,
-    // TODO: load from storage
+    tool,
+    activatedVariants,
     customVariants: DEFAULT_CUSTOM_VARIANTS,
     color: loadColor(),
     gamepad: null,

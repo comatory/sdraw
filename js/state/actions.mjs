@@ -37,7 +37,7 @@ export async function setTool(tool, { state, variant }) {
     activateVariant(tool, nextVariant, { state });
   }
 
-  storeTool(tool);
+  storeTool(tool, nextVariant);
 
   switch (state.get((prevState) => prevState.tool.id)) {
     case TOOLS.PEN.id:

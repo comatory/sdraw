@@ -105,33 +105,38 @@ const DEFAULT_TOOL_VARIANTS = new Map([
   [TOOLS.STAMP.id, TOOLS.STAMP.variants[0]],
 ]);
 
-const DEFAULT_CUSTOM_VARIANTS = new Map([[TOOLS.STAMP.id, new Set([
-    {
-      id: Symbol("stamp-custom-slot-1"),
-      iconUrl: "img/stamps/slot.svg",
-      value: null,
-    },
-    {
-      id: Symbol("stamp-custom-slot-2"),
-      iconUrl: "img/stamps/slot.svg",
-      value: null,
-    },
-    {
-      id: Symbol("stamp-custom-slot-3"),
-      iconUrl: "img/stamps/slot.svg",
-      value: null,
-    },
-    {
-      id: Symbol("stamp-custom-slot-4"),
-      iconUrl: "img/stamps/slot.svg",
-      value: null,
-    },
-    {
-      id: Symbol("stamp-custom-slot-5"),
-      iconUrl: "img/stamps/slot.svg",
-      value: null,
-    },
-])]]);
+const DEFAULT_CUSTOM_VARIANTS = new Map([
+  [
+    TOOLS.STAMP.id,
+    new Set([
+      {
+        id: Symbol("stamp-custom-slot-1"),
+        iconUrl: "img/stamps/slot.svg",
+        value: null,
+      },
+      {
+        id: Symbol("stamp-custom-slot-2"),
+        iconUrl: "img/stamps/slot.svg",
+        value: null,
+      },
+      {
+        id: Symbol("stamp-custom-slot-3"),
+        iconUrl: "img/stamps/slot.svg",
+        value: null,
+      },
+      {
+        id: Symbol("stamp-custom-slot-4"),
+        iconUrl: "img/stamps/slot.svg",
+        value: null,
+      },
+      {
+        id: Symbol("stamp-custom-slot-5"),
+        iconUrl: "img/stamps/slot.svg",
+        value: null,
+      },
+    ]),
+  ],
+]);
 
 export function createState() {
   const callbacks = [];

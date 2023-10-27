@@ -2,6 +2,7 @@ import { getCanvas } from "../dom.mjs";
 import { TOOLS } from "../state/state.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 import { serializeSvg, deserializeSvg } from "../ui/svg-utils.mjs";
+import { isDataUri } from "../state/utils.mjs";
 
 function createDataUri(data) {
   return `data:image/svg+xml;base64,${window.btoa(data)}`;
@@ -21,7 +22,7 @@ export function activateStamp({ state }) {
   function drawStamp(x, y, stamp) {
     const color = state.get((prevState) => prevState.color);
 
-    if (stamp.value) {
+    if (isDataUri(stamp.value)) {
       placeStamp(x, y, stamp.value);
       return;
     }

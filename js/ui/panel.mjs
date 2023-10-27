@@ -6,6 +6,7 @@ import {
   removePhoto,
   storeCustomVariant,
 } from "../state/actions.mjs";
+import { isDataUri } from "../state/utils.mjs";
 import {
   getPanel,
   getPanelTools,
@@ -230,7 +231,7 @@ function buildToolVariants(tool, state) {
       switch (tool.id) {
         case TOOLS.STAMP.id:
           {
-            if (variant.value === null) {
+            if (!variant.value || isDataUri(variant.value)) {
               customStampOnClick();
             } else {
               defaultOnClick();

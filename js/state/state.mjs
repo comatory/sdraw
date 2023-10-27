@@ -48,7 +48,7 @@ export const TOOLS = Object.freeze({
       {
         id: Symbol("stamp-star"),
         iconUrl: "img/stamps/star.svg",
-        value: null,
+        value: "star.svg",
       },
     ],
   },

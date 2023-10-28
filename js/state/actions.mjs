@@ -4,7 +4,7 @@ import { activateFill } from "../tools/fill.mjs";
 import { activateCam } from "../tools/cam.mjs";
 import { activateStamp } from "../tools/stamp.mjs";
 import { TOOLS, COLOR_LIST } from "./state.mjs";
-import { storeTool, storeColor } from "./storage.mjs";
+import { storeTool, storeColor, storeCustomVariants } from "./storage.mjs";
 import {
   getCam,
   getCanvas,
@@ -68,7 +68,7 @@ export function setColor(color, { state }) {
 export function setNextColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length,
+    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length
   );
 
   setColor(nextColor, { state });
@@ -77,7 +77,7 @@ export function setNextColor({ state }) {
 export function setPreviousColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length,
+    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length
   );
 
   setColor(nextColor, { state });
@@ -94,7 +94,7 @@ export function moveCursor({ acceleration, state, keysPressed }) {
     acceleration && acceleration.key === event.key
       ? acceleration.acceleration
       : 1,
-    MAXIMUM_CURSOR_ACCERATION,
+    MAXIMUM_CURSOR_ACCERATION
   );
 
   const cursor = state.get((prevState) => prevState.cursor);
@@ -122,7 +122,7 @@ export function setGamepadIndex(index, { state }) {
 
 function activateVariant(tool, variant, { state }) {
   const activatedVariants = state.get(
-    (prevState) => prevState.activatedVariants,
+    (prevState) => prevState.activatedVariants
   );
 
   const variants = new Map(activatedVariants);
@@ -186,12 +186,17 @@ export function unblockInteractions({ state }) {
   }));
 }
 
-export function storeCustomVariant(tool, variant, { state }) {
-  const customVariants = state.get((prevState) => prevState.customVariants);
-  const toolVariants = Array.from(new Set(customVariants.get(tool.id)));
+function produceUpdatedCustomVariants({
+  previousCustomVariants,
+  tool,
+  variant,
+}) {
+  const nextCustomVariants = new Map(previousCustomVariants);
+
+  const toolVariants = Array.from(new Set(nextCustomVariants.get(tool.id)));
 
   const variantIndex = toolVariants.findIndex(
-    (customVariant) => customVariant.id === variant.id,
+    (customVariant) => customVariant.id === variant.id
   );
 
   if (variantIndex === -1) {
@@ -201,8 +206,19 @@ export function storeCustomVariant(tool, variant, { state }) {
   toolVariants.splice(variantIndex, 1, variant);
 
   const nextToolVariants = new Set(toolVariants);
-  const nextCustomVariants = new Map(customVariants);
   nextCustomVariants.set(tool.id, nextToolVariants);
+
+  return nextCustomVariants;
+}
+
+export function setCustomVariant(tool, variant, { state }) {
+  const nextCustomVariants = produceUpdatedCustomVariants({
+    tool,
+    variant,
+    previousCustomVariants: state.get((prevState) => prevState.customVariants),
+  });
+
+  storeCustomVariants(nextCustomVariants);
 
   state.set(() => ({
     customVariants: nextCustomVariants,

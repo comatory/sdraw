@@ -1,4 +1,4 @@
-import { setTool, storeCustomVariant } from "../state/actions.mjs";
+import { setTool, setCustomVariant } from "../state/actions.mjs";
 import { TOOLS } from "../state/state.mjs";
 import { isDataUri } from "../state/utils.mjs";
 import { getPanelToolVariants } from "../dom.mjs";
@@ -73,7 +73,7 @@ function customStampOnClick({ tool, variant, state }) {
       updatedVariant.id.description
     );
     setTool(tool, { state, variant: updatedVariant });
-    storeCustomVariant(tool, updatedVariant, { state });
+    setCustomVariant(tool, updatedVariant, { state });
   });
   fileInput.addEventListener("stamp-custom-slot-failure", () => {
     alert("Something went wrong with uploading the image!");

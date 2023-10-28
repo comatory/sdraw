@@ -2,11 +2,12 @@ import {
   DEFAULT_TOOL,
   DEFAULT_TOOL_VARIANTS,
   DEFAULT_COLOR,
+  DEFAULT_CUSTOM_VARIANTS,
   TOOLS,
 } from "./state.mjs";
 
 export function loadToolWithVariants() {
-  const storedValue = window.sessionStorage.getItem("tool");
+  const storedValue = window.localStorage.getItem("tool");
 
   if (!storedValue) {
     return {
@@ -43,11 +44,11 @@ export function loadToolWithVariants() {
 }
 
 export function loadColor() {
-  return window.sessionStorage.getItem("color") || DEFAULT_COLOR;
+  return window.localStorage.getItem("color") || DEFAULT_COLOR;
 }
 
 export function storeTool(tool, variant) {
-  window.sessionStorage.setItem(
+  window.localStorage.setItem(
     "tool",
     JSON.stringify({
       tool: tool.id.description,
@@ -57,5 +58,74 @@ export function storeTool(tool, variant) {
 }
 
 export function storeColor(color) {
-  window.sessionStorage.setItem("color", color);
+  window.localStorage.setItem("color", color);
+}
+
+export function loadCustomVariants() {
+  const storedValue = window.localStorage.getItem("customVariants");
+
+  if (!storedValue) {
+    storeCustomVariants(DEFAULT_CUSTOM_VARIANTS);
+
+    return DEFAULT_CUSTOM_VARIANTS;
+  }
+
+  return JSON.parse(storedValue, customVariantsDeserializer);
+}
+
+export function storeCustomVariants(variants) {
+  window.localStorage.setItem(
+    "customVariants",
+    JSON.stringify(variants, customVariantsSerializer)
+  );
+}
+
+function customVariantsSerializer(key, value) {
+  if (value instanceof Map) {
+    const obj = Object.fromEntries(value);
+    for (const sym of Object.getOwnPropertySymbols(obj)) {
+      return {
+        [sym.description]: customVariantsSerializer(sym.description, obj[sym]),
+      };
+    }
+  }
+
+  if (value instanceof Set) {
+    return Array.from(value).map(({ id, ...rest }) => ({
+      id: id.description,
+      ...rest,
+    }));
+  }
+
+  if (value instanceof Symbol) {
+    return value.description;
+  }
+
+  return value;
+}
+
+function customVariantsDeserializer(key, value) {
+  if (Array.isArray(value)) {
+    return new Set(
+      value,
+    );
+  }
+
+  if (value?.toString() === "[object Object]") {
+    if (key === "") {
+      return new Map(
+        Object.entries(value).map(([mapKey, mapValue]) => [
+          Symbol(mapKey),
+          mapValue,
+        ])
+      );
+    }
+
+    return {
+      ...value,
+      id: Symbol(value.id),
+    }
+  }
+
+  return value;
 }

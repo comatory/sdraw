@@ -22,12 +22,16 @@ function readUploadedSVG(event, fileInput) {
   const fileReader = new FileReader();
   fileReader.addEventListener("load", (fileEvent) => {
     const parsedSvgElement = deserializeSvgFromDataURI(fileEvent.srcElement.result);
-    const svgElement = normalizeSvgSize(parsedSvgElement.documentElement);
+    const iconSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
+    const stampSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
+    const iconSvgElement = normalizeSvgSize(iconSvgDocument);
+    const stampSvgElement = normalizeSvgSize(stampSvgDocument, 50);
 
     fileInput.dispatchEvent(
       new CustomEvent("stamp-custom-slot-success", {
         detail: {
-          dataUri: createSvgDataUri(serializeSvg(svgElement)),
+          iconDataUri: createSvgDataUri(serializeSvg(iconSvgElement)),
+          dataUri: createSvgDataUri(serializeSvg(stampSvgElement)),
         },
       })
     );
@@ -61,7 +65,7 @@ function customStampOnClick({ tool, variant, state }) {
 
     const updatedVariant = {
       ...variant,
-      iconUrl: event.detail.dataUri,
+      iconUrl: event.detail.iconDataUri,
       value: event.detail.dataUri,
     };
     updateActivatedButton(

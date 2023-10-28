@@ -11,9 +11,9 @@ export function deserializeSvg(svg) {
   return parser.parseFromString(svg, "image/svg+xml");
 }
 
-export function normalizeSvgSize(element) {
-  element.setAttribute("width", 24);
-  element.setAttribute("height", 24);
+export function normalizeSvgSize(element, size = 24) {
+  element.setAttribute("width", size);
+  element.setAttribute("height", size);
 
   return element;
 }

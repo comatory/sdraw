@@ -1,13 +1,29 @@
 import { getCanvas } from "../dom.mjs";
 import { TOOLS } from "../state/state.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
-import { createSvgDataUri, serializeSvg, deserializeSvg } from "../svg-utils.mjs";
+import {
+  createSvgDataUri,
+  serializeSvg,
+  deserializeSvg,
+  deserializeSvgFromDataURI,
+} from "../svg-utils.mjs";
 import { isDataUri } from "../state/utils.mjs";
+
+function setSvgPathColor(svg, color) {
+  Array.from(svg.querySelectorAll("path")).forEach((path) => {
+    path.setAttribute("stroke", color);
+  });
+
+  return svg;
+}
 
 export function activateStamp({ state }) {
   const ctx = getCanvas().getContext("2d");
 
-  function placeStamp(x, y, data) {
+  function placeStamp({ x, y, svg, color }) {
+    setSvgPathColor(svg, color);
+    const data = createSvgDataUri(serializeSvg(svg));
+
     const image = new Image();
     image.onload = () => {
       ctx.drawImage(image, x, y);
@@ -19,7 +35,9 @@ export function activateStamp({ state }) {
     const color = state.get((prevState) => prevState.color);
 
     if (isDataUri(stamp.value)) {
-      placeStamp(x, y, stamp.value);
+      const doc = deserializeSvgFromDataURI(stamp.value);
+
+      placeStamp({ x, y, svg: doc.documentElement, color });
       return;
     }
 
@@ -28,15 +46,8 @@ export function activateStamp({ state }) {
       .then((response) => response.text())
       .then((svg) => {
         const doc = deserializeSvg(svg);
-        const svgElement = doc.documentElement;
 
-        Array.from(svgElement.querySelectorAll("path")).forEach((path) => {
-          path.setAttribute("stroke", color);
-        });
-
-        const serializedSvg = serializeSvg(svgElement);
-
-        placeStamp(x, y, createSvgDataUri(serializedSvg));
+        placeStamp({ x, y, svg: doc.documentElement, color });
       })
       .catch((error) => {
         alert(error);
@@ -45,7 +56,7 @@ export function activateStamp({ state }) {
 
   function mouseClick(event) {
     const activeStamp = state.get((prevState) =>
-      prevState.activatedVariants.get(TOOLS.STAMP.id),
+      prevState.activatedVariants.get(TOOLS.STAMP.id)
     );
 
     if (!activeStamp) {

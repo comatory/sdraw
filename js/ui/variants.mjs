@@ -8,7 +8,7 @@ import {
   ensureCallbacksRemoved,
   updateActivatedButton,
 } from "./utils.mjs";
-import { createSvgFromBlob, serializeSvg } from "./svg-utils.mjs";
+import { createSvgFromBlob, serializeSvg } from "../svg-utils.mjs";
 
 function readUploadedSVG(event, fileInput) {
   const file = event.target.files[0];

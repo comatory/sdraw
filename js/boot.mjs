@@ -14,7 +14,7 @@ import { setTool, setColor, setCursor } from "./state/actions.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
 import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
-import { throttle } from "./util.mjs";
+import { throttle } from "./utils.mjs";
 
 function attachResizeListeners() {
   const canvas = getCanvas();

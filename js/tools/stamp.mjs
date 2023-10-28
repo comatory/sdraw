@@ -1,7 +1,7 @@
 import { getCanvas } from "../dom.mjs";
 import { TOOLS } from "../state/state.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
-import { serializeSvg, deserializeSvg } from "../ui/svg-utils.mjs";
+import { serializeSvg, deserializeSvg } from "../svg-utils.mjs";
 import { isDataUri } from "../state/utils.mjs";
 
 function createDataUri(data) {

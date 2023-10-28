@@ -180,14 +180,15 @@ export function createState() {
   function set(fn) {
     const nextPartialState = fn(state);
 
+    const prevState = { ...state }
     const nextState = {
-      ...state,
+      ...prevState,
       ...nextPartialState,
     };
 
-    emit(nextState, state);
-
     state = nextState;
+
+    emit(nextState, prevState);
   }
 
   return {

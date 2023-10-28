@@ -28,9 +28,6 @@ function readUploadedSVG(event, fileInput) {
       new CustomEvent("stamp-custom-slot-success", {
         detail: {
           dataUri: createSvgDataUri(serializeSvg(svgElement)),
-          svgString: serializeSvg(
-            svgElement,
-          ),
         },
       })
     );
@@ -51,7 +48,7 @@ function createFileInputForUpload() {
   return fileInput;
 }
 
-function customStampOnClick({ tool, variant, state, button }) {
+function customStampOnClick({ tool, variant, state }) {
   const fileInput = createFileInputForUpload();
 
   function handleFileUpload(event) {
@@ -64,15 +61,15 @@ function customStampOnClick({ tool, variant, state, button }) {
 
     const updatedVariant = {
       ...variant,
+      iconUrl: event.detail.dataUri,
       value: event.detail.dataUri,
     };
-    button.innerHTML = event.detail.svgString;
-    storeCustomVariant(tool, updatedVariant, { state });
-    setTool(tool, { state, variant: updatedVariant });
     updateActivatedButton(
       getPanelToolVariants(),
       updatedVariant.id.description
     );
+    setTool(tool, { state, variant: updatedVariant });
+    storeCustomVariant(tool, updatedVariant, { state });
   });
   fileInput.addEventListener("stamp-custom-slot-failure", () => {
     alert("Something went wrong with uploading the image!");
@@ -87,7 +84,7 @@ function defaultOnClick({ tool, variant, state }) {
   updateActivatedButton(getPanelToolVariants(), variant.id.description);
 }
 
-export function buildToolVariants(tool, state) {
+function renderToolVariants(tool, state) {
   const variantsContainer = getPanelToolVariants();
 
   const listeners = {};
@@ -107,8 +104,8 @@ export function buildToolVariants(tool, state) {
       switch (tool.id) {
         case TOOLS.STAMP.id:
           {
-            if (!variant.value || isDataUri(variant.value)) {
-              customStampOnClick({ tool, variant, state, button });
+            if (!variant.value) {
+              customStampOnClick({ tool, variant, state });
             } else {
               defaultOnClick({ tool, variant, state });
             }
@@ -124,14 +121,18 @@ export function buildToolVariants(tool, state) {
 
     button.dataset.value = variant.id.description;
 
-    loadIcon(variant.iconUrl)
-      .then((icon) => {
-        button.innerHTML = icon;
-      })
-      .catch((error) => {
-        console.error(error);
-        button.innerText = variant.id.description;
-      });
+    if (isDataUri(variant.iconUrl)) {
+      button.innerHTML = serializeSvg(deserializeSvgFromDataURI(variant.iconUrl));
+    } else {
+      loadIcon(variant.iconUrl)
+        .then((icon) => {
+          button.innerHTML = icon;
+        })
+        .catch((error) => {
+          console.error(error);
+          button.innerText = variant.id.description;
+        });
+    }
 
     variantsContainer.appendChild(button);
 
@@ -155,4 +156,34 @@ export function buildToolVariants(tool, state) {
 
     variantsContainer.innerHTML = "";
   };
+}
+
+export function buildToolVariants(tool, state) {
+  let disposeVariantsCallback = null;
+
+  function onToolChange(nextState, prevState) {
+    if (nextState.customVariants === prevState.customVariants) {
+      return;
+    }
+
+    if (disposeVariantsCallback) {
+      disposeVariantsCallback();
+      disposeVariantsCallback = null;
+    }
+
+    disposeVariantsCallback = renderToolVariants(tool, state);
+  }
+
+  disposeVariantsCallback = renderToolVariants(tool, state);
+
+  state.addListener(onToolChange);
+
+  return function dispose() {
+    state.removeListener(onToolChange);
+
+    if (disposeVariantsCallback) {
+      disposeVariantsCallback();
+      disposeVariantsCallback = null;
+    }
+  }
 }

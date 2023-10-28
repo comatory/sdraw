@@ -188,12 +188,21 @@ export function unblockInteractions({ state }) {
 
 export function storeCustomVariant(tool, variant, { state }) {
   const customVariants = state.get((prevState) => prevState.customVariants);
-  const toolVariants = new Set(customVariants.get(tool.id));
+  const toolVariants = Array.from(new Set(customVariants.get(tool.id)));
 
-  toolVariants.add(variant);
+  const variantIndex = toolVariants.findIndex(
+    (customVariant) => customVariant.id === variant.id,
+  );
 
+  if (variantIndex === -1) {
+    throw new Error("Variant not found");
+  }
+
+  toolVariants.splice(variantIndex, 1, variant);
+
+  const nextToolVariants = new Set(toolVariants);
   const nextCustomVariants = new Map(customVariants);
-  nextCustomVariants.set(tool.id, toolVariants);
+  nextCustomVariants.set(tool.id, nextToolVariants);
 
   state.set(() => ({
     customVariants: nextCustomVariants,

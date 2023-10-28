@@ -68,7 +68,7 @@ export function setColor(color, { state }) {
 export function setNextColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length
+    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length,
   );
 
   setColor(nextColor, { state });
@@ -77,7 +77,7 @@ export function setNextColor({ state }) {
 export function setPreviousColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length
+    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length,
   );
 
   setColor(nextColor, { state });
@@ -94,7 +94,7 @@ export function moveCursor({ acceleration, state, keysPressed }) {
     acceleration && acceleration.key === event.key
       ? acceleration.acceleration
       : 1,
-    MAXIMUM_CURSOR_ACCERATION
+    MAXIMUM_CURSOR_ACCERATION,
   );
 
   const cursor = state.get((prevState) => prevState.cursor);
@@ -122,7 +122,7 @@ export function setGamepadIndex(index, { state }) {
 
 function activateVariant(tool, variant, { state }) {
   const activatedVariants = state.get(
-    (prevState) => prevState.activatedVariants
+    (prevState) => prevState.activatedVariants,
   );
 
   const variants = new Map(activatedVariants);
@@ -196,7 +196,7 @@ function produceUpdatedCustomVariants({
   const toolVariants = Array.from(new Set(nextCustomVariants.get(tool.id)));
 
   const variantIndex = toolVariants.findIndex(
-    (customVariant) => customVariant.id === variant.id
+    (customVariant) => customVariant.id === variant.id,
   );
 
   if (variantIndex === -1) {

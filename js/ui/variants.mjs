@@ -8,7 +8,12 @@ import {
   ensureCallbacksRemoved,
   updateActivatedButton,
 } from "./utils.mjs";
-import { createSvgDataUri, serializeSvg, deserializeSvgFromDataURI, normalizeSvgSize } from "../svg-utils.mjs";
+import {
+  createSvgDataUri,
+  serializeSvg,
+  deserializeSvgFromDataURI,
+  normalizeSvgSize,
+} from "../svg-utils.mjs";
 
 function readUploadedSVG(event, fileInput) {
   const file = event.target.files[0];
@@ -21,7 +26,9 @@ function readUploadedSVG(event, fileInput) {
 
   const fileReader = new FileReader();
   fileReader.addEventListener("load", (fileEvent) => {
-    const parsedSvgElement = deserializeSvgFromDataURI(fileEvent.srcElement.result);
+    const parsedSvgElement = deserializeSvgFromDataURI(
+      fileEvent.srcElement.result,
+    );
     const iconSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
     const stampSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
     const iconSvgElement = normalizeSvgSize(iconSvgDocument);
@@ -33,7 +40,7 @@ function readUploadedSVG(event, fileInput) {
           iconDataUri: createSvgDataUri(serializeSvg(iconSvgElement)),
           dataUri: createSvgDataUri(serializeSvg(stampSvgElement)),
         },
-      })
+      }),
     );
   });
   fileReader.addEventListener("error", () => {
@@ -70,7 +77,7 @@ function customStampOnClick({ tool, variant, state }) {
     };
     updateActivatedButton(
       getPanelToolVariants(),
-      updatedVariant.id.description
+      updatedVariant.id.description,
     );
     setTool(tool, { state, variant: updatedVariant });
     setCustomVariant(tool, updatedVariant, { state });
@@ -94,11 +101,11 @@ function renderToolVariants(tool, state) {
   const listeners = {};
 
   const activatedVariant = state.get((prevState) =>
-    prevState.activatedVariants.get(tool.id)
+    prevState.activatedVariants.get(tool.id),
   );
 
   const customVariants = state.get(
-    (prevState) => prevState.customVariants.get(tool.id) ?? new Set()
+    (prevState) => prevState.customVariants.get(tool.id) ?? new Set(),
   );
 
   [...tool.variants, ...customVariants].forEach((variant) => {
@@ -126,7 +133,9 @@ function renderToolVariants(tool, state) {
     button.dataset.value = variant.id.description;
 
     if (isDataUri(variant.iconUrl)) {
-      button.innerHTML = serializeSvg(deserializeSvgFromDataURI(variant.iconUrl));
+      button.innerHTML = serializeSvg(
+        deserializeSvgFromDataURI(variant.iconUrl),
+      );
     } else {
       loadIcon(variant.iconUrl)
         .then((icon) => {
@@ -153,7 +162,7 @@ function renderToolVariants(tool, state) {
         disposeCallback(button, listeners);
 
         button.remove();
-      }
+      },
     );
 
     ensureCallbacksRemoved(listeners);
@@ -189,5 +198,5 @@ export function buildToolVariants(tool, state) {
       disposeVariantsCallback();
       disposeVariantsCallback = null;
     }
-  }
+  };
 }

@@ -1,4 +1,8 @@
-import { loadToolWithVariants, loadColor, loadCustomVariants } from "./storage.mjs";
+import {
+  loadToolWithVariants,
+  loadColor,
+  loadCustomVariants,
+} from "./storage.mjs";
 
 export const TOOLS = Object.freeze({
   PEN: {
@@ -141,12 +145,13 @@ export const DEFAULT_CUSTOM_VARIANTS = new Map([
 export function createState() {
   const callbacks = [];
 
-  const { tool, activatedVariants } = loadToolWithVariants();
+  const customVariants = loadCustomVariants();
+  const { tool, activatedVariants } = loadToolWithVariants(customVariants);
 
   let state = {
     tool,
     activatedVariants,
-    customVariants: loadCustomVariants(),
+    customVariants,
     color: loadColor(),
     gamepad: null,
     photoMemorized: false,
@@ -180,7 +185,7 @@ export function createState() {
   function set(fn) {
     const nextPartialState = fn(state);
 
-    const prevState = { ...state }
+    const prevState = { ...state };
     const nextState = {
       ...prevState,
       ...nextPartialState,

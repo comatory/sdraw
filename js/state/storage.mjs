@@ -6,7 +6,7 @@ import {
   TOOLS,
 } from "./state.mjs";
 
-export function loadToolWithVariants() {
+export function loadToolWithVariants(customVariants) {
   const storedValue = window.localStorage.getItem("tool");
 
   if (!storedValue) {
@@ -19,15 +19,18 @@ export function loadToolWithVariants() {
   const storedIds = JSON.parse(storedValue);
 
   const tool = Object.values(TOOLS).find(
-    ({ id }) => id.description === storedIds.tool
+    ({ id }) => id.description === storedIds.tool,
   );
 
   if (!tool) {
     throw new Error(`Tool not found: ${storedIds.tool}`);
   }
 
+  const customToolVariants = customVariants?.get(tool.id) ?? new Set();
   const variant = storedIds.variant
-    ? tool.variants.find(({ id }) => id.description === storedIds.variant)
+    ? [...tool.variants, ...customToolVariants].find(
+        ({ id }) => id.description === storedIds.variant,
+      )
     : null;
 
   if (storedIds.variant && !variant) {
@@ -53,7 +56,7 @@ export function storeTool(tool, variant) {
     JSON.stringify({
       tool: tool.id.description,
       variant: variant?.id.description ?? null,
-    })
+    }),
   );
 }
 
@@ -76,7 +79,7 @@ export function loadCustomVariants() {
 export function storeCustomVariants(variants) {
   window.localStorage.setItem(
     "customVariants",
-    JSON.stringify(variants, customVariantsSerializer)
+    JSON.stringify(variants, customVariantsSerializer),
   );
 }
 
@@ -104,27 +107,36 @@ function customVariantsSerializer(key, value) {
   return value;
 }
 
+function findToolSymbol(description) {
+  return Object.values(TOOLS).find(({ id }) => id.description === description)
+    ?.id;
+}
+
+function findCustomVariantSymbol(description) {
+  return Array.from(DEFAULT_CUSTOM_VARIANTS.values())
+    .flatMap((variants) => Array.from(variants))
+    .find(({ id }) => id.description === description)?.id;
+}
+
 function customVariantsDeserializer(key, value) {
   if (Array.isArray(value)) {
-    return new Set(
-      value,
-    );
+    return new Set(value);
   }
 
   if (value?.toString() === "[object Object]") {
     if (key === "") {
       return new Map(
         Object.entries(value).map(([mapKey, mapValue]) => [
-          Symbol(mapKey),
+          findToolSymbol(mapKey),
           mapValue,
-        ])
+        ]),
       );
     }
 
     return {
       ...value,
-      id: Symbol(value.id),
-    }
+      id: findCustomVariantSymbol(value.id),
+    };
   }
 
   return value;

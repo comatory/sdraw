@@ -1,3 +1,7 @@
+export function createSvgDataUri(data) {
+  return `data:image/svg+xml;base64,${window.btoa(data)}`;
+}
+
 export function serializeSvg(svg) {
   return new XMLSerializer().serializeToString(svg);
 }
@@ -7,15 +11,15 @@ export function deserializeSvg(svg) {
   return parser.parseFromString(svg, "image/svg+xml");
 }
 
-export function createSvgFromBlob(blob) {
-  const svg = document.createElement("svg");
-  svg.setAttribute("width", 24);
-  svg.setAttribute("height", 24);
-  const svgImage = document.createElement("image");
-  svgImage.setAttribute("xlink:href", blob);
-  svgImage.setAttribute("width", 24);
-  svgImage.setAttribute("height", 24);
-  svg.appendChild(svgImage);
+export function normalizeSvgSize(element) {
+  element.setAttribute("width", 24);
+  element.setAttribute("height", 24);
 
-  return svg;
+  return element;
+}
+
+export function deserializeSvgFromDataURI(dataURI) {
+  const base64 = dataURI.replace(/^data:image\/svg\+xml;base64,/, "");
+
+  return deserializeSvg(window.atob(base64));
 }

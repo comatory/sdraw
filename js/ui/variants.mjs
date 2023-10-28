@@ -8,7 +8,7 @@ import {
   ensureCallbacksRemoved,
   updateActivatedButton,
 } from "./utils.mjs";
-import { createSvgFromBlob, serializeSvg } from "../svg-utils.mjs";
+import { createSvgDataUri, serializeSvg, deserializeSvgFromDataURI, normalizeSvgSize } from "../svg-utils.mjs";
 
 function readUploadedSVG(event, fileInput) {
   const file = event.target.files[0];
@@ -21,12 +21,15 @@ function readUploadedSVG(event, fileInput) {
 
   const fileReader = new FileReader();
   fileReader.addEventListener("load", (fileEvent) => {
+    const parsedSvgElement = deserializeSvgFromDataURI(fileEvent.srcElement.result);
+    const svgElement = normalizeSvgSize(parsedSvgElement.documentElement);
+
     fileInput.dispatchEvent(
       new CustomEvent("stamp-custom-slot-success", {
         detail: {
-          dataUri: fileEvent.srcElement.result,
+          dataUri: createSvgDataUri(serializeSvg(svgElement)),
           svgString: serializeSvg(
-            createSvgFromBlob(fileEvent.srcElement.result)
+            svgElement,
           ),
         },
       })

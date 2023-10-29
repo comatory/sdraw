@@ -92,3 +92,7 @@ export function getSaveButton() {
 export function getInfoButton() {
   return document.getElementById("info");
 }
+
+export function getInfoDialog() {
+  return document.getElementById("info-dialog");
+}

@@ -12,6 +12,7 @@ import {
   removeCountdown,
   getCountdownAnimationLengthInSeconds,
   getFlashAnimationLengthInSeconds,
+  getInfoDialog,
 } from "../dom.mjs";
 
 let disposeCallback;
@@ -242,4 +243,18 @@ export function exportImage() {
 
   const event = new MouseEvent("click");
   link.dispatchEvent(event);
+}
+
+export function showInfo() {
+  const dialog = getInfoDialog();
+  const closeButton = dialog.querySelector("#close-info");
+
+  function closeDialog () {
+    dialog.close();
+    closeButton.removeEventListener("click", closeDialog);
+  }
+
+  dialog.showModal();
+
+  closeButton.addEventListener("click", closeDialog);
 }

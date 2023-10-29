@@ -1,5 +1,5 @@
 import { getClearButton, getSaveButton, getInfoButton } from "../dom.mjs"
-import { resetCanvas, exportImage } from "../state/actions.mjs";
+import { resetCanvas, exportImage, showInfo } from "../state/actions.mjs";
 
 export function createGlobalActionsPanel({ state }) {
   const clearButton = getClearButton();
@@ -20,11 +20,17 @@ export function createGlobalActionsPanel({ state }) {
     exportImage();
   }
 
+  function handleInfoClick() {
+    showInfo();
+  }
+
   clearButton.addEventListener("click", handleClearClick);
   saveButton.addEventListener("click", handleSaveClick);
+  infoButton.addEventListener("click", handleInfoClick);
 
   return function dispose() {
     clearButton.removeEventListener("click", handleClearClick);
     saveButton.removeEventListener("click", handleSaveClick);
+    infoButton.removeEventListener("click", handleInfoClick);
   }
 }

@@ -141,3 +141,11 @@ function customVariantsDeserializer(key, value) {
 
   return value;
 }
+
+export function storeCanvas(dataUri) {
+  window.localStorage.setItem("canvas", dataUri);
+}
+
+export function loadCanvas() {
+  return window.localStorage.getItem("canvas");
+}

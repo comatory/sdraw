@@ -5,7 +5,7 @@ import {
   setCanvasSizeWithoutPanel,
   setVideoSizeByCanvasSize,
 } from "./dom.mjs";
-import { prepareCanvasRestoration } from "./canvas.mjs";
+import { prepareCanvasRestoration, attachCanvasSaveListener, restorePreviousCanvas } from "./canvas.mjs";
 import { attachPanelListeners } from "./ui/panel.mjs";
 import { createColorPanel } from "./ui/colors.mjs";
 import { createToolPanel } from "./ui/tools.mjs";
@@ -62,6 +62,10 @@ function attachDrawingListeners(state) {
 
 export function boot() {
   const state = createState();
+  const canvas = getCanvas();
+
+  restorePreviousCanvas(canvas);
+  attachCanvasSaveListener(canvas);
 
   attachResizeListeners();
 

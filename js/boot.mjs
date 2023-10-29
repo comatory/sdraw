@@ -5,7 +5,11 @@ import {
   setCanvasSizeWithoutPanel,
   setVideoSizeByCanvasSize,
 } from "./dom.mjs";
-import { prepareCanvasRestoration, attachCanvasSaveListener, restorePreviousCanvas } from "./canvas.mjs";
+import {
+  prepareCanvasRestoration,
+  attachCanvasSaveListener,
+  restorePreviousCanvas,
+} from "./canvas.mjs";
 import { attachPanelListeners } from "./ui/panel.mjs";
 import { createColorPanel } from "./ui/colors.mjs";
 import { createToolPanel } from "./ui/tools.mjs";

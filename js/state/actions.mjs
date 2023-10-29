@@ -249,7 +249,7 @@ export function showInfo() {
   const dialog = getInfoDialog();
   const closeButton = dialog.querySelector("#close-info");
 
-  function closeDialog () {
+  function closeDialog() {
     dialog.close();
     closeButton.removeEventListener("click", closeDialog);
   }

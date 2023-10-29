@@ -1,4 +1,4 @@
-import { getCanvas, getCursorCanvas } from "../dom.mjs";
+import { getCanvas, getCursorCanvas, showLoader, hideLoader } from "../dom.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 import { blockInteractions, unblockInteractions } from "../state/actions.mjs";
 
@@ -47,6 +47,7 @@ function colorsMatch(a, b) {
 
 // taken from SO: https://stackoverflow.com/a/56221940/3056783
 function floodFill(ctx, x, y, fillColor, { state }) {
+  showLoader();
   blockInteractions({ state });
   // read the pixels in the canvas
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -76,6 +77,7 @@ function floodFill(ctx, x, y, fillColor, { state }) {
   }
 
   unblockInteractions({ state });
+  hideLoader();
 }
 
 export function activateFill({ state }) {

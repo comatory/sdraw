@@ -96,3 +96,17 @@ export function getInfoButton() {
 export function getInfoDialog() {
   return document.getElementById("info-dialog");
 }
+
+function getLoader() {
+  return document.getElementById("loader");
+}
+
+export function showLoader() {
+  const loader = getLoader();
+  loader.style.display = "flex";
+}
+
+export function hideLoader() {
+  const loader = getLoader();
+  loader.style.display = "none";
+}

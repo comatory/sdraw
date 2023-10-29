@@ -1,6 +1,7 @@
 @import url("./canvas.css");
 @import url("./panel.css");
 @import url("./cam.css");
+@import url("./loader.css");
 
 * {
   box-sizing: border-box;

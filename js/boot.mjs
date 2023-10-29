@@ -6,8 +6,8 @@ import {
   setVideoSizeByCanvasSize,
 } from "./dom.mjs";
 import {
-  prepareCanvasRestoration,
   attachCanvasSaveListener,
+  attachWindowResizeListeners,
   restorePreviousCanvas,
 } from "./canvas.mjs";
 import { attachPanelListeners } from "./ui/panel.mjs";
@@ -19,7 +19,6 @@ import { setTool, setColor, setCursor } from "./state/actions.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
 import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
-import { throttle } from "./utils.mjs";
 
 function attachResizeListeners() {
   const canvas = getCanvas();
@@ -29,19 +28,7 @@ function attachResizeListeners() {
   setCanvasSizeWithoutPanel(canvas);
   setVideoSizeByCanvasSize(canvas);
 
-  function handleWindowResize() {
-    const restoreCanvas = prepareCanvasRestoration(canvas);
-
-    setCanvasSizeByViewport(cursorCanvas);
-    setCanvasSizeWithoutPanel(canvas);
-    setVideoSizeByCanvasSize(canvas);
-
-    restoreCanvas();
-  }
-
-  const throttledWindowResize = throttle(handleWindowResize, 5000);
-
-  window.addEventListener("resize", throttledWindowResize);
+  attachWindowResizeListeners({ canvas, cursorCanvas });
 }
 
 function attachDrawingListeners(state) {
@@ -51,7 +38,7 @@ function attachDrawingListeners(state) {
 
   if (currentTool) {
     const activatedVariants = state.get(
-      (prevState) => prevState.activatedVariants,
+      (prevState) => prevState.activatedVariants
     );
     const variant = activatedVariants.get(currentTool.id);
     setTool(currentTool, { state, variant });
@@ -81,7 +68,7 @@ export function boot() {
       x: rect.width / 2,
       y: rect.height / 2,
     },
-    { state },
+    { state }
   );
 
   attachDrawingListeners(state);

@@ -61,8 +61,8 @@ export const TOOLS = Object.freeze({
 export const TOOL_LIST = Object.freeze([
   TOOLS.PEN,
   TOOLS.FILL,
-  TOOLS.CAM,
   TOOLS.STAMP,
+  TOOLS.CAM,
 ]);
 
 export const COLOR = Object.freeze({

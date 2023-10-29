@@ -80,3 +80,15 @@ export function getFlashAnimationLengthInSeconds() {
 
   return Number.parseFloat(rawValue, 10);
 }
+
+export function getClearButton() {
+  return document.getElementById("clear");
+}
+
+export function getSaveButton() {
+  return document.getElementById("save");
+}
+
+export function getInfoButton() {
+  return document.getElementById("info");
+}

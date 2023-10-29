@@ -1,10 +1,12 @@
 :root {
   --button-size: 40px;
   --button-space: 8px;
+  --panel-height: 180px;
 }
 
 #panel {
-  height: 200px;
+  height: var(--panel-height);
+  min-height: var(--panel-height);
   width: 100%;
   background-color: gainsboro;
   box-shadow: inset 0px 4px 0px silver;
@@ -15,7 +17,11 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding-bottom: var(--button-space);
+  padding-bottom: 12px;
+}
+
+.panel-row.spaced {
+  justify-content: space-between;
 }
 
 .panel-row button {
@@ -24,6 +30,10 @@
   height: var(--button-size);
   border: 2px solid black;
   border-radius: 6px;
+}
+
+.panel-row button:last-child {
+  margin-right: 0px;
 }
 
 .panel-row button.active {

@@ -9,6 +9,7 @@ import { prepareCanvasRestoration } from "./canvas.mjs";
 import { attachPanelListeners } from "./ui/panel.mjs";
 import { createColorPanel } from "./ui/colors.mjs";
 import { createToolPanel } from "./ui/tools.mjs";
+import { createGlobalActionsPanel } from "./ui/global.mjs";
 import { createState } from "./state/state.mjs";
 import { setTool, setColor, setCursor } from "./state/actions.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
@@ -81,5 +82,6 @@ export function boot() {
 
   createToolPanel({ state });
   createColorPanel({ state });
+  createGlobalActionsPanel({ state });
   attachPanelListeners({ state });
 }

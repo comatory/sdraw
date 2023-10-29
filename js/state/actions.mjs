@@ -4,7 +4,7 @@ import { activateFill } from "../tools/fill.mjs";
 import { activateCam } from "../tools/cam.mjs";
 import { activateStamp } from "../tools/stamp.mjs";
 import { TOOLS, COLOR_LIST } from "./state.mjs";
-import { storeTool, storeColor, storeCustomVariants } from "./storage.mjs";
+import { storeTool, storeColor, storeCustomVariants, storeCanvas } from "./storage.mjs";
 import {
   getCam,
   getCanvas,
@@ -231,6 +231,7 @@ export function resetCanvas() {
   const ctx = canvas.getContext("2d");
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  storeCanvas(canvas);
 }
 
 export function exportImage() {

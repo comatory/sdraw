@@ -116,6 +116,10 @@ export function activateFill({ state }) {
     const cursor = state.get((prevState) => prevState.cursor);
     const color = state.get((prevState) => prevState.color);
 
+    if (!isWithinCanvasBounds(cursor.x, cursor.y)) {
+      return;
+    }
+
     floodFill(ctx, cursor.x, cursor.y, hexToRGB(color), { state });
   }
 

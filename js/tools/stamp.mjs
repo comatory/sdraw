@@ -73,9 +73,34 @@ export function activateStamp({ state }) {
     drawStamp(x, y, activeStamp);
   }
 
+  function keyDown(event) {
+    if (event.code !== "Space") {
+      return;
+    }
+
+    const activeStamp = state.get((prevState) =>
+      prevState.activatedVariants.get(TOOLS.STAMP.id),
+    );
+
+    if (!activeStamp) {
+      return;
+    }
+
+    const x = state.get((prevState) => prevState.cursor.x);
+    const y = state.get((prevState) => prevState.cursor.y);
+
+    if (!isWithinCanvasBounds(x, y)) {
+      return;
+    }
+
+    drawStamp(x, y, activeStamp);
+  }
+
   window.addEventListener("click", mouseClick);
+  window.addEventListener("keydown", keyDown);
 
   return function dispose() {
     window.removeEventListener("click", mouseClick);
+    window.removeEventListener("keydown", keyDown);
   };
 }

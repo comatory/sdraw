@@ -1,5 +1,8 @@
 # sdraw
 
+<div style="display: flex; align-items: flex-start;">
+<img width="200px" height="auto" src="./img/logo.png" alt="application logo resembling a pine tree" />
+<div>
 Simple drawing program aimed for kids with accessibility in mind.
 The program provides very simple functionality:
 
@@ -9,8 +12,8 @@ The program provides very simple functionality:
 - photo capture
 
 The cursor can be controlled with mouse, keyboard or gamepad.
-
-<img width="300px" height="auto" src="./docs/lame.png" />
+</div>
+</div>
 
 ## Control mapping
 

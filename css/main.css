@@ -2,6 +2,7 @@
 @import url("./panel.css");
 @import url("./cam.css");
 @import url("./loader.css");
+@import url("./dialog.css");
 
 * {
   box-sizing: border-box;

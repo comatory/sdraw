@@ -1,0 +1,8 @@
+.colophon {
+  display: flex;
+  align-items: flex-start;
+}
+
+.colophon-info {
+  margin-left: 8px;
+}

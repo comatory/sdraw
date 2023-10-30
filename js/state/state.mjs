@@ -50,9 +50,57 @@ export const TOOLS = Object.freeze({
     iconUrl: "img/tools/stamp.svg",
     variants: [
       {
+        id: Symbol("stamp-girl"),
+        iconUrl: "img/stamps/girl.svg",
+        value: "girl.svg",
+        size: { w: 100, h: 100 },
+      },
+      {
+        id: Symbol("stamp-boy"),
+        iconUrl: "img/stamps/boy.svg",
+        value: "boy.svg",
+        size: { w: 85, h: 85 },
+      },
+      {
+        id: Symbol("stamp-baby"),
+        iconUrl: "img/stamps/baby.svg",
+        value: "baby.svg",
+        size: { w: 100, h: 100 },
+      },
+      {
+        id: Symbol("stamp-woman"),
+        iconUrl: "img/stamps/woman.svg",
+        value: "woman.svg",
+        size: { w: 150, h: 150 },
+      },
+      {
+        id: Symbol("stamp-man"),
+        iconUrl: "img/stamps/man.svg",
+        value: "man.svg",
+        size: { w: 135, h: 135 },
+      },
+      {
         id: Symbol("stamp-star"),
         iconUrl: "img/stamps/star.svg",
         value: "star.svg",
+      },
+      {
+        id: Symbol("stamp-house"),
+        iconUrl: "img/stamps/house.svg",
+        value: "house.svg",
+        size: { w: 200, h: 200 },
+      },
+      {
+        id: Symbol("stamp-tree"),
+        iconUrl: "img/stamps/tree.svg",
+        value: "tree.svg",
+        size: { w: 200, h: 200 },
+      },
+      {
+        id: Symbol("stamp-truck"),
+        iconUrl: "img/stamps/truck.svg",
+        value: "truck.svg",
+        size: { w: 160, h: 160 },
       },
     ],
   },

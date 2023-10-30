@@ -12,9 +12,13 @@ export function deserializeSvg(svg) {
 }
 
 export function normalizeSvgSize(element, size = 24) {
-  element.setAttribute("width", size);
-  element.setAttribute("height", size);
+  const singleDimension = Number.isFinite(size) ? size : null;
+  const width = size.w ?? singleDimension;
+  const height = size.h ?? singleDimension;
 
+  element.setAttribute("width", width);
+  element.setAttribute("height", height);
+  
   return element;
 }
 

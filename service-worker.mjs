@@ -78,7 +78,7 @@ const STATIC_ASSETS = [
   "img/tools/stamp.svg",
 ];
 
-  function handleRejectedRequest(error) {
+function handleRejectedRequest(error) {
   console.error(error);
   return new Response(
     "<h1>You are offline.</h1><p>The application needs to go online at least once to work properly</p>",

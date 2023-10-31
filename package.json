@@ -8,6 +8,7 @@
     "test": "test",
     "start": "./server.sh",
     "format": "prettier . --write",
+    "format:ci": "prettier . --list-different",
     "lint": "eslint . --ext .js,.mjs"
   },
   "repository": {

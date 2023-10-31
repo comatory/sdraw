@@ -1,0 +1,27 @@
+{
+  "name": "sdraw",
+  "short_name": "sdraw",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#2f9e44",
+  "description": "Simple drawing application",
+  "icons": [
+    {
+      "src": "img/icon.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "img/screenshot-desktop.png",
+      "sizes": "1400x1034",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Main application area"
+    }
+  ]
+}

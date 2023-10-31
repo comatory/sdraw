@@ -3,9 +3,30 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="manifest" href="manifest.json" />
     <title>sdraw</title>
     <script type="module" src="./index.mjs"></script>
     <link rel="stylesheet" href="./css/main.css" />
+    <script>
+      function loadServiceWorker() {
+        navigator.serviceWorker
+          .register("./service-worker.mjs")
+          .then((registration) => {
+            console.info(
+              `Service worker registered with scope: ${registration.scope}`
+            );
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+
+      if (navigator.serviceWorker) {
+        loadServiceWorker();
+      } else {
+        console.warn("Service worker is not supported by this browser");
+      }
+    </script>
   </head>
   <body>
     <div id="loader"><span id="loader-indicators">...</span></div>

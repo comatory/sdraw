@@ -4,7 +4,7 @@ import { getCursorCanvas } from "./dom.mjs";
 const ctx = getCursorCanvas().getContext("2d");
 const CURSOR_SIZE = 20;
 
-  export function drawCursor(x, y) {
+export function drawCursor(x, y) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   ctx.lineWidth = 5;

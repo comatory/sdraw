@@ -13,7 +13,7 @@ export function moveCursor({ acceleration, state, keysPressed }) {
     acceleration && acceleration.key === event.key
       ? acceleration.acceleration
       : 1,
-    MAXIMUM_CURSOR_ACCERATION
+    MAXIMUM_CURSOR_ACCERATION,
   );
 
   const cursor = state.get((prevState) => prevState.cursor);
@@ -32,4 +32,3 @@ export function moveCursor({ acceleration, state, keysPressed }) {
   setCursor(nextCursor, { state });
   drawCursor(nextCursor.x, nextCursor.y);
 }
-

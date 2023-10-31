@@ -39,7 +39,7 @@ function attachDrawingListeners(state) {
 
   if (currentTool) {
     const activatedVariants = state.get(
-      (prevState) => prevState.activatedVariants
+      (prevState) => prevState.activatedVariants,
     );
     const variant = activatedVariants.get(currentTool.id);
     setTool(currentTool, { state, variant });
@@ -69,7 +69,7 @@ export function boot() {
       x: rect.width / 2,
       y: rect.height / 2,
     },
-    { state }
+    { state },
   );
 
   attachDrawingListeners(state);

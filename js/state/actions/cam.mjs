@@ -39,7 +39,7 @@ export function takePhoto({ state }) {
       canvas.width / 2 - (videoSettings?.width ? videoSettings.width / 2 : 0),
       0,
       videoSettings?.width,
-      videoSettings?.height
+      videoSettings?.height,
     );
     memorizePhoto({ state });
     removeCountdown();

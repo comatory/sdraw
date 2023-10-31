@@ -18,7 +18,7 @@ export function normalizeSvgSize(element, size = 24) {
 
   element.setAttribute("width", width);
   element.setAttribute("height", height);
-  
+
   return element;
 }
 

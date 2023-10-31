@@ -21,4 +21,3 @@ export function drawCursor(x, y) {
   ctx.lineTo(x + CURSOR_SIZE / 2, y + CURSOR_SIZE / 2);
   ctx.stroke();
 }
-

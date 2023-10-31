@@ -12,6 +12,7 @@ The program provides very simple functionality:
 - photo capture
 
 The cursor can be controlled with mouse, keyboard or gamepad.
+
 </div>
 </div>
 

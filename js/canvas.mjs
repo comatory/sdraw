@@ -17,7 +17,7 @@ export function attachCanvasSaveListener() {
 
   const interval = window.setInterval(
     handleSaveCanvasWhenIdle,
-    SAVE_CANVAS_INTERVAL_IN_MS
+    SAVE_CANVAS_INTERVAL_IN_MS,
   );
 
   return function dispose() {

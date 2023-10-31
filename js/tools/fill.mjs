@@ -1,6 +1,9 @@
 import { getCanvas, getCursorCanvas, showLoader, hideLoader } from "../dom.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
-import { blockInteractions, unblockInteractions } from "../state/actions/ui.mjs";
+import {
+  blockInteractions,
+  unblockInteractions,
+} from "../state/actions/ui.mjs";
 
 function hexToRGB(h) {
   let r = 0,

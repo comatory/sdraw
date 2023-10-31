@@ -1,4 +1,8 @@
-import { setTool, setNextColor, setPreviousColor } from "../state/actions/tool.mjs";
+import {
+  setTool,
+  setNextColor,
+  setPreviousColor,
+} from "../state/actions/tool.mjs";
 import { moveCursor } from "../state/actions/cursor.mjs";
 import { TOOLS } from "../state/constants.mjs";
 

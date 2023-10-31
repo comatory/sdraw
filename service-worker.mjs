@@ -86,7 +86,7 @@ function handleRejectedRequest(error) {
       headers: {
         "Content-Type": "text/html; charset=utf-8",
       },
-    }
+    },
   );
 }
 
@@ -107,7 +107,7 @@ async function handleRequest(response, request) {
 function onFetch(event) {
   const { request } = event;
   return event.respondWith(
-    caches.match(request).then((response) => handleRequest(response, request))
+    caches.match(request).then((response) => handleRequest(response, request)),
   );
 }
 
@@ -127,7 +127,7 @@ function handleCacheUpdate(cacheNames) {
         console.log(`Deleting cache: ${cacheName}`);
         return caches.delete(cacheName);
       }
-    })
+    }),
   );
 }
 
@@ -147,7 +147,7 @@ addEventListener("install", function onInstall(event) {
     caches
       .open(STATIC_CACHE_ID)
       .then(handleCacheOpen)
-      .catch(handleCacheOpenError)
+      .catch(handleCacheOpenError),
   );
 });
 
@@ -159,7 +159,7 @@ addEventListener("activate", function onActivate(event) {
       .keys()
       .then(handleCacheUpdate)
       .then(finishCacheUpdate)
-      .catch(handleCacheUpdateError)
+      .catch(handleCacheUpdateError),
   );
 });
 

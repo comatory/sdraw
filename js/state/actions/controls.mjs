@@ -3,4 +3,3 @@ export function setGamepadIndex(index, { state }) {
     gamepad: index,
   }));
 }
-

@@ -3,11 +3,7 @@ import { activateFill } from "../../tools/fill.mjs";
 import { activateCam } from "../../tools/cam.mjs";
 import { activateStamp } from "../../tools/stamp.mjs";
 import { TOOLS, COLOR_LIST } from "../constants.mjs";
-import {
-  storeTool,
-  storeColor,
-  storeCustomVariants,
-} from "../storage.mjs";
+import { storeTool, storeColor, storeCustomVariants } from "../storage.mjs";
 
 let disposeCallback;
 
@@ -53,7 +49,7 @@ export async function setTool(tool, { state, variant }) {
 
 function activateVariant(tool, variant, { state }) {
   const activatedVariants = state.get(
-    (prevState) => prevState.activatedVariants
+    (prevState) => prevState.activatedVariants,
   );
 
   const variants = new Map(activatedVariants);
@@ -76,7 +72,7 @@ export function setColor(color, { state }) {
 export function setNextColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length
+    (COLOR_LIST.indexOf(currentColor) + 1) % COLOR_LIST.length,
   );
 
   setColor(nextColor, { state });
@@ -85,7 +81,7 @@ export function setNextColor({ state }) {
 export function setPreviousColor({ state }) {
   const currentColor = state.get((prevState) => prevState.color);
   const nextColor = COLOR_LIST.at(
-    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length
+    (COLOR_LIST.indexOf(currentColor) - 1) % COLOR_LIST.length,
   );
 
   setColor(nextColor, { state });
@@ -101,7 +97,7 @@ function produceUpdatedCustomVariants({
   const toolVariants = Array.from(new Set(nextCustomVariants.get(tool.id)));
 
   const variantIndex = toolVariants.findIndex(
-    (customVariant) => customVariant.id === variant.id
+    (customVariant) => customVariant.id === variant.id,
   );
 
   if (variantIndex === -1) {

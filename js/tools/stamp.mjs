@@ -58,7 +58,7 @@ export function activateStamp({ state }) {
         const svg = stamp.size
           ? normalizeSvgSize(
               deserializeSvg(svgData).documentElement,
-              stamp.size
+              stamp.size,
             )
           : deserializeSvg(svgData).documentElement;
 
@@ -71,7 +71,7 @@ export function activateStamp({ state }) {
 
   function mouseClick(event) {
     const activeStamp = state.get((prevState) =>
-      prevState.activatedVariants.get(TOOLS.STAMP.id)
+      prevState.activatedVariants.get(TOOLS.STAMP.id),
     );
 
     if (!activeStamp) {
@@ -94,7 +94,7 @@ export function activateStamp({ state }) {
     }
 
     const activeStamp = state.get((prevState) =>
-      prevState.activatedVariants.get(TOOLS.STAMP.id)
+      prevState.activatedVariants.get(TOOLS.STAMP.id),
     );
 
     if (!activeStamp) {

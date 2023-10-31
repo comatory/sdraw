@@ -3,7 +3,7 @@
 <div style="display: flex; align-items: flex-start;">
 <img width="200px" height="auto" src="./img/logo.png" alt="application logo resembling a pine tree" />
 <div>
-Simple drawing program aimed for kids with accessibility in mind.
+Simple drawing web program aimed for kids with accessibility in mind.
 The program provides very simple functionality:
 
 - pen tool
@@ -11,10 +11,12 @@ The program provides very simple functionality:
 - stamps (with ability to load in custom ones)
 - photo capture
 
-The cursor can be controlled with mouse, keyboard or gamepad.
+The cursor can be controlled with mouse, keyboard or gamepad. You can install this application via browser (PWA) and it will work offline just fine, there is no server component involved.
 
 </div>
 </div>
+
+<img width="600" height="auto" src="img/screenshot-desktop.png" alt="Screenshot of application UI." />
 
 ## Control mapping
 

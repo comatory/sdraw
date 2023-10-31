@@ -1,5 +1,5 @@
 const STATIC_CACHE_NAME = "static";
-const STATIC_CACHE_VERSION = "v18";
+const STATIC_CACHE_VERSION = "v19";
 const STATIC_CACHE_ID = `${STATIC_CACHE_NAME}-${STATIC_CACHE_VERSION}`;
 
 // All the files need to be added here manually. I want to avoid
@@ -83,28 +83,49 @@ function handleRejectedRequest(error) {
   );
 }
 
-
 async function handleRequest(response, request) {
   if (response) {
     return response;
   }
 
   if (!response) {
-    console.log(`cache miss for ${request.url}`)
+    console.log(`cache miss for ${request.url}`);
   }
 
-  return fetch(request).then((fetchResponse) => fetchResponse).catch(handleRejectedRequest);
+  return fetch(request)
+    .then((fetchResponse) => fetchResponse)
+    .catch(handleRejectedRequest);
 }
 
 function onFetch(event) {
   const { request } = event;
   return event.respondWith(
-    caches.match(request).then((response) => handleRequest(response, request)),
+    caches.match(request).then((response) => handleRequest(response, request))
   );
 }
 
 function handleCacheOpen(staticCache) {
   return staticCache.addAll(STATIC_ASSETS);
+}
+
+function handleCacheOpenError(error) {
+  console.error(error);
+  return Promise.reject(error);
+}
+
+function handleCacheUpdate(cacheNames) {
+  return Promise.all(
+    cacheNames.map((cacheName) => {
+      if (cacheName !== STATIC_CACHE_ID) {
+        console.log(`Deleting cache: ${cacheName}`);
+        return caches.delete(cacheName);
+      }
+    })
+  );
+}
+
+function finishCacheUpdate() {
+  return clients.claim();
 }
 
 function handleCacheOpenError(error) {
@@ -125,6 +146,14 @@ addEventListener("install", function onInstall(event) {
 
 addEventListener("activate", function onActivate(event) {
   console.log("Activating service worker");
+
+  return event.waitUntil(
+    caches
+      .keys()
+      .then(handleCacheUpdate)
+      .then(finishCacheUpdate)
+      .catch(handleCacheUpdateError)
+  );
 });
 
 addEventListener("fetch", onFetch);

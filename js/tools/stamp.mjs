@@ -1,5 +1,5 @@
 import { getCanvas } from "../dom.mjs";
-import { TOOLS } from "../state/state.mjs";
+import { TOOLS } from "../state/constants.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 import {
   createSvgDataUri,

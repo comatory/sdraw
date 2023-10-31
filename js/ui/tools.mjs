@@ -1,6 +1,6 @@
 import { getPanelTools } from "../dom.mjs";
-import { setTool } from "../state/actions.mjs";
-import { TOOL_LIST } from "../state/state.mjs";
+import { setTool } from "../state/actions/tool.mjs";
+import { TOOL_LIST } from "../state/constants.mjs";
 import { loadIcon, updateActivatedButton } from "./utils.mjs";
 import { buildToolActions } from "./actions.mjs";
 import { buildToolVariants } from "./variants.mjs";

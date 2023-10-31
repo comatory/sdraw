@@ -1,5 +1,5 @@
-import { COLOR_LIST } from "../state/state.mjs";
-import { setColor } from "../state/actions.mjs";
+import { COLOR_LIST } from "../state/constants.mjs";
+import { setColor } from "../state/actions/tool.mjs";
 import { getPanelColors } from "../dom.mjs";
 import { updateActivatedButton } from "./utils.mjs";
 

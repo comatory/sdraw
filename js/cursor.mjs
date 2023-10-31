@@ -1,36 +1,14 @@
-import { setCursor } from "./state/actions.mjs";
-import { COLOR } from "./state/state.mjs";
+import { setCursor } from "./state/actions/cursor.mjs";
 import { getCursorCanvas } from "./dom.mjs";
 import {
   getGamepad,
   createCursorFromGamepad,
   isGamepadDirectionPressed,
 } from "./controls/gamepad.mjs";
-
-const ctx = getCursorCanvas().getContext("2d");
-
-const CURSOR_SIZE = 20;
+import { drawCursor } from "./canvas-utils.mjs";
 const SET_CURSOR_DELAY_IN_MS = 500;
 const BASE_GAMEPAD_ACCELERATION_MULTIPLIER = 1.0;
 const MAX_GAMEPAD_ACCELERATION_MULTIPLIER = 4.0;
-
-export function drawCursor(x, y) {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-  ctx.lineWidth = 5;
-  ctx.lineCap = "round";
-  ctx.strokeStyle = COLOR.BLACK;
-
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x + CURSOR_SIZE, y);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x + CURSOR_SIZE / 2, y - CURSOR_SIZE / 2);
-  ctx.lineTo(x + CURSOR_SIZE / 2, y + CURSOR_SIZE / 2);
-  ctx.stroke();
-}
 
 export function initializeCursor({ state }) {
   // TODO cursor shape based on active tool

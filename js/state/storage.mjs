@@ -4,7 +4,7 @@ import {
   DEFAULT_COLOR,
   DEFAULT_CUSTOM_VARIANTS,
   TOOLS,
-} from "./state.mjs";
+} from "./constants.mjs";
 
 export function loadToolWithVariants(customVariants) {
   const storedValue = window.localStorage.getItem("tool");

@@ -1,4 +1,4 @@
-import { setGamepadIndex } from "../state/actions.mjs";
+import { setGamepadIndex } from "../state/actions/controls.mjs";
 
 export function attachGamepadListeners(state) {
   window.addEventListener("gamepadconnected", (event) => {

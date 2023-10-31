@@ -1,10 +1,6 @@
-import {
-  setTool,
-  setNextColor,
-  setPreviousColor,
-  moveCursor,
-} from "../state/actions.mjs";
-import { TOOLS } from "../state/state.mjs";
+import { setTool, setNextColor, setPreviousColor } from "../state/actions/tool.mjs";
+import { moveCursor } from "../state/actions/cursor.mjs";
+import { TOOLS } from "../state/constants.mjs";
 
 const NO_KEYS_PRESSED = Object.freeze({
   up: false,

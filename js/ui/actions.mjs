@@ -1,4 +1,4 @@
-import { takePhoto, removePhoto } from "../state/actions.mjs";
+import { takePhoto, removePhoto } from "../state/actions/cam.mjs";
 import { getPanelToolActions } from "../dom.mjs";
 import { disposeCallback, ensureCallbacksRemoved, loadIcon } from "./utils.mjs";
 

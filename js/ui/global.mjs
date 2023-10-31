@@ -1,5 +1,6 @@
 import { getClearButton, getSaveButton, getInfoButton } from "../dom.mjs";
-import { resetCanvas, exportImage, showInfo } from "../state/actions.mjs";
+import { resetCanvas, exportImage } from "../state/actions/canvas.mjs";
+import { showInfo } from "../state/actions/ui.mjs";
 
 export function createGlobalActionsPanel({ state }) {
   const clearButton = getClearButton();

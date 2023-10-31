@@ -1,5 +1,5 @@
-import { setTool, setCustomVariant } from "../state/actions.mjs";
-import { TOOLS } from "../state/state.mjs";
+import { setTool, setCustomVariant } from "../state/actions/tool.mjs";
+import { TOOLS } from "../state/constants.mjs";
 import { isDataUri } from "../state/utils.mjs";
 import { getPanelToolVariants } from "../dom.mjs";
 import {

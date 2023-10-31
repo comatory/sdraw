@@ -24,4 +24,4 @@ jobs:
           node-version: 18.x
           cache: "npm"
       - run: npm ci
-      - run: npm run format:ci | wc -l | awk '{if ($1 > 0) print "1"; else print "0";}'
+      - run: npm run format:ci | wc -l | awk '{if ($1 > 0) exit 1; else exit 0;}'

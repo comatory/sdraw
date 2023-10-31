@@ -10,7 +10,7 @@
     <script>
       function loadServiceWorker() {
         navigator.serviceWorker
-          .register("./service-worker.mjs")
+          .register("./service-worker.js")
           .then((registration) => {
             console.info(
               `Service worker registered with scope: ${registration.scope}`,

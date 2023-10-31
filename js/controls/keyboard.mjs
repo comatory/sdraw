@@ -21,12 +21,6 @@ function clearAccelerationTimer(timer) {
   window.clearTimeout(timer);
 }
 
-function setAccelerationTimer(value) {
-  return window.setTimeout(() => {
-    value = null;
-  }, 50);
-}
-
 function produceAcceleration(prevAcceleration, key) {
   return {
     key,
@@ -130,6 +124,8 @@ export function attachKeyboardListeners(state) {
       keysPressed,
     });
 
-    accelerationTimer = setAccelerationTimer(acceleration);
+    accelerationTimer = window.setTimeout(() => {
+      acceleration = null;
+    }, 50);
   });
 }

@@ -132,10 +132,10 @@ function handleCacheUpdate(cacheNames) {
 }
 
 function finishCacheUpdate() {
-  return clients.claim();
+  return self.clients.claim();
 }
 
-function handleCacheOpenError(error) {
+function handleCacheUpdateError(error) {
   console.error(error);
   return Promise.reject(error);
 }

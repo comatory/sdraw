@@ -78,6 +78,6 @@ export function boot() {
 
   createToolPanel({ state });
   createColorPanel({ state });
-  createGlobalActionsPanel({ state });
+  createGlobalActionsPanel();
   attachPanelListeners({ state });
 }

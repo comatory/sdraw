@@ -1,5 +1,5 @@
 const STATIC_CACHE_NAME = "static";
-const STATIC_CACHE_VERSION = "v22";
+const STATIC_CACHE_VERSION = "v23";
 const STATIC_CACHE_ID = `${STATIC_CACHE_NAME}-${STATIC_CACHE_VERSION}`;
 
 // All the files need to be added here manually. I want to avoid
@@ -20,6 +20,7 @@ const STATIC_ASSETS = [
   "js/canvas-utils.mjs",
   "js/svg-utils.mjs",
   "js/controls/gamepad.mjs",
+  "js/controls/general.mjs",
   "js/controls/keyboard.mjs",
   "js/state/constants.mjs",
   "js/state/state.mjs",

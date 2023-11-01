@@ -54,3 +54,7 @@ export function isGamepadDirectionPressed(gamepad) {
 export function isPrimaryGamepadButtonPressed(gamepad) {
   return gamepad.buttons[2].pressed;
 }
+
+export function isGamepadButtonPressed(gamepad) {
+  return gamepad.buttons.some((button) => button.pressed);
+}

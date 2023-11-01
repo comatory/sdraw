@@ -56,6 +56,7 @@ export function activatePen({ state, variant }) {
     ctx.beginPath();
   }
 
+  let wasPrimaryGamepadButtonPressed = false;
   function activatePenOnGamepadButtonPress() {
     const gamepad = getGamepad(state);
 
@@ -64,15 +65,18 @@ export function activatePen({ state, variant }) {
     }
 
     const pressed = isPrimaryGamepadButtonPressed(gamepad);
-    inProgress = pressed;
-
     const cursor = state.get((prevState) => prevState.cursor);
+
+    if (!wasPrimaryGamepadButtonPressed && pressed) {
+      ctx.beginPath();
+    }
 
     if (pressed) {
       draw(cursor.x, cursor.y);
-    } else {
-      ctx.beginPath();
-    }
+      wasPrimaryGamepadButtonPressed = true;
+   } else {
+      wasPrimaryGamepadButtonPressed = false;
+   }
 
     requestAnimationFrame(activatePenOnGamepadButtonPress);
   }

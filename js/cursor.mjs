@@ -15,6 +15,7 @@ export function initializeCursor({ state }) {
 
   const canvas = getCursorCanvas();
   const cursor = state.get((prevState) => prevState.cursor);
+  let gamepadBlocked = state.get((prevState) => prevState.gamepadBlocked);
   const x = cursor.x;
   const y = cursor.y;
   let setCursorTimer = null;
@@ -52,6 +53,10 @@ export function initializeCursor({ state }) {
   let gamepadAccelerationInterval = null;
 
   function drawCursorOnGamepadMove() {
+    if (gamepadBlocked) {
+      return requestAnimationFrame(drawCursorOnGamepadMove);
+    }
+
     const gamepad = getGamepad(state);
 
     if (gamepad) {
@@ -74,6 +79,11 @@ export function initializeCursor({ state }) {
     requestAnimationFrame(drawCursorOnGamepadMove);
   }
 
+  function handleGamepadBlockedChange(nextState) {
+    gamepadBlocked = nextState.gamepadBlocked;
+  }
+
+  requestAnimationFrame(drawCursorOnGamepadMove);
   gamepadAccelerationInterval = window.setInterval(() => {
     const gamepad = getGamepad(state);
 
@@ -88,11 +98,12 @@ export function initializeCursor({ state }) {
     }
   }, 500);
 
-  requestAnimationFrame(drawCursorOnGamepadMove);
   canvas.addEventListener("mousemove", drawCursorOnMouseMove);
+  state.addListener(handleGamepadBlockedChange);
 
   return function dispose() {
     cancelAnimationFrame(drawCursorOnGamepadMove);
+    state.removeListener(handleGamepadBlockedChange);
     if (gamepadAccelerationInterval) {
       window.clearInterval(gamepadAccelerationInterval);
     }

@@ -18,6 +18,7 @@ export function createState() {
     gamepad: null,
     photoMemorized: false,
     blockedInteractions: false,
+    gamepadBlocked: false,
   };
 
   function addListener(callback) {

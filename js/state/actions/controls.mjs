@@ -3,3 +3,15 @@ export function setGamepadIndex(index, { state }) {
     gamepad: index,
   }));
 }
+
+export function blockGamepad({ state }) {
+  state.set(() => ({
+    gamepadBlocked: true,
+  }));
+}
+
+export function unblockGamepad({ state }) {
+  state.set(() => ({
+    gamepadBlocked: false,
+  }));
+}

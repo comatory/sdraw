@@ -1,5 +1,5 @@
 import { blockGamepad, unblockGamepad } from "../state/actions/controls.mjs";
-import { getGamepad, isGamepadButtonPressed } from "./gamepad.mjs";
+import { getGamepad, isGamepadDirectionPressed } from "./gamepad.mjs";
 
 const GAMEPAD_INTERACTION_POLLING_INTERVAL_IN_MS = 100;
 
@@ -23,7 +23,7 @@ export function attachGamepadBlockListeners(state) {
       return;
     }
 
-    if (isGamepadButtonPressed(gamepad)) {
+    if (isGamepadDirectionPressed(gamepad)) {
       unblockGamepad({ state });
     }
   }

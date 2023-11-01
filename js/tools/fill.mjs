@@ -1,4 +1,8 @@
 import { getCanvas, getCursorCanvas, showLoader, hideLoader } from "../dom.mjs";
+import {
+  getGamepad,
+  isPrimaryGamepadButtonPressed,
+} from "../controls/gamepad.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 import {
   blockInteractions,
@@ -86,6 +90,7 @@ function floodFill(ctx, x, y, fillColor, { state }) {
 export function activateFill({ state }) {
   const ctx = getCanvas().getContext("2d");
   const cursorCanvas = getCursorCanvas();
+  let frame = null;
 
   function shouldBlockInteractions() {
     return state.get((prevState) => prevState.blockedInteractions);
@@ -127,11 +132,17 @@ export function activateFill({ state }) {
   }
 
   function activateListeners() {
+    if (frame) {
+      cancelAnimationFrame(frame);
+    }
+
+    frame = requestAnimationFrame(activateFillOnGamepadButtonPress);
     cursorCanvas.addEventListener("click", mouseClick);
     window.addEventListener("keydown", keyDown);
   }
 
   function deactivateListeners() {
+    cancelAnimationFrame(frame);
     cursorCanvas.removeEventListener("click", mouseClick);
     window.removeEventListener("keydown", keyDown);
   }
@@ -148,8 +159,31 @@ export function activateFill({ state }) {
     }
   }
 
+  let wasPressed = false;
+  function activateFillOnGamepadButtonPress() {
+    const gamepad = getGamepad(state);
+
+    if (!gamepad) {
+      frame = requestAnimationFrame(activateFillOnGamepadButtonPress);
+      return;
+    }
+
+    const pressed = isPrimaryGamepadButtonPressed(gamepad);
+    const cursor = state.get((prevState) => prevState.cursor);
+    const color = state.get((prevState) => prevState.color);
+
+    if (pressed && !wasPressed && isWithinCanvasBounds(cursor.x, cursor.y)) {
+      wasPressed = true;
+      floodFill(ctx, cursor.x, cursor.y, hexToRGB(color), { state });
+    }
+
+    wasPressed = pressed;
+
+    frame = requestAnimationFrame(activateFillOnGamepadButtonPress);
+  }
+
   const blockedInteractions = state.get(
-    (prevState) => prevState.blockedInteractions,
+    (prevState) => prevState.blockedInteractions
   );
 
   if (blockedInteractions) {

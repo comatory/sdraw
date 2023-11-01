@@ -7,6 +7,7 @@ export function activatePen({ state, variant }) {
   let inProgress = false;
   let color = state.get((prevState) => prevState.color);
   let isHoldingSpacebar = false;
+  let frame = null;
 
   function draw(x, y) {
     ctx.lineWidth = variant.value;
@@ -61,7 +62,8 @@ export function activatePen({ state, variant }) {
     const gamepad = getGamepad(state);
 
     if (!gamepad) {
-      return requestAnimationFrame(activatePenOnGamepadButtonPress);
+      frame = requestAnimationFrame(activatePenOnGamepadButtonPress);
+      return;
     }
 
     const pressed = isPrimaryGamepadButtonPressed(gamepad);
@@ -78,12 +80,15 @@ export function activatePen({ state, variant }) {
       wasPrimaryGamepadButtonPressed = false;
    }
 
-    requestAnimationFrame(activatePenOnGamepadButtonPress);
+    frame = requestAnimationFrame(activatePenOnGamepadButtonPress);
   }
 
 
   function activateListeners() {
-    requestAnimationFrame(activatePenOnGamepadButtonPress);
+    if (frame) {
+      cancelAnimationFrame(frame);
+    }
+    frame = requestAnimationFrame(activatePenOnGamepadButtonPress);
     window.addEventListener("mousedown", mouseDown);
     window.addEventListener("mouseup", mouseUp);
     window.addEventListener("mousemove", mouseMove);
@@ -92,7 +97,7 @@ export function activatePen({ state, variant }) {
   }
 
   function deactivateListeners() {
-    cancelAnimationFrame(activatePenOnGamepadButtonPress);
+    cancelAnimationFrame(frame);
     window.removeEventListener("mousedown", mouseDown);
     window.removeEventListener("mouseup", mouseUp);
     window.removeEventListener("mousemove", mouseMove);
@@ -147,12 +152,10 @@ export function activatePen({ state, variant }) {
   state.addListener(updateColor);
   state.addListener(updatePath);
 
-  requestAnimationFrame(activatePenOnGamepadButtonPress);
-
   return function dispose() {
+    deactivateListeners();
     state.removeListener(onBlockInteractionsChange);
     state.removeListener(updateColor);
     state.removeListener(updatePath);
-    deactivateListeners();
   };
 }

@@ -50,3 +50,7 @@ export function createCursorFromGamepad(gamepad, prevCursor, multiplier) {
 export function isGamepadDirectionPressed(gamepad) {
   return gamepad.axes.slice(0, 3).some((axis) => Math.ceil(axis) !== 0);
 }
+
+export function isPrimaryGamepadButtonPressed(gamepad) {
+  return gamepad.buttons[2].pressed;
+}

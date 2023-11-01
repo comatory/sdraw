@@ -1,3 +1,4 @@
+import { getGamepad, isPrimaryGamepadButtonPressed } from "../controls/gamepad.mjs";
 import { getCanvas } from "../dom.mjs";
 
 const ctx = getCanvas().getContext("2d");
@@ -55,7 +56,30 @@ export function activatePen({ state, variant }) {
     ctx.beginPath();
   }
 
+  function activatePenOnGamepadButtonPress() {
+    const gamepad = getGamepad(state);
+
+    if (!gamepad) {
+      return requestAnimationFrame(activatePenOnGamepadButtonPress);
+    }
+
+    const pressed = isPrimaryGamepadButtonPressed(gamepad);
+    inProgress = pressed;
+
+    const cursor = state.get((prevState) => prevState.cursor);
+
+    if (pressed) {
+      draw(cursor.x, cursor.y);
+    } else {
+      ctx.beginPath();
+    }
+
+    requestAnimationFrame(activatePenOnGamepadButtonPress);
+  }
+
+
   function activateListeners() {
+    requestAnimationFrame(activatePenOnGamepadButtonPress);
     window.addEventListener("mousedown", mouseDown);
     window.addEventListener("mouseup", mouseUp);
     window.addEventListener("mousemove", mouseMove);
@@ -64,6 +88,7 @@ export function activatePen({ state, variant }) {
   }
 
   function deactivateListeners() {
+    cancelAnimationFrame(activatePenOnGamepadButtonPress);
     window.removeEventListener("mousedown", mouseDown);
     window.removeEventListener("mouseup", mouseUp);
     window.removeEventListener("mousemove", mouseMove);
@@ -117,6 +142,8 @@ export function activatePen({ state, variant }) {
 
   state.addListener(updateColor);
   state.addListener(updatePath);
+
+  requestAnimationFrame(activatePenOnGamepadButtonPress);
 
   return function dispose() {
     state.removeListener(onBlockInteractionsChange);

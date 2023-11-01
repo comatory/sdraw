@@ -63,6 +63,7 @@ export function initializeCursor({ state }) {
       prevGamepadCursor = gamepadCursor;
 
       drawCursor(gamepadCursor.x, gamepadCursor.y);
+      setCursor(gamepadCursor, { state });
 
       gamepadAccelerationMultiplier = Math.min(
         gamepadAccelerationMultiplier + 0.08,

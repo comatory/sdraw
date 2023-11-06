@@ -1,5 +1,6 @@
 import { getCanvas } from "../dom.mjs";
 import { TOOLS } from "../state/constants.mjs";
+import { getGamepad, isPrimaryGamepadButtonPressed } from "../controls/gamepad.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 import {
   createSvgDataUri,
@@ -27,6 +28,7 @@ function setSvgPathColor(svg, color) {
 
 export function activateStamp({ state }) {
   const ctx = getCanvas().getContext("2d");
+  let frame = null;
 
   function placeStamp({ x, y, svg, color }) {
     setSvgPathColor(svg, color);
@@ -111,11 +113,43 @@ export function activateStamp({ state }) {
     drawStamp(x, y, activeStamp);
   }
 
-  window.addEventListener("click", mouseClick);
-  window.addEventListener("keydown", keyDown);
+  function activateStampOnGamepadButtonPress() {
+    const gamepad = getGamepad(state);
 
-  return function dispose() {
+    if (!gamepad) {
+      frame = requestAnimationFrame(activateStampOnGamepadButtonPress);
+      return;
+    }
+
+    const pressed = isPrimaryGamepadButtonPressed(gamepad);
+    const cursor = state.get((prevState) => prevState.cursor);
+
+    if (pressed && isWithinCanvasBounds(cursor.x, cursor.y)) {
+      const activeStamp = state.get((prevState) =>
+        prevState.activatedVariants.get(TOOLS.STAMP.id),
+      );
+
+      drawStamp(cursor.x, cursor.y, activeStamp)
+    }
+
+    requestAnimationFrame(activateStampOnGamepadButtonPress);
+  }
+
+  function activateListeners() {
+    frame = requestAnimationFrame(activateStampOnGamepadButtonPress);
+    window.addEventListener("click", mouseClick);
+    window.addEventListener("keydown", keyDown);
+  }
+
+  function deactivateListeners() {
+    cancelAnimationFrame(frame);
     window.removeEventListener("click", mouseClick);
     window.removeEventListener("keydown", keyDown);
+  }
+
+  activateListeners();
+
+  return function dispose() {
+    deactivateListeners();
   };
 }

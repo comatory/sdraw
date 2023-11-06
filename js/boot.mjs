@@ -18,7 +18,7 @@ import { createState } from "./state/state.mjs";
 import { setTool, setColor } from "./state/actions/tool.mjs";
 import { setCursor } from "./state/actions/cursor.mjs";
 import { attachKeyboardListeners } from "./controls/keyboard.mjs";
-import { attachGamepadBlockListeners } from './controls/general.mjs';
+import { attachGamepadBlockListeners } from "./controls/general.mjs";
 import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
 

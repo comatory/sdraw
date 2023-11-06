@@ -168,7 +168,7 @@ export function activateFill({ state }) {
         Math.ceil(cursor.x),
         Math.ceil(cursor.y),
         hexToRGB(color),
-        { state }
+        { state },
       );
     }
 
@@ -178,7 +178,7 @@ export function activateFill({ state }) {
   }
 
   const blockedInteractions = state.get(
-    (prevState) => prevState.blockedInteractions
+    (prevState) => prevState.blockedInteractions,
   );
 
   if (blockedInteractions) {

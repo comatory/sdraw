@@ -1,4 +1,7 @@
-import { getGamepad, isPrimaryGamepadButtonPressed } from "../controls/gamepad.mjs";
+import {
+  getGamepad,
+  isPrimaryGamepadButtonPressed,
+} from "../controls/gamepad.mjs";
 import { getCanvas } from "../dom.mjs";
 
 const ctx = getCanvas().getContext("2d");
@@ -76,13 +79,12 @@ export function activatePen({ state, variant }) {
     if (pressed) {
       draw(cursor.x, cursor.y);
       wasPrimaryGamepadButtonPressed = true;
-   } else {
+    } else {
       wasPrimaryGamepadButtonPressed = false;
-   }
+    }
 
     frame = requestAnimationFrame(activatePenOnGamepadButtonPress);
   }
-
 
   function activateListeners() {
     if (frame) {

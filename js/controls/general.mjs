@@ -28,7 +28,10 @@ export function attachGamepadBlockListeners(state) {
     }
   }
 
-  window.setInterval(checkGamepadInteraction, GAMEPAD_INTERACTION_POLLING_INTERVAL_IN_MS);
+  window.setInterval(
+    checkGamepadInteraction,
+    GAMEPAD_INTERACTION_POLLING_INTERVAL_IN_MS,
+  );
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("mousemove", handleMouseMove);

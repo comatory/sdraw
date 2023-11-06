@@ -1,6 +1,9 @@
 import { getCanvas } from "../dom.mjs";
 import { TOOLS } from "../state/constants.mjs";
-import { getGamepad, isPrimaryGamepadButtonPressed } from "../controls/gamepad.mjs";
+import {
+  getGamepad,
+  isPrimaryGamepadButtonPressed,
+} from "../controls/gamepad.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
 import {
   createSvgDataUri,
@@ -117,7 +120,7 @@ export function activateStamp({ state }) {
     const gamepad = getGamepad(state);
 
     if (!gamepad) {
-      frame = requestAnimationFrame(activateStampOnGamepadButtonPress);
+      requestGamepadAnimationFrame();
       return;
     }
 
@@ -129,20 +132,34 @@ export function activateStamp({ state }) {
         prevState.activatedVariants.get(TOOLS.STAMP.id),
       );
 
-      drawStamp(cursor.x, cursor.y, activeStamp)
+      drawStamp(cursor.x, cursor.y, activeStamp);
     }
 
-    requestAnimationFrame(activateStampOnGamepadButtonPress);
+    requestGamepadAnimationFrame();
+  }
+
+  function requestGamepadAnimationFrame() {
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = null;
+    }
+
+    frame = requestAnimationFrame(activateStampOnGamepadButtonPress);
+  }
+
+  function cancelGamepadAnimationFrame() {
+    cancelAnimationFrame(frame);
+    frame = null;
   }
 
   function activateListeners() {
-    frame = requestAnimationFrame(activateStampOnGamepadButtonPress);
+    requestGamepadAnimationFrame();
     window.addEventListener("click", mouseClick);
     window.addEventListener("keydown", keyDown);
   }
 
   function deactivateListeners() {
-    cancelAnimationFrame(frame);
+    cancelGamepadAnimationFrame();
     window.removeEventListener("click", mouseClick);
     window.removeEventListener("keydown", keyDown);
   }

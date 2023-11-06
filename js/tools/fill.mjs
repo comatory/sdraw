@@ -120,17 +120,13 @@ export function activateFill({ state }) {
   }
 
   function activateListeners() {
-    if (frame) {
-      cancelAnimationFrame(frame);
-    }
-
-    frame = requestAnimationFrame(activateFillOnGamepadButtonPress);
+    requestGamepadAnimationFrame();
     cursorCanvas.addEventListener("click", mouseClick);
     window.addEventListener("keydown", keyDown);
   }
 
   function deactivateListeners() {
-    cancelAnimationFrame(frame);
+    cancelGamepadAnimationFrame();
     cursorCanvas.removeEventListener("click", mouseClick);
     window.removeEventListener("keydown", keyDown);
   }
@@ -152,7 +148,7 @@ export function activateFill({ state }) {
     const gamepad = getGamepad(state);
 
     if (!gamepad) {
-      frame = requestAnimationFrame(activateFillOnGamepadButtonPress);
+      requestGamepadAnimationFrame();
       return;
     }
 
@@ -174,7 +170,21 @@ export function activateFill({ state }) {
 
     wasPressed = pressed;
 
+    requestGamepadAnimationFrame();
+  }
+
+  function requestGamepadAnimationFrame() {
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = null;
+    }
+
     frame = requestAnimationFrame(activateFillOnGamepadButtonPress);
+  }
+
+  function cancelGamepadAnimationFrame() {
+    cancelAnimationFrame(frame);
+    frame = null;
   }
 
   const blockedInteractions = state.get(
@@ -190,7 +200,7 @@ export function activateFill({ state }) {
   state.addListener(onBlockInteractionsChange);
 
   return function dispose() {
-    state.removeListener(onBlockInteractionsChange);
     deactivateListeners();
+    state.removeListener(onBlockInteractionsChange);
   };
 }

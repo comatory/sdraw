@@ -65,7 +65,7 @@ export function activatePen({ state, variant }) {
     const gamepad = getGamepad(state);
 
     if (!gamepad) {
-      frame = requestAnimationFrame(activatePenOnGamepadButtonPress);
+      requestGamepadAnimationFrame();
       return;
     }
 
@@ -83,14 +83,25 @@ export function activatePen({ state, variant }) {
       wasPrimaryGamepadButtonPressed = false;
     }
 
+    requestGamepadAnimationFrame();
+  }
+
+  function requestGamepadAnimationFrame() {
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = null;
+    }
+
     frame = requestAnimationFrame(activatePenOnGamepadButtonPress);
   }
 
+  function cancelGamepadAnimationFrame() {
+    cancelAnimationFrame(frame);
+    frame = null;
+  }
+
   function activateListeners() {
-    if (frame) {
-      cancelAnimationFrame(frame);
-    }
-    frame = requestAnimationFrame(activatePenOnGamepadButtonPress);
+    requestGamepadAnimationFrame();
     window.addEventListener("mousedown", mouseDown);
     window.addEventListener("mouseup", mouseUp);
     window.addEventListener("mousemove", mouseMove);
@@ -99,7 +110,7 @@ export function activatePen({ state, variant }) {
   }
 
   function deactivateListeners() {
-    cancelAnimationFrame(frame);
+    cancelGamepadAnimationFrame();
     window.removeEventListener("mousedown", mouseDown);
     window.removeEventListener("mouseup", mouseUp);
     window.removeEventListener("mousemove", mouseMove);
@@ -122,8 +133,6 @@ export function activatePen({ state, variant }) {
   const blockInteractions = state.get(
     (prevState) => prevState.blockedInteractions,
   );
-
-  state.addListener(onBlockInteractionsChange);
 
   if (blockInteractions) {
     deactivateListeners();
@@ -151,6 +160,7 @@ export function activatePen({ state, variant }) {
     draw(nextState.cursor.x, nextState.cursor.y);
   }
 
+  state.addListener(onBlockInteractionsChange);
   state.addListener(updateColor);
   state.addListener(updatePath);
 

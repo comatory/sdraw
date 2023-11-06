@@ -27,7 +27,7 @@ function readUploadedSVG(event, fileInput) {
   const fileReader = new FileReader();
   fileReader.addEventListener("load", (fileEvent) => {
     const parsedSvgElement = deserializeSvgFromDataURI(
-      fileEvent.srcElement.result,
+      fileEvent.srcElement.result
     );
     const iconSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
     const stampSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
@@ -40,7 +40,7 @@ function readUploadedSVG(event, fileInput) {
           iconDataUri: createSvgDataUri(serializeSvg(iconSvgElement)),
           dataUri: createSvgDataUri(serializeSvg(stampSvgElement)),
         },
-      }),
+      })
     );
   });
   fileReader.addEventListener("error", () => {
@@ -77,7 +77,7 @@ function customStampOnClick({ tool, variant, state }) {
     };
     updateActivatedButton(
       getPanelToolVariants(),
-      updatedVariant.id.description,
+      updatedVariant.id.description
     );
     setTool(tool, { state, variant: updatedVariant });
     setCustomVariant(tool, updatedVariant, { state });
@@ -95,20 +95,77 @@ function defaultOnClick({ tool, variant, state }) {
   updateActivatedButton(getPanelToolVariants(), variant.id.description);
 }
 
+function getVariantButtons(container) {
+  return Array.from(container.querySelectorAll("button"));
+}
+
+function attachKeyboardListeners(container, tool, { state }) {
+  const buttons = getVariantButtons(container);
+
+  // do not bubble event to avoid clicks on canvas
+  function dispatchButtonClick(element) {
+    element.dispatchEvent(
+      new MouseEvent("click", {
+        view: window,
+        bubbles: false,
+      })
+    );
+  }
+
+  function onKeyDown(event) {
+    const activatedVariant = state.get((prevState) =>
+      prevState.activatedVariants.get(tool.id)
+    );
+
+    const index = buttons.findIndex(
+      (button) => button.dataset.value === activatedVariant.id.description
+    );
+
+    if (index === -1) {
+      return;
+    }
+
+    switch (event.key) {
+      case ".": {
+        const nextButton =
+          index + 1 < buttons.length ? buttons[index + 1] : buttons[0];
+        dispatchButtonClick(nextButton);
+        break;
+      }
+      case ",": {
+        const prevButton =
+          index - 1 >= 0 ? buttons[index - 1] : buttons[buttons.length - 1];
+        dispatchButtonClick(prevButton);
+        break;
+      }
+      default:
+        return;
+    }
+  }
+
+  window.addEventListener("keydown", onKeyDown);
+
+  return function dispose() {
+    window.removeEventListener("keydown", onKeyDown);
+  };
+}
+
 function renderToolVariants(tool, state) {
   const variantsContainer = getPanelToolVariants();
 
   const listeners = {};
 
   const activatedVariant = state.get((prevState) =>
-    prevState.activatedVariants.get(tool.id),
+    prevState.activatedVariants.get(tool.id)
   );
 
   const customVariants = state.get(
-    (prevState) => prevState.customVariants.get(tool.id) ?? new Set(),
+    (prevState) => prevState.customVariants.get(tool.id) ?? new Set()
   );
 
-  [...tool.variants, ...customVariants].forEach((variant) => {
+  const allVariants = [...tool.variants, ...customVariants];
+
+  allVariants.forEach((variant) => {
     const button = document.createElement("button");
 
     function onClick() {
@@ -134,7 +191,7 @@ function renderToolVariants(tool, state) {
 
     if (isDataUri(variant.iconUrl)) {
       button.innerHTML = serializeSvg(
-        deserializeSvgFromDataURI(variant.iconUrl),
+        deserializeSvgFromDataURI(variant.iconUrl)
       );
     } else {
       loadIcon(variant.iconUrl)
@@ -156,14 +213,19 @@ function renderToolVariants(tool, state) {
     listeners[button.dataset.value] = onClick;
   });
 
-  return function dispose() {
-    Array.from(variantsContainer.querySelectorAll("button")).forEach(
-      (button) => {
-        disposeCallback(button, listeners);
+  const keyboardListenersDisposeCallback = attachKeyboardListeners(
+    variantsContainer,
+    tool,
+    { state }
+  );
 
-        button.remove();
-      },
-    );
+  return function dispose() {
+    keyboardListenersDisposeCallback();
+    getVariantButtons(variantsContainer).forEach((button) => {
+      disposeCallback(button, listeners);
+
+      button.remove();
+    });
 
     ensureCallbacksRemoved(listeners);
 

@@ -26,6 +26,7 @@ The cursor can be controlled with mouse, keyboard or gamepad. You can install th
 - `ENTER` for selecting buttons (tools, colors ...)
 - `SPACE` for activating tool (to draw with pen, you need to hold it)
 - `a`, `z` for cycling between colors
+- `,`, `.` for cycling between tool variants
 - `p` activate pen tool
 - `f` activate bucket tool
 - `c` activate photo capture

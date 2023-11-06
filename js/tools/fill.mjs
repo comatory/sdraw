@@ -92,15 +92,7 @@ export function activateFill({ state }) {
   const cursorCanvas = getCursorCanvas();
   let frame = null;
 
-  function shouldBlockInteractions() {
-    return state.get((prevState) => prevState.blockedInteractions);
-  }
-
   function mouseClick(event) {
-    if (shouldBlockInteractions()) {
-      return;
-    }
-
     const color = state.get((prevState) => prevState.color);
     const x = event.clientX;
     const y = event.clientY;
@@ -113,10 +105,6 @@ export function activateFill({ state }) {
   }
 
   function keyDown(event) {
-    if (shouldBlockInteractions()) {
-      return;
-    }
-
     if (event.code !== "Space") {
       return;
     }
@@ -170,11 +158,18 @@ export function activateFill({ state }) {
 
     const pressed = isPrimaryGamepadButtonPressed(gamepad);
     const cursor = state.get((prevState) => prevState.cursor);
-    const color = state.get((prevState) => prevState.color);
 
     if (pressed && !wasPressed && isWithinCanvasBounds(cursor.x, cursor.y)) {
+      const color = state.get((prevState) => prevState.color);
       wasPressed = true;
-      floodFill(ctx, cursor.x, cursor.y, hexToRGB(color), { state });
+      floodFill(
+        ctx,
+        // cursor values need to be rounded due to algorithm used
+        Math.ceil(cursor.x),
+        Math.ceil(cursor.y),
+        hexToRGB(color),
+        { state }
+      );
     }
 
     wasPressed = pressed;

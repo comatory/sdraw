@@ -42,16 +42,6 @@ export function createToolPanel({ state }) {
     button.addEventListener(
       "click",
       () => {
-        if (disposeVariantsCallback) {
-          disposeVariantsCallback();
-          disposeVariantsCallback = null;
-        }
-
-        if (disposeActionsCallback) {
-          disposeActionsCallback();
-          disposeActionsCallback = null;
-        }
-
         setTool(tool, { state });
       },
       true,

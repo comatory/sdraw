@@ -3,6 +3,11 @@ import { TOOLS } from "../state/constants.mjs";
 import { isDataUri } from "../state/utils.mjs";
 import { getPanelToolVariants } from "../dom.mjs";
 import {
+  isLeftTriggerGamepadButtonPressed,
+  isRightTriggerGamepadButtonPressed,
+  getGamepad,
+} from "../controls/gamepad.mjs";
+import {
   loadIcon,
   disposeCallback,
   ensureCallbacksRemoved,
@@ -14,6 +19,8 @@ import {
   deserializeSvgFromDataURI,
   normalizeSvgSize,
 } from "../svg-utils.mjs";
+
+const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
 
 function readUploadedSVG(event, fileInput) {
   const file = event.target.files[0];
@@ -99,27 +106,104 @@ function getVariantButtons(container) {
   return Array.from(container.querySelectorAll("button"));
 }
 
+// do not bubble event to avoid clicks on canvas
+function dispatchButtonClick(element) {
+  element.dispatchEvent(
+    new MouseEvent("click", {
+      view: window,
+      bubbles: false,
+    }),
+  );
+}
+
+function getNextButton(buttons, index) {
+  return index + 1 < buttons.length ? buttons[index + 1] : buttons[0];
+}
+
+function getPreviousButton(buttons, index) {
+  return index - 1 >= 0 ? buttons[index - 1] : buttons[buttons.length - 1];
+}
+
+function getButtonIndex(buttons, { state, tool }) {
+  const activatedVariant = state.get((prevState) =>
+    prevState.activatedVariants.get(tool.id),
+  );
+
+  const index = buttons.findIndex(
+    (button) => button.dataset.value === activatedVariant.id.description,
+  );
+
+  return index;
+}
+
+function attachGamepadListeners(container, tool, { state }) {
+  let frame = null;
+  let buttonPressedTimestamp = null;
+
+  function activateVariantCycleOnShoulderButtonPresses(timestamp) {
+    const gamepad = getGamepad(state);
+
+    if (!gamepad) {
+      requestGamepadAnimationFrame();
+      return;
+    }
+
+    const buttonPressedDelta = timestamp - buttonPressedTimestamp;
+
+    const index = getButtonIndex(getVariantButtons(container), {
+      state,
+      tool,
+    });
+
+    if (index === -1) {
+      return;
+    }
+
+    if (
+      isLeftTriggerGamepadButtonPressed(gamepad) &&
+      buttonPressedDelta > GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS
+    ) {
+      const prevButton = getPreviousButton(getVariantButtons(container), index);
+      dispatchButtonClick(prevButton);
+      buttonPressedTimestamp = timestamp;
+    } else if (
+      isRightTriggerGamepadButtonPressed(gamepad) &&
+      buttonPressedDelta > GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS
+    ) {
+      const nextButton = getNextButton(getVariantButtons(container), index);
+      dispatchButtonClick(nextButton);
+      buttonPressedTimestamp = timestamp;
+    }
+
+    requestGamepadAnimationFrame();
+  }
+
+  function requestGamepadAnimationFrame() {
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = null;
+    }
+
+    frame = requestAnimationFrame(activateVariantCycleOnShoulderButtonPresses);
+  }
+
+  function cancelGamepadAnimationFrame() {
+    cancelAnimationFrame(frame);
+    frame = null;
+  }
+
+  requestGamepadAnimationFrame();
+
+  return function dispose() {
+    cancelGamepadAnimationFrame();
+  };
+}
+
 function attachKeyboardListeners(container, tool, { state }) {
   const buttons = getVariantButtons(container);
 
-  // do not bubble event to avoid clicks on canvas
-  function dispatchButtonClick(element) {
-    element.dispatchEvent(
-      new MouseEvent("click", {
-        view: window,
-        bubbles: false,
-      }),
-    );
-  }
-
   function onKeyDown(event) {
-    const activatedVariant = state.get((prevState) =>
-      prevState.activatedVariants.get(tool.id),
-    );
-
-    const index = buttons.findIndex(
-      (button) => button.dataset.value === activatedVariant.id.description,
-    );
+    const index = getButtonIndex(buttons, { state, tool });
 
     if (index === -1) {
       return;
@@ -127,14 +211,12 @@ function attachKeyboardListeners(container, tool, { state }) {
 
     switch (event.key) {
       case ".": {
-        const nextButton =
-          index + 1 < buttons.length ? buttons[index + 1] : buttons[0];
+        const nextButton = getNextButton(buttons, index);
         dispatchButtonClick(nextButton);
         break;
       }
       case ",": {
-        const prevButton =
-          index - 1 >= 0 ? buttons[index - 1] : buttons[buttons.length - 1];
+        const prevButton = getPreviousButton(buttons, index);
         dispatchButtonClick(prevButton);
         break;
       }
@@ -218,12 +300,18 @@ function renderToolVariants(tool, state) {
     tool,
     { state },
   );
+  const gamepadListenersDisposeCallback = attachGamepadListeners(
+    variantsContainer,
+    tool,
+    { state },
+  );
 
   return function dispose() {
     keyboardListenersDisposeCallback();
+    gamepadListenersDisposeCallback();
+
     getVariantButtons(variantsContainer).forEach((button) => {
       disposeCallback(button, listeners);
-
       button.remove();
     });
 

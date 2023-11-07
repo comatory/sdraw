@@ -1,3 +1,7 @@
+import {
+  getGamepad,
+  isPrimaryGamepadButtonPressed,
+} from "../controls/gamepad.mjs";
 import { getPanel } from "../dom.mjs";
 
 function isCursorWithinPanelBounds(x, y, rect) {
@@ -45,11 +49,13 @@ function activatePanelButtonOnCoordinates(x, y) {
   button.dispatchEvent(clickEvent);
 }
 
-export function attachPanelListeners({ state }) {
+function attachMouseListeners() {
   window.addEventListener("click", (event) => {
     activatePanelButtonOnCoordinates(event.clientX, event.clientY);
   });
+}
 
+function attachKeyboardListeners(state) {
   window.addEventListener("keydown", (event) => {
     if (event.key !== "Enter") {
       return;
@@ -59,4 +65,114 @@ export function attachPanelListeners({ state }) {
 
     activatePanelButtonOnCoordinates(cursor.x, cursor.y);
   });
+}
+
+function attachGamepadListeners(state) {
+  let frame = null;
+  let wasPressed = false;
+
+  function activateButtonPressOnPrimaryGamepadButtonPress() {
+    const gamepad = getGamepad(state);
+
+    if (!gamepad) {
+      requestGamepadAnimationFrame();
+      return;
+    }
+
+    const pressed = isPrimaryGamepadButtonPressed(gamepad);
+    const cursor = state.get((prevState) => prevState.cursor);
+
+    if (pressed && !wasPressed) {
+      wasPressed = true;
+      activatePanelButtonOnCoordinates(cursor.x, cursor.y);
+    } else if (!pressed) {
+      wasPressed = false;
+    }
+
+    requestGamepadAnimationFrame();
+  }
+
+  function requestGamepadAnimationFrame() {
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = null;
+    }
+
+    frame = requestAnimationFrame(
+      activateButtonPressOnPrimaryGamepadButtonPress,
+    );
+  }
+
+  function cancelGamepadAnimationFrame() {
+    cancelAnimationFrame(frame);
+    frame = null;
+  }
+
+  requestGamepadAnimationFrame();
+
+  return function dispose() {
+    cancelGamepadAnimationFrame();
+  };
+}
+
+export function attachPanelListeners({ state }) {
+  let disposeMouseListenersCallback = null;
+  let disposeKeyboardListenersCallback = null;
+  let disposeGamepadListenersCallback = null;
+
+  function activateListeners() {
+    if (disposeMouseListenersCallback) {
+      disposeMouseListenersCallback();
+      disposeMouseListenersCallback = null;
+    }
+
+    disposeMouseListenersCallback = attachMouseListeners();
+
+    if (disposeKeyboardListenersCallback) {
+      disposeKeyboardListenersCallback();
+      disposeKeyboardListenersCallback = null;
+    }
+
+    disposeKeyboardListenersCallback = attachKeyboardListeners(state);
+
+    if (disposeGamepadListenersCallback) {
+      disposeGamepadListenersCallback();
+      disposeGamepadListenersCallback = null;
+    }
+
+    disposeGamepadListenersCallback = attachGamepadListeners(state);
+  }
+
+  function deactivateListeners() {
+    if (disposeMouseListenersCallback) {
+      disposeMouseListenersCallback();
+      disposeMouseListenersCallback = null;
+    }
+
+    if (disposeKeyboardListenersCallback) {
+      disposeKeyboardListenersCallback();
+      disposeKeyboardListenersCallback = null;
+    }
+
+    if (disposeGamepadListenersCallback) {
+      disposeGamepadListenersCallback();
+      disposeGamepadListenersCallback = null;
+    }
+  }
+
+  function onBlockedInteractionsChange(nextState, prevState) {
+    if (nextState.blockedInteractions === prevState.blockedInteractions) {
+      return;
+    }
+
+    if (nextState.blockedInteractions) {
+      deactivateListeners();
+    } else {
+      activateListeners();
+    }
+  }
+
+  state.addListener(onBlockedInteractionsChange);
+
+  activateListeners();
 }

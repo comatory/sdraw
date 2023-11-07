@@ -6,6 +6,7 @@ const CURSOR_SIZE = 20;
 
 export function drawCursor(x, y) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  const half = CURSOR_SIZE / 2;
 
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
@@ -17,7 +18,16 @@ export function drawCursor(x, y) {
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo(x + CURSOR_SIZE / 2, y - CURSOR_SIZE / 2);
-  ctx.lineTo(x + CURSOR_SIZE / 2, y + CURSOR_SIZE / 2);
+  ctx.moveTo(x + half, y - half);
+  ctx.lineTo(x + half, y + half);
   ctx.stroke();
+
+  ctx.closePath();
+
+  ctx.moveTo(x + half, y + half);
+  ctx.strokeStyle = COLOR.WHITE;
+  ctx.fillStyle = COLOR.WHITE;
+  ctx.beginPath();
+  ctx.arc(x + half, y, 3, 0, Math.PI * 2);
+  ctx.fill();
 }

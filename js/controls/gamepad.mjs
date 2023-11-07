@@ -1,5 +1,10 @@
 import { setGamepadIndex } from "../state/actions/controls.mjs";
 
+// Chrome swaps gamepad axes so need to handle it
+function isChrome() {
+  return navigator.userAgent.indexOf("Chrome") !== -1;
+}
+
 export function attachGamepadListeners(state) {
   window.addEventListener("gamepadconnected", (event) => {
     setGamepadIndex(event.gamepad.index, { state });
@@ -22,22 +27,27 @@ export function getGamepad(state) {
 
 export function createCursorFromGamepad(gamepad, prevCursor, multiplier) {
   const nextCursor = { x: 0, y: 0 };
+  const isChromeBrowser = isChrome();
 
-  const axis1 = gamepad.axes[0];
-  const axis2 = gamepad.axes[1];
-  const axis3 = gamepad.axes[2];
-  const axis4 = gamepad.axes[3];
+  const axis1 = isChromeBrowser ? gamepad.axes[1] : gamepad.axes[0];
+  const axis2 = isChromeBrowser ? gamepad.axes[0] : gamepad.axes[1];
+  const axis3 = isChromeBrowser ? null : gamepad.axes[2];
+  const axis4 = isChromeBrowser ? null : gamepad.axes[3];
 
   if (Math.ceil(axis1) !== 0) {
-    nextCursor.y -= axis1 * multiplier;
+    if (isChromeBrowser) {
+      nextCursor.y += axis1 * multiplier;
+    } else {
+      nextCursor.y -= axis1 * multiplier;
+    }
   }
   if (Math.ceil(axis2) !== 0) {
     nextCursor.x += axis2 * multiplier;
   }
-  if (Math.ceil(axis3) !== 0) {
+  if (Number.isFinite(axis3) && Math.ceil(axis3) !== 0) {
     nextCursor.y += axis3 * multiplier;
   }
-  if (Math.ceil(axis4) !== 0) {
+  if (Number.isFinite(axis4) && Math.ceil(axis4) !== 0) {
     nextCursor.x += axis4 * multiplier;
   }
 
@@ -48,6 +58,9 @@ export function createCursorFromGamepad(gamepad, prevCursor, multiplier) {
 }
 
 export function isGamepadDirectionPressed(gamepad) {
+  if (isChrome()) {
+    return gamepad.axes.slice(0, 2).some((axis) => Math.ceil(axis) !== 0);
+  }
   return gamepad.axes.slice(0, 3).some((axis) => Math.ceil(axis) !== 0);
 }
 

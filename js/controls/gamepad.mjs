@@ -63,6 +63,14 @@ export function isLeftShoulderGamepadButtonPressed(gamepad) {
   return gamepad.buttons[4].pressed;
 }
 
+export function isRightTriggerGamepadButtonPressed(gamepad) {
+  return gamepad.buttons[7].pressed;
+}
+
+export function isLeftTriggerGamepadButtonPressed(gamepad) {
+  return gamepad.buttons[6].pressed;
+}
+
 export function isGamepadButtonPressed(gamepad) {
   return gamepad.buttons.some((button) => button.pressed);
 }

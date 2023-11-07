@@ -35,7 +35,8 @@ The cursor can be controlled with mouse, keyboard or gamepad. You can install th
 ### Gamepad
 
 - D-PAD for movement
-- A button for selecting buttons and activating tool
+- A button for selecting buttons and activating tool (hold for repeatedly activating it, e.g. drawing with pen)
+- Right shoulder button / Left shoulder button - for cycling between colors
 
 ## Installation
 

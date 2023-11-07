@@ -27,7 +27,7 @@ function readUploadedSVG(event, fileInput) {
   const fileReader = new FileReader();
   fileReader.addEventListener("load", (fileEvent) => {
     const parsedSvgElement = deserializeSvgFromDataURI(
-      fileEvent.srcElement.result
+      fileEvent.srcElement.result,
     );
     const iconSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
     const stampSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
@@ -40,7 +40,7 @@ function readUploadedSVG(event, fileInput) {
           iconDataUri: createSvgDataUri(serializeSvg(iconSvgElement)),
           dataUri: createSvgDataUri(serializeSvg(stampSvgElement)),
         },
-      })
+      }),
     );
   });
   fileReader.addEventListener("error", () => {
@@ -77,7 +77,7 @@ function customStampOnClick({ tool, variant, state }) {
     };
     updateActivatedButton(
       getPanelToolVariants(),
-      updatedVariant.id.description
+      updatedVariant.id.description,
     );
     setTool(tool, { state, variant: updatedVariant });
     setCustomVariant(tool, updatedVariant, { state });
@@ -108,17 +108,17 @@ function attachKeyboardListeners(container, tool, { state }) {
       new MouseEvent("click", {
         view: window,
         bubbles: false,
-      })
+      }),
     );
   }
 
   function onKeyDown(event) {
     const activatedVariant = state.get((prevState) =>
-      prevState.activatedVariants.get(tool.id)
+      prevState.activatedVariants.get(tool.id),
     );
 
     const index = buttons.findIndex(
-      (button) => button.dataset.value === activatedVariant.id.description
+      (button) => button.dataset.value === activatedVariant.id.description,
     );
 
     if (index === -1) {
@@ -156,11 +156,11 @@ function renderToolVariants(tool, state) {
   const listeners = {};
 
   const activatedVariant = state.get((prevState) =>
-    prevState.activatedVariants.get(tool.id)
+    prevState.activatedVariants.get(tool.id),
   );
 
   const customVariants = state.get(
-    (prevState) => prevState.customVariants.get(tool.id) ?? new Set()
+    (prevState) => prevState.customVariants.get(tool.id) ?? new Set(),
   );
 
   const allVariants = [...tool.variants, ...customVariants];
@@ -191,7 +191,7 @@ function renderToolVariants(tool, state) {
 
     if (isDataUri(variant.iconUrl)) {
       button.innerHTML = serializeSvg(
-        deserializeSvgFromDataURI(variant.iconUrl)
+        deserializeSvgFromDataURI(variant.iconUrl),
       );
     } else {
       loadIcon(variant.iconUrl)
@@ -216,7 +216,7 @@ function renderToolVariants(tool, state) {
   const keyboardListenersDisposeCallback = attachKeyboardListeners(
     variantsContainer,
     tool,
-    { state }
+    { state },
   );
 
   return function dispose() {

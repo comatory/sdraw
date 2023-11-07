@@ -1,8 +1,4 @@
-import {
-  setTool,
-  setNextColor,
-  setPreviousColor,
-} from "../state/actions/tool.mjs";
+import { setTool } from "../state/actions/tool.mjs";
 import { moveCursor } from "../state/actions/cursor.mjs";
 import { TOOLS } from "../state/constants.mjs";
 
@@ -83,10 +79,6 @@ export function attachKeyboardListeners(state) {
       setTool(TOOLS.CAM, { state });
     } else if (event.key === "s") {
       setTool(TOOLS.STAMP, { state });
-    } else if (event.key === "a") {
-      setNextColor({ state });
-    } else if (event.key === "z") {
-      setPreviousColor({ state });
     }
 
     if (

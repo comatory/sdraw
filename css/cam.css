@@ -16,7 +16,7 @@
   left: 0px;
   width: 100vw;
   height: 100vh;
-  z-index: 100;
+  z-index: var(--z-index-cam);
   border: 10px solid red;
   background-color: transparent;
   animation:

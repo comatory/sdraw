@@ -8,7 +8,7 @@
 #cursor {
   display: block;
   cursor: none;
-  z-index: 1;
+  z-index: var(--z-index-canvas);
   background: transparent;
   position: absolute;
   top: 0px;

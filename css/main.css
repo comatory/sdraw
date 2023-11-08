@@ -3,9 +3,16 @@
 @import url("./cam.css");
 @import url("./loader.css");
 @import url("./dialog.css");
+@import url("./toast.css");
 
 * {
   box-sizing: border-box;
+}
+
+:root {
+  --z-index-canvas: 1;
+  --z-index-cam: 2;
+  --z-index-toast: 3;
 }
 
 html,

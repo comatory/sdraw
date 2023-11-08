@@ -1,5 +1,5 @@
 const STATIC_CACHE_NAME = "static";
-const STATIC_CACHE_VERSION = "v30";
+const STATIC_CACHE_VERSION = "v37";
 const STATIC_CACHE_ID = `${STATIC_CACHE_NAME}-${STATIC_CACHE_VERSION}`;
 
 // All the files need to be added here manually. I want to avoid
@@ -41,6 +41,7 @@ const STATIC_ASSETS = [
   "js/ui/global.mjs",
   "js/ui/panel.mjs",
   "js/ui/tools.mjs",
+  "js/ui/toast.mjs",
   "js/ui/utils.mjs",
   "js/ui/variants.mjs",
 
@@ -51,6 +52,7 @@ const STATIC_ASSETS = [
   "css/loader.css",
   "css/main.css",
   "css/panel.css",
+  "css/toast.css",
 
   /* Images */
   "img/logo.png",
@@ -142,6 +144,23 @@ function handleCacheUpdateError(error) {
   return Promise.reject(error);
 }
 
+function handleMessage(event) {
+  const type = event.data.type;
+
+  if (!type) {
+    return;
+  }
+
+  switch (type) {
+    case "SKIP_WAITING": {
+      self.skipWaiting();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 addEventListener("install", function onInstall(event) {
   console.log("Installing service worker");
 
@@ -166,3 +185,4 @@ addEventListener("activate", function onActivate(event) {
 });
 
 addEventListener("fetch", onFetch);
+addEventListener("message", handleMessage);

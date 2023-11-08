@@ -1,0 +1,28 @@
+#upgrade-toast {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  z-index: var(--z-index-toast);
+  transform: translateX(-50%);
+  width: 300px;
+  border: 2px solid silver;
+  border-radius: 6px;
+  background-color: gainsboro;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: top 0.5s ease-in-out;
+}
+
+#upgrade-toast[aria-hidden="true"] {
+  top: -100%;
+}
+
+#upgrade-toast[aria-hidden="false"] {
+  top: 10px;
+}
+
+#upgrade-toast h3 {
+  margin-top: 0px;
+}

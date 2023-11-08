@@ -7,22 +7,46 @@
     <title>sdraw</title>
     <script type="module" src="./index.mjs"></script>
     <link rel="stylesheet" href="./css/main.css" />
-    <script>
+    <script type="module">
+      import { showUpgradeToast } from "./js/ui/toast.mjs";
+
       function loadServiceWorker() {
-        navigator.serviceWorker
+        return navigator.serviceWorker
           .register("./service-worker.js")
           .then((registration) => {
             console.info(
               `Service worker registered with scope: ${registration.scope}`,
             );
+
+            return registration;
           })
           .catch((error) => {
             console.error(error);
           });
       }
 
+      function checkServiceWorkerUpdate(registration) {
+        if (registration.waiting) {
+          showUpgradeToast(registration);
+        }
+
+        registration.addEventListener("updatefound", () => {
+          if (!registration.installing) {
+            return;
+          }
+
+          registration.installing.addEventListener("statechange", () => {
+            if (!registration.waiting || !navigator.serviceWorker.controller) {
+              return;
+            }
+
+            showUpgradeToast(registration);
+          });
+        });
+      }
+
       if (navigator.serviceWorker) {
-        loadServiceWorker();
+        loadServiceWorker().then(checkServiceWorkerUpdate);
       } else {
         console.warn("Service worker is not supported by this browser");
       }
@@ -30,6 +54,13 @@
   </head>
   <body>
     <div id="loader"><span id="loader-indicators">...</span></div>
+    <div id="upgrade-toast" aria-hidden="true" role="alert">
+      <h3>New version available</h3>
+      <section class="row">
+        <button id="upgrade">Upgrade</button>
+        <button id="dismiss-upgrade">Close</button>
+      </section>
+    </div>
     <canvas id="cursor"> </canvas>
     <video id="cam">Video stream not available</video>
     <main>

@@ -2,6 +2,7 @@
   --button-size: 40px;
   --button-space: 8px;
   --panel-height: 180px;
+  --panel-spacing: 8px;
 }
 
 #panel {
@@ -10,7 +11,19 @@
   width: 100%;
   background-color: gainsboro;
   box-shadow: inset 0px 4px 0px silver;
-  padding: 12px 8px 8px 8px;
+  padding: var(--panel-spacing);
+  padding-top: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+#left-panel-column {
+  flex: 1;
+}
+
+#right-panel-column {
+  flex: 0;
 }
 
 .panel-row {
@@ -43,4 +56,12 @@
 
 #actions {
   margin-left: 32px;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  #right-panel-column {
+    position: absolute;
+    bottom: 0px;
+    right: var(--panel-spacing);
+  }
 }

@@ -66,19 +66,21 @@
     <main>
       <canvas id="canvas" width="100%" height="auto"> </canvas>
       <section id="panel">
-        <section class="panel-row spaced">
+        <div id="left-panel-column">
           <section id="colors" class="panel-row"></section>
+          <div class="panel-row">
+            <section id="tools"></section>
+            <section id="actions"></section>
+          </div>
+          <section id="variants" class="panel-row"></section>
+        </div>
+        <div id="right-panel-column">
           <section id="global-actions" class="panel-row">
             <button id="clear"><img src="img/buttons/clear.svg" /></button>
             <button id="save"><img src="img/buttons/save.svg" /></button>
             <button id="info"><img src="img/buttons/info.svg" /></button>
           </section>
-        </section>
-        <section class="panel-row">
-          <section id="tools"></section>
-          <section id="actions"></section>
-        </section>
-        <section id="variants" class="panel-row"></section>
+        </div>
       </section>
     </main>
     <dialog id="info-dialog">

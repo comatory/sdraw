@@ -13,6 +13,8 @@ The program provides very simple functionality:
 
 The cursor can be controlled with mouse, keyboard or gamepad. You can install this application via browser (PWA) and it will work offline just fine, there is no server component involved.
 
+You can try an instance [here](https://sdraw.synacek.org) or easily deploy your own.
+
 </div>
 </div>
 
@@ -43,8 +45,9 @@ Basic touch controls are also supported (single touch). The application is reall
 
 ## Installation
 
-Upload source files to a folder on a web server ;)
-You might want to exclude `node_modules/` if you're copying it after running developer tools.
+Upload source files to a folder on a web server ;) Any modern browser that supports ES modules will load the application just fine. This application does not have any server component so it's convenient to be placed on regular web hosts (static hosting).
+
+If you've installed any development dependencies make sure to avoid uploading `node_modules/` directory.
 
 ## Development
 

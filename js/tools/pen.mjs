@@ -214,7 +214,7 @@ export function activatePen({ state, variant }) {
   }
 
   const blockInteractions = state.get(
-    (prevState) => prevState.blockedInteractions
+    (prevState) => prevState.blockedInteractions,
   );
 
   if (blockInteractions) {

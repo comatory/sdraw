@@ -13,7 +13,7 @@ const MAX_GAMEPAD_ACCELERATION_MULTIPLIER = 4.0;
 
 export function initializeCursor({ state }) {
   // TODO cursor shape based on active tool
-  
+
   const isTouchDevice = usesTouchDevice();
 
   const canvas = getCursorCanvas();

@@ -36,13 +36,7 @@ export function takePhoto({ state }) {
   const width = (height / videoSettings?.height) * videoSettings?.width;
 
   setTimeout(() => {
-    ctx.drawImage(
-      cam,
-      canvas.width / 2 - width / 2,
-      0,
-      width,
-      height,
-    );
+    ctx.drawImage(cam, canvas.width / 2 - width / 2, 0, width, height);
     memorizePhoto({ state });
     removeCountdown();
     unblockInteractions({ state });

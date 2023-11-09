@@ -5,6 +5,7 @@ import {
   createCursorFromGamepad,
   isGamepadDirectionPressed,
 } from "./controls/gamepad.mjs";
+import { usesTouchDevice } from "./controls/touch.mjs";
 import { drawCursor } from "./canvas-utils.mjs";
 const SET_CURSOR_DELAY_IN_MS = 500;
 const BASE_GAMEPAD_ACCELERATION_MULTIPLIER = 1.0;
@@ -12,6 +13,8 @@ const MAX_GAMEPAD_ACCELERATION_MULTIPLIER = 4.0;
 
 export function initializeCursor({ state }) {
   // TODO cursor shape based on active tool
+  
+  const isTouchDevice = usesTouchDevice();
 
   const canvas = getCursorCanvas();
   const cursor = state.get((prevState) => prevState.cursor);
@@ -19,8 +22,6 @@ export function initializeCursor({ state }) {
   const x = cursor.x;
   const y = cursor.y;
   let setCursorTimer = null;
-
-  drawCursor(x, y);
 
   function shouldBlockInteractions() {
     return state.get((prevState) => prevState.blockedInteractions);
@@ -98,7 +99,11 @@ export function initializeCursor({ state }) {
     }
   }, 500);
 
-  canvas.addEventListener("mousemove", drawCursorOnMouseMove);
+  if (!isTouchDevice) {
+    canvas.addEventListener("mousemove", drawCursorOnMouseMove);
+    drawCursor(x, y);
+  }
+
   state.addListener(handleGamepadBlockedChange);
 
   return function dispose() {
@@ -107,7 +112,10 @@ export function initializeCursor({ state }) {
     if (gamepadAccelerationInterval) {
       window.clearInterval(gamepadAccelerationInterval);
     }
-    canvas.removeEventListener("mousemove", drawCursorOnMouseMove);
+
+    if (!isTouchDevice) {
+      canvas.removeEventListener("mousemove", drawCursorOnMouseMove);
+    }
 
     if (setCursorTimer) {
       window.clearTimeout(setCursorTimer);

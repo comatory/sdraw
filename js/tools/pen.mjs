@@ -2,7 +2,9 @@ import {
   getGamepad,
   isPrimaryGamepadButtonPressed,
 } from "../controls/gamepad.mjs";
+import { usesTouchDevice } from "../controls/touch.mjs";
 import { getCanvas } from "../dom.mjs";
+import { isWithinCanvasBounds } from "../canvas.mjs";
 
 const ctx = getCanvas().getContext("2d");
 
@@ -11,6 +13,7 @@ export function activatePen({ state, variant }) {
   let color = state.get((prevState) => prevState.color);
   let isHoldingSpacebar = false;
   let frame = null;
+  const isTouchDevice = usesTouchDevice();
 
   function draw(x, y) {
     ctx.lineWidth = variant.value;
@@ -36,6 +39,41 @@ export function activatePen({ state, variant }) {
 
     const x = event.clientX;
     const y = event.clientY;
+
+    draw(x, y);
+  }
+
+  function touchStart(event) {
+    if (event.touches.length === 0) {
+      return;
+    }
+
+    const touch = event.touches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    if (!isWithinCanvasBounds(x, y)) {
+      return;
+    }
+
+    event.preventDefault();
+
+    mouseDown();
+  }
+
+  function touchEnd() {
+    mouseUp();
+  }
+
+  function touchMove(event) {
+    event.preventDefault();
+
+    if (!inProgress || event.touches.length === 0) return;
+
+    const touch = event.touches[0];
+
+    const x = touch.clientX;
+    const y = touch.clientY;
 
     draw(x, y);
   }
@@ -100,22 +138,67 @@ export function activatePen({ state, variant }) {
     frame = null;
   }
 
-  function activateListeners() {
-    requestGamepadAnimationFrame();
-    window.addEventListener("mousedown", mouseDown);
-    window.addEventListener("mouseup", mouseUp);
-    window.addEventListener("mousemove", mouseMove);
+  function attachKeyboardListeners() {
     window.addEventListener("keydown", keyDown);
     window.addEventListener("keyup", keyUp);
   }
 
-  function deactivateListeners() {
-    cancelGamepadAnimationFrame();
+  function unattachKeyboardListeners() {
+    window.removeEventListener("keydown", keyDown);
+    window.removeEventListener("keyup", keyUp);
+  }
+
+  function attachTouchListeners() {
+    if (!isTouchDevice) {
+      return;
+    }
+
+    window.addEventListener("touchstart", touchStart, { passive: false });
+    window.addEventListener("touchend", touchEnd, { passive: false });
+    window.addEventListener("touchmove", touchMove, { passive: false });
+  }
+
+  function unattachTouchListeners() {
+    if (!isTouchDevice) {
+      return;
+    }
+
+    window.removeEventListener("touchstart", touchStart);
+    window.removeEventListener("touchend", touchEnd);
+    window.removeEventListener("touchmove", touchMove);
+  }
+
+  function attachMouseListeners() {
+    if (isTouchDevice) {
+      return;
+    }
+
+    window.addEventListener("mousedown", mouseDown);
+    window.addEventListener("mouseup", mouseUp);
+    window.addEventListener("mousemove", mouseMove);
+  }
+
+  function unattachMouseListeners() {
+    if (isTouchDevice) {
+      return;
+    }
     window.removeEventListener("mousedown", mouseDown);
     window.removeEventListener("mouseup", mouseUp);
     window.removeEventListener("mousemove", mouseMove);
-    window.removeEventListener("keydown", keyDown);
-    window.removeEventListener("keyup", keyUp);
+  }
+
+  function activateListeners() {
+    attachMouseListeners();
+    attachKeyboardListeners();
+    attachTouchListeners();
+    requestGamepadAnimationFrame();
+  }
+
+  function deactivateListeners() {
+    unattachMouseListeners();
+    unattachKeyboardListeners();
+    unattachTouchListeners();
+    cancelGamepadAnimationFrame();
   }
 
   function onBlockInteractionsChange(nextState, prevState) {
@@ -131,7 +214,7 @@ export function activatePen({ state, variant }) {
   }
 
   const blockInteractions = state.get(
-    (prevState) => prevState.blockedInteractions,
+    (prevState) => prevState.blockedInteractions
   );
 
   if (blockInteractions) {

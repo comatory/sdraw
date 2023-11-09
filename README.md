@@ -39,6 +39,8 @@ The cursor can be controlled with mouse, keyboard or gamepad. You can install th
 - Right shoulder button / Left shoulder button - for cycling between colors
 - Right trigger button / Left trigger button - for cycling between tool variants
 
+Basic touch controls are also supported (single touch). The application is really optimized for desktop and will work with tablet viewport size in portrait mode. However tablets were not considered (yet) as the main device.
+
 ## Installation
 
 Upload source files to a folder on a web server ;)

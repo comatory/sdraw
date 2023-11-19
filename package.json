@@ -1,6 +1,6 @@
 {
   "name": "sdraw",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Simple drawing application for kids, can be controlled via mouse, keyboard or gamepad.",
   "private": true,
   "main": "index.mjs",

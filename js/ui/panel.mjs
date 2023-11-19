@@ -50,13 +50,19 @@ function activatePanelButtonOnCoordinates(x, y) {
 }
 
 function attachMouseListeners() {
-  window.addEventListener("click", (event) => {
+  function handleMouseClick(event) {
     activatePanelButtonOnCoordinates(event.clientX, event.clientY);
-  });
+  }
+
+  window.addEventListener("click", handleMouseClick);
+
+  return function dispose() {
+    window.removeEventListener("click", handleMouseClick);
+  };
 }
 
 function attachKeyboardListeners(state) {
-  window.addEventListener("keydown", (event) => {
+  function handleKeyDown(event) {
     if (event.key !== "Enter") {
       return;
     }
@@ -64,7 +70,13 @@ function attachKeyboardListeners(state) {
     const cursor = state.get((prevState) => prevState.cursor);
 
     activatePanelButtonOnCoordinates(cursor.x, cursor.y);
-  });
+  }
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return function dispose() {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
 }
 
 function attachGamepadListeners(state) {

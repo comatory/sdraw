@@ -1,9 +1,10 @@
 import { getPanelTools } from "../dom.mjs";
 import { setTool } from "../state/actions/tool.mjs";
 import { TOOL_LIST } from "../state/constants.mjs";
-import { loadIcon, updateActivatedButton } from "./utils.mjs";
+import { updateActivatedButton } from "./utils.mjs";
 import { buildToolActions } from "./actions.mjs";
 import { buildToolVariants } from "./variants.mjs";
+import { ToolButton } from "./tool.mjs";
 
 export function createToolPanel({ state }) {
   const tools = getPanelTools();
@@ -37,26 +38,10 @@ export function createToolPanel({ state }) {
   });
 
   TOOL_LIST.forEach((tool) => {
-    const button = document.createElement("button");
-
-    button.addEventListener(
-      "click",
-      () => {
-        setTool(tool, { state });
-      },
-      true,
-    );
-
-    button.dataset.value = tool.id.description;
-
-    loadIcon(tool.iconUrl)
-      .then((icon) => {
-        button.innerHTML = icon;
-      })
-      .catch((error) => {
-        console.error(error);
-        button.innerText = tool.id.description;
-      });
+    const button = new ToolButton({
+      ...tool,
+      onClick: () => setTool(tool, { state }),
+    });
 
     tools.appendChild(button);
   });

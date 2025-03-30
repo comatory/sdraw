@@ -1,24 +1,27 @@
-import { COLOR } from "../state/constants.mjs";
+import { loadIcon } from "./utils.mjs";
 /**
- * Represents a button for selecting colors
+ * Represents tool/action button.
  */
-export class ColorButton extends HTMLElement {
-  constructor({ onClick, color }) {
+export class ToolButton extends HTMLElement {
+  constructor({ id, iconUrl, onClick }) {
     super();
 
-    this.color = color;
+    this.#description = id.description;
+    this.#iconUrl = iconUrl;
+    this.id = id;
     this.#onClick = onClick;
     this.attachShadow({ mode: "open" });
   }
 
-  color = "#000000";
+  id = "";
+  #iconUrl = "";
+  #description = "";
   #onClick = () => {};
 
   connectedCallback() {
     this.shadowRoot.innerHTML = `
       <style>
         button {
-          background-color: ${this.color};
           width: var(--button-size);
           height: var(--button-size);
           border: 2px solid black;
@@ -31,25 +34,29 @@ export class ColorButton extends HTMLElement {
         }
       </style>
       <button
-        data-value="${this.color}"
-        aria-label="${Object.entries(COLOR)
-          .find(([_, value]) => value === this.color)?.[0]
-          ?.toLocaleLowerCase()} color"
+        data-id="${this.id.description}"
+        data-value="${this.#description}"
+        aria-label="${this.#description.toLocaleLowerCase()} tool"
         aria-pressed="${this.isActive ? "true" : "false"}"
       >
       </button>
     `;
 
-    this.#button.addEventListener("click", this.#handleClick);
+    this.#button.addEventListener("click", this.#handleClick, true);
     this.isActive = false;
+
+    loadIcon(this.#iconUrl)
+      .then((icon) => {
+        this.#button.innerHTML = icon;
+      })
+      .catch((error) => {
+        console.error(error);
+        this.#button.innerText = this.#description;
+      });
   }
 
   click(e) {
     this.#button.dispatchEvent(e);
-  }
-
-  isColorEqual(color) {
-    return this.color === color;
   }
 
   set isActive(value) {
@@ -67,4 +74,8 @@ export class ColorButton extends HTMLElement {
   #handleClick = (e) => {
     this.#onClick(e);
   };
+
+  static compare(id, description) {
+    return id.description === description;
+  }
 }

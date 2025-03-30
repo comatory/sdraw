@@ -5,9 +5,10 @@ import {
 import { getPanel } from "../dom.mjs";
 import { isCursorWithinPanelBounds } from "./utils.mjs";
 import { ColorButton } from "./color.mjs";
+import { ToolButton } from "./tool.mjs";
 
 function getPanelButtonByCoordinates(x, y, panel) {
-  const buttons = panel.querySelectorAll("button,color-button");
+  const buttons = panel.querySelectorAll("button,color-button,tool-button");
 
   for (let i = 0; i < buttons.length; i++) {
     const button = buttons[i];
@@ -44,7 +45,7 @@ function activatePanelButtonOnCoordinates(x, y) {
     bubbles: false,
   });
 
-  if (button instanceof ColorButton) {
+  if (button instanceof ColorButton || button instanceof ToolButton) {
     button.click(clickEvent);
 
     return;

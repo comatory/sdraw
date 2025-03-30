@@ -84,6 +84,19 @@
       </section>
     </main>
     <dialog id="info-dialog">
+      <script type="module">
+        const info = document.getElementById("version-id");
+
+        try {
+          const pkg = await fetch("/package.json");
+          const json = await pkg.json();
+          const { version } = json;
+          info.textContent = `Version: ${version}`;
+        } catch (error) {
+          console.error(error);
+          info.textContent = "Version: unknown";
+        }
+      </script>
       <h3>sdraw</h3>
       <section class="colophon">
         <img
@@ -94,7 +107,7 @@
         />
         <div class="colophon-info">
           <pre>MIT License</pre>
-          <pre>Version: 0.1.2</pre>
+          <pre id="version-id">Version</pre>
           <pre>2023</pre>
         </div>
       </section>

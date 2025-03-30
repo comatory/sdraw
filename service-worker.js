@@ -10,6 +10,7 @@ const STATIC_ASSETS = [
   "favicon.ico",
   "manifest.json",
   "README.md",
+  "package.json",
 
   /* JS */
   "index.mjs",

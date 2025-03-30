@@ -3,7 +3,7 @@ import {
   isPrimaryGamepadButtonPressed,
 } from "../controls/gamepad.mjs";
 import { getPanel } from "../dom.mjs";
-import { isCursorWithinPanelBounds } from "../ui-utils.mjs";
+import { isCursorWithinPanelBounds } from "./utils.mjs";
 
 function getPanelButtonByCoordinates(x, y, panel) {
   const buttons = panel.querySelectorAll("button");

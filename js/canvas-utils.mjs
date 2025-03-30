@@ -1,7 +1,7 @@
 import { COLOR } from "./state/constants.mjs";
 import { getCursorCanvas, getCanvas } from "./dom.mjs";
 import { getPanel } from "./dom.mjs";
-import { isCursorWithinPanelBounds } from "./ui-utils.mjs";
+import { isCursorWithinPanelBounds } from "./ui/utils.mjs";
 
 const ctx = getCursorCanvas().getContext("2d");
 const canvasCtx = getCanvas().getContext("2d");

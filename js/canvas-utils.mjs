@@ -4,7 +4,12 @@ import { getCursorCanvas } from "./dom.mjs";
 const ctx = getCursorCanvas().getContext("2d");
 const CURSOR_SIZE = 20;
 
+function offsetCursorX(x) {
+  return x - CURSOR_SIZE / 2;
+}
+
 export function drawCursor(x, y) {
+  x = offsetCursorX(x);
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const half = CURSOR_SIZE / 2;
 
@@ -23,6 +28,7 @@ export function drawCursor(x, y) {
   ctx.stroke();
 
   ctx.closePath();
+
 
   ctx.moveTo(x + half, y + half);
   ctx.strokeStyle = COLOR.WHITE;

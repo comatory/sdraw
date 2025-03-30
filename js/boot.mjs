@@ -22,6 +22,11 @@ import { attachKeyboardListeners } from "./controls/keyboard.mjs";
 import { attachGamepadBlockListeners } from "./controls/general.mjs";
 import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
+import { ColorButton } from "./ui/color.mjs";
+
+function registerComponents() {
+  customElements.define("color-button", ColorButton);
+}
 
 function attachResizeListeners() {
   const canvas = getCanvas();
@@ -59,6 +64,7 @@ export function boot() {
   const state = createState();
   const canvas = getCanvas();
 
+  registerComponents();
   restorePreviousCanvas(canvas);
   attachCanvasSaveListener(canvas);
 

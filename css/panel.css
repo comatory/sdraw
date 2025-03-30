@@ -37,6 +37,14 @@
   justify-content: space-between;
 }
 
+.panel-row color-button {
+  margin-right: var(--button-space);
+}
+
+.panel-row color-button:last-child {
+  margin-right: 0px;
+}
+
 .panel-row button {
   margin-right: var(--button-space);
   width: var(--button-size);

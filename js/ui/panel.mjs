@@ -4,9 +4,10 @@ import {
 } from "../controls/gamepad.mjs";
 import { getPanel } from "../dom.mjs";
 import { isCursorWithinPanelBounds } from "./utils.mjs";
+import { ColorButton } from "./color.mjs";
 
 function getPanelButtonByCoordinates(x, y, panel) {
-  const buttons = panel.querySelectorAll("button");
+  const buttons = panel.querySelectorAll("button,color-button");
 
   for (let i = 0; i < buttons.length; i++) {
     const button = buttons[i];
@@ -42,6 +43,12 @@ function activatePanelButtonOnCoordinates(x, y) {
     view: window,
     bubbles: false,
   });
+
+  if (button instanceof ColorButton) {
+    button.click(clickEvent);
+
+    return;
+  }
 
   button.dispatchEvent(clickEvent);
 }

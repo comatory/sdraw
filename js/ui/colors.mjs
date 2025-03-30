@@ -11,6 +11,7 @@ import {
 } from "../controls/gamepad.mjs";
 import { getPanelColors } from "../dom.mjs";
 import { updateActivatedButton } from "./utils.mjs";
+import { ColorButton } from "./color.mjs";
 
 const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
 
@@ -122,15 +123,10 @@ export function createColorPanel({ state }) {
   });
 
   COLOR_LIST.forEach((color) => {
-    const button = document.createElement("button");
-    button.style.backgroundColor = color;
-
-    button.addEventListener("click", () => {
-      setColor(color, { state });
+    const button = new ColorButton({
+      color,
+      onClick: () => setColor(color, { state }),
     });
-
-    button.dataset.value = color;
-    button.style.backgroundColor = color;
 
     colors.appendChild(button);
   });

@@ -1,3 +1,5 @@
+import { ColorButton } from "./color.mjs";
+
 export async function loadIcon(url) {
   const response = await fetch(url);
 
@@ -28,13 +30,23 @@ export function ensureCallbacksRemoved(listeners) {
 }
 
 export function updateActivatedButton(buttonContainer, value) {
-  const buttons = buttonContainer.querySelectorAll("button");
+  const buttons = buttonContainer.querySelectorAll("button,color-button");
 
   Array.from(buttons).forEach((button) => {
-    if (button.dataset.value === value) {
-      button.classList.add("active");
+    const isColorButton = button instanceof ColorButton;
+    const buttonColor = isColorButton ? button.color : button.dataset.value;
+    const isActive = buttonColor === value;
+
+    if (isColorButton) {
+      button.isActive = isActive;
+
+      return;
     } else {
-      button.classList.remove("active");
+      if (button.dataset.value === value) {
+        button.classList.add("active");
+      } else {
+        button.classList.remove("active");
+      }
     }
   });
 }

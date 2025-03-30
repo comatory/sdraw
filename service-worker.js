@@ -40,6 +40,7 @@ const STATIC_ASSETS = [
   "js/tools/stamp.mjs",
   "js/ui/actions.mjs",
   "js/ui/colors.mjs",
+  "js/ui/color.mjs",
   "js/ui/global.mjs",
   "js/ui/panel.mjs",
   "js/ui/tools.mjs",

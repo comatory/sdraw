@@ -3,6 +3,7 @@ import {
   getCursorCanvas,
   setCanvasSizeByViewport,
   setCanvasSizeWithoutPanel,
+  setCanvasFill,
   setVideoSizeByCanvasSize,
 } from "./dom.mjs";
 import {
@@ -29,6 +30,7 @@ function attachResizeListeners() {
   setCanvasSizeByViewport(cursorCanvas);
   setCanvasSizeWithoutPanel(canvas);
   setVideoSizeByCanvasSize(canvas);
+  setCanvasFill(canvas);
 
   attachWindowResizeListeners({ canvas, cursorCanvas });
 }

@@ -1,11 +1,10 @@
-import { getCanvas } from "../../dom.mjs";
+import { getCanvas, setCanvasFill } from "../../dom.mjs";
 import { storeCanvas } from "../storage.mjs";
 
 export function resetCanvas() {
   const canvas = getCanvas();
-  const ctx = canvas.getContext("2d");
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  setCanvasFill(canvas);
   storeCanvas(canvas);
 }
 

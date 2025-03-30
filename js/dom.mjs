@@ -1,3 +1,5 @@
+import { COLOR } from "./state/constants.mjs";
+
 export function getCanvas() {
   return document.getElementById("canvas");
 }
@@ -51,6 +53,12 @@ export function setVideoSizeByCanvasSize(canvas) {
 
   video.style.width = `${canvas.width}px`;
   video.style.height = `${canvas.height}px`;
+}
+
+export function setCanvasFill(canvas) {
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = COLOR.WHITE;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 export function insertCountdown() {

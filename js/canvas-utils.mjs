@@ -20,9 +20,9 @@ const LINE_WIDTH = 5;
  * @returns {number[]} - Inverted color in r, g,b order.
  */
 function invertColor(r, g, b, a) {
-  const rgb = [r, g, b, a]
+  const rgb = [r, g, b, a];
   for (var i = 0; i < rgb.length; i++) rgb[i] = (i === 3 ? 1 : 255) - rgb[i];
-  return rgb
+  return rgb;
 }
 
 /**
@@ -41,7 +41,7 @@ function getPixelRGBAColor(x, y) {
     return COLOR.BLACK;
   }
 
-  const pixel = canvasCtx.getImageData(x, y, GAP, GAP)
+  const pixel = canvasCtx.getImageData(x, y, GAP, GAP);
   const [r, g, b, a] = invertColor(...pixel.data);
 
   return `rgb(${r}, ${g}, ${b}, ${Math.abs(a)})`;

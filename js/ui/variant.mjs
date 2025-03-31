@@ -1,6 +1,4 @@
-import { isDataUri } from "../state/utils.mjs";
-import { loadIcon } from "./utils.mjs";
-import { serializeSvg, deserializeSvgFromDataURI } from "../svg-utils.mjs";
+import { UiButton } from "./button.mjs";
 
 export class VariantButton extends HTMLElement {
   constructor({ id, onClick, iconUrl }) {
@@ -18,45 +16,16 @@ export class VariantButton extends HTMLElement {
   #iconUrl = "";
 
   connectedCallback() {
-    this.shadowRoot.innerHTML = `
-      <style>
-        button {
-          width: var(--button-size);
-          height: var(--button-size);
-          border: 2px solid black;
-          border-radius: 6px;
-        }
+    const button = new UiButton({
+      ariaLabel: `${this.id.description.toLocaleLowerCase()} variant}`,
+      dataset: {
+        value: this.id.description,
+      },
+      iconUrl: this.#iconUrl,
+      onClick: this.#onClick,
+    });
 
-        button[aria-pressed="true"] {
-          border: 2px solid white;
-          box-shadow: 0px 0px 0px 4px orange;
-        }
-      </style>
-      <button
-        data-value="${this.id.description}"
-        aria-label="${this.id.description.toLocaleLowerCase()} variant"
-        aria-pressed="${this.isActive ? "true" : "false"}"
-      >
-      </button>
-    `;
-
-    this.#button.addEventListener("click", this.#handleClick, true);
-    this.isActive = false;
-
-    if (isDataUri(this.#iconUrl)) {
-      this.#button.innerHTML = serializeSvg(
-        deserializeSvgFromDataURI(this.#iconUrl),
-      );
-    } else {
-      loadIcon(this.#iconUrl)
-        .then((icon) => {
-          this.#button.innerHTML = icon;
-        })
-        .catch((error) => {
-          console.error(error);
-          this.#button.innerText = this.id.description;
-        });
-    }
+    this.shadowRoot.appendChild(button);
   }
 
   click(e) {
@@ -64,7 +33,7 @@ export class VariantButton extends HTMLElement {
   }
 
   get #button() {
-    return this.shadowRoot.querySelector("button");
+    return this.shadowRoot.querySelector("ui-button").button;
   }
 
   get button() {
@@ -72,12 +41,8 @@ export class VariantButton extends HTMLElement {
   }
 
   set isActive(value) {
-    this.#button.setAttribute("aria-pressed", value ? "true" : "false");
+    this.shadowRoot.querySelector("ui-button").isActive = value;
   }
-
-  #handleClick = (event) => {
-    this.#onClick(event);
-  };
 
   static compare(id, value) {
     return id.description === value;

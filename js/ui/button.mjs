@@ -6,9 +6,14 @@ import { isDataUri } from "../state/utils.mjs";
  * This is a base UI button with square shape.
  */
 export class UiButton extends HTMLElement {
-  constructor({ ariaLabel, dataset, iconUrl, backgroundColor, onClick }) {
+  // Can be built also declaratively with HTML.
+  constructor(options = {}) {
+    const { id, ariaLabel, dataset, iconUrl, backgroundColor, onClick } =
+      options;
+
     super();
 
+    this.#id = id;
     this.#onClick = onClick;
     this.#ariaLabel = ariaLabel;
     this.#dataset = dataset;
@@ -18,6 +23,7 @@ export class UiButton extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
+  #id = "";
   #ariaLabel = "";
   #dataset = {};
   #iconUrl = "";
@@ -45,6 +51,7 @@ export class UiButton extends HTMLElement {
         }
       </style>
       <button
+        id="${this.#id ?? this.getAttribute("id")}"
         aria-pressed="${this.isActive ? "true" : "false"}"
         aria-label="${this.#ariaLabel}"
         ${UiButton.#createDataSetAttributesString(this.#dataset)}
@@ -52,30 +59,23 @@ export class UiButton extends HTMLElement {
       </button>
     `;
 
-    this.button.addEventListener("click", this.#onClick);
+    if (this.#onClick) {
+      this.addClickListener(this.#onClick);
+    }
     this.isActive = false;
     this.#setContents();
   }
 
-  #setContents() {
-    if (!this.#iconUrl) {
-      return;
-    }
+  click(e) {
+    this.button.dispatchEvent(e);
+  }
 
-    if (isDataUri(this.#iconUrl)) {
-      this.button.innerHTML = serializeSvg(
-        deserializeSvgFromDataURI(this.#iconUrl),
-      );
-    } else {
-      loadIcon(this.#iconUrl)
-        .then((icon) => {
-          this.button.innerHTML = icon;
-        })
-        .catch((error) => {
-          console.error(error);
-          this.button.innerText = UiButton.#getContentFallback(this.#dataset);
-        });
-    }
+  addClickListener(listener) {
+    this.button.addEventListener("click", listener);
+  }
+
+  removeClickListener(listener) {
+    this.button.removeEventListener("click", listener);
   }
 
   get button() {
@@ -86,8 +86,30 @@ export class UiButton extends HTMLElement {
     this.button.setAttribute("aria-pressed", value ? "true" : "false");
   }
 
+  #setContents() {
+    const iconUrl = this.#iconUrl ?? this.getAttribute("icon-url");
+    const dataset = this.#dataset ?? this.dataset;
+
+    if (!iconUrl) {
+      return;
+    }
+
+    if (isDataUri(iconUrl)) {
+      this.button.innerHTML = serializeSvg(deserializeSvgFromDataURI(iconUrl));
+    } else {
+      loadIcon(iconUrl)
+        .then((icon) => {
+          this.button.innerHTML = icon;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.button.innerText = UiButton.#getContentFallback(dataset);
+        });
+    }
+  }
+
   static #createDataSetAttributesString(dataset) {
-    return Object.entries(dataset)
+    return Object.entries(dataset ?? {})
       .map(([key, value]) => `data-${key}="${value}"`)
       .join(" ");
   }

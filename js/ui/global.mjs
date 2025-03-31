@@ -27,13 +27,13 @@ export function createGlobalActionsPanel() {
     showInfo();
   }
 
-  clearButton.addEventListener("click", handleClearClick);
-  saveButton.addEventListener("click", handleSaveClick);
-  infoButton.addEventListener("click", handleInfoClick);
+  clearButton.addClickListener(handleClearClick);
+  saveButton.addClickListener(handleSaveClick);
+  infoButton.addClickListener(handleInfoClick);
 
   return function dispose() {
-    clearButton.removeEventListener("click", handleClearClick);
-    saveButton.removeEventListener("click", handleSaveClick);
-    infoButton.removeEventListener("click", handleInfoClick);
+    clearButton.removeClickListener(handleClearClick);
+    saveButton.removeClickListener(handleSaveClick);
+    infoButton.removeClickListener(handleInfoClick);
   };
 }

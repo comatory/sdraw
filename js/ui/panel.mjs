@@ -7,10 +7,11 @@ import { isCursorWithinPanelBounds } from "./utils.mjs";
 import { ColorButton } from "./color.mjs";
 import { ToolButton } from "./tool.mjs";
 import { VariantButton } from "./variant.mjs";
+import { UiButton } from "./button.mjs";
 
 function getPanelButtonByCoordinates(x, y, panel) {
   const buttons = panel.querySelectorAll(
-    "button,color-button,tool-button,variant-button",
+    "ui-button,color-button,tool-button,variant-button",
   );
 
   for (let i = 0; i < buttons.length; i++) {
@@ -49,6 +50,7 @@ function activatePanelButtonOnCoordinates(x, y) {
   });
 
   if (
+    button instanceof UiButton ||
     button instanceof ColorButton ||
     button instanceof ToolButton ||
     button instanceof VariantButton

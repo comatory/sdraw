@@ -29,7 +29,7 @@ export class VariantButton extends HTMLElement {
   }
 
   click(e) {
-    this.#button.dispatchEvent(e);
+    this.#button.click(e);
   }
 
   get #button() {

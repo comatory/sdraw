@@ -24,10 +24,12 @@ import { attachGamepadListeners } from "./controls/gamepad.mjs";
 import { initializeCursor } from "./cursor.mjs";
 import { ColorButton } from "./ui/color.mjs";
 import { ToolButton } from "./ui/tool.mjs";
+import { VariantButton } from "./ui/variant.mjs";
 
 function registerComponents() {
   customElements.define("color-button", ColorButton);
   customElements.define("tool-button", ToolButton);
+  customElements.define("variant-button", VariantButton);
 }
 
 function attachResizeListeners() {

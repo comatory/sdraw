@@ -1,4 +1,5 @@
 import { ToolButton } from "./tool.mjs";
+import { VariantButton } from "./variant.mjs";
 
 export async function loadIcon(url) {
   const response = await fetch(url);
@@ -50,6 +51,12 @@ export function updateActivatedButton(buttonContainer, value) {
 
   Array.from(toolButtons).forEach((button) => {
     button.isActive = ToolButton.compare(button.id, value);
+  });
+
+  const variantButtons = buttonContainer.querySelectorAll("variant-button");
+
+  Array.from(variantButtons).forEach((button) => {
+    button.isActive = VariantButton.compare(button.id, value);
   });
 }
 

@@ -1,6 +1,5 @@
 import { setTool, setCustomVariant } from "../state/actions/tool.mjs";
 import { TOOLS } from "../state/constants.mjs";
-import { isDataUri } from "../state/utils.mjs";
 import { getPanelToolVariants } from "../dom.mjs";
 import {
   isLeftTriggerGamepadButtonPressed,
@@ -8,7 +7,6 @@ import {
   getGamepad,
 } from "../controls/gamepad.mjs";
 import {
-  loadIcon,
   disposeCallback,
   ensureCallbacksRemoved,
   updateActivatedButton,
@@ -19,6 +17,7 @@ import {
   deserializeSvgFromDataURI,
   normalizeSvgSize,
 } from "../svg-utils.mjs";
+import { VariantButton } from "./variant.mjs";
 
 const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
 
@@ -103,7 +102,7 @@ function defaultOnClick({ tool, variant, state }) {
 }
 
 function getVariantButtons(container) {
-  return Array.from(container.querySelectorAll("button"));
+  return Array.from(container.querySelectorAll("button,variant-button"));
 }
 
 // do not bubble event to avoid clicks on canvas
@@ -124,13 +123,14 @@ function getPreviousButton(buttons, index) {
   return index - 1 >= 0 ? buttons[index - 1] : buttons[buttons.length - 1];
 }
 
-function getButtonIndex(buttons, { state, tool }) {
+function getButtonIndex(variantButtons, { state, tool }) {
   const activatedVariant = state.get((prevState) =>
     prevState.activatedVariants.get(tool.id),
   );
 
-  const index = buttons.findIndex(
-    (button) => button.dataset.value === activatedVariant.id.description,
+  const index = variantButtons.findIndex(
+    (variantButton) =>
+      variantButton.button.dataset.value === activatedVariant.id.description,
   );
 
   return index;
@@ -212,12 +212,12 @@ function attachKeyboardListeners(container, tool, { state }) {
     switch (event.key) {
       case ".": {
         const nextButton = getNextButton(buttons, index);
-        dispatchButtonClick(nextButton);
+        dispatchButtonClick(nextButton.button);
         break;
       }
       case ",": {
         const prevButton = getPreviousButton(buttons, index);
-        dispatchButtonClick(prevButton);
+        dispatchButtonClick(prevButton.button);
         break;
       }
       default:
@@ -248,8 +248,6 @@ function renderToolVariants(tool, state) {
   const allVariants = [...tool.variants, ...customVariants];
 
   allVariants.forEach((variant) => {
-    const button = document.createElement("button");
-
     function onClick() {
       switch (tool.id) {
         case TOOLS.STAMP.id:
@@ -267,32 +265,18 @@ function renderToolVariants(tool, state) {
       }
     }
 
-    button.addEventListener("click", onClick);
+    const variantButton = new VariantButton({
+      ...variant,
+      onClick,
+    });
 
-    button.dataset.value = variant.id.description;
-
-    if (isDataUri(variant.iconUrl)) {
-      button.innerHTML = serializeSvg(
-        deserializeSvgFromDataURI(variant.iconUrl),
-      );
-    } else {
-      loadIcon(variant.iconUrl)
-        .then((icon) => {
-          button.innerHTML = icon;
-        })
-        .catch((error) => {
-          console.error(error);
-          button.innerText = variant.id.description;
-        });
-    }
-
-    variantsContainer.appendChild(button);
+    variantsContainer.appendChild(variantButton);
 
     if (variant.id === activatedVariant.id) {
       updateActivatedButton(variantsContainer, variant.id.description);
     }
 
-    listeners[button.dataset.value] = onClick;
+    listeners[variantButton.button.dataset.value] = onClick;
   });
 
   const keyboardListenersDisposeCallback = attachKeyboardListeners(
@@ -310,9 +294,9 @@ function renderToolVariants(tool, state) {
     keyboardListenersDisposeCallback();
     gamepadListenersDisposeCallback();
 
-    getVariantButtons(variantsContainer).forEach((button) => {
-      disposeCallback(button, listeners);
-      button.remove();
+    getVariantButtons(variantsContainer).forEach((variantButton) => {
+      disposeCallback(variantButton.button, listeners);
+      variantButton.remove();
     });
 
     ensureCallbacksRemoved(listeners);

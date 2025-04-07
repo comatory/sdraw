@@ -1,12 +1,13 @@
 import { UiButton } from "./button.mjs";
 
 export class VariantButton extends HTMLElement {
-  constructor({ id, onClick, iconUrl }) {
+  constructor({ id, onClick, iconUrl, signal }) {
     super();
 
     this.id = id;
     this.#onClick = onClick;
     this.#iconUrl = iconUrl;
+    this.#signal = signal;
 
     this.attachShadow({ mode: "open" });
   }
@@ -14,6 +15,7 @@ export class VariantButton extends HTMLElement {
   id = "";
   #onClick = () => {};
   #iconUrl = "";
+  #signal = null;
 
   connectedCallback() {
     const button = new UiButton({
@@ -23,6 +25,7 @@ export class VariantButton extends HTMLElement {
       },
       iconUrl: this.#iconUrl,
       onClick: this.#onClick,
+      signal: this.#signal,
     });
 
     this.shadowRoot.appendChild(button);

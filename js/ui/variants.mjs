@@ -6,11 +6,7 @@ import {
   isRightTriggerGamepadButtonPressed,
   getGamepad,
 } from "../controls/gamepad.mjs";
-import {
-  disposeCallback,
-  ensureCallbacksRemoved,
-  updateActivatedButton,
-} from "./utils.mjs";
+import { updateActivatedButton } from "./utils.mjs";
 import {
   createSvgDataUri,
   serializeSvg,
@@ -187,19 +183,10 @@ function attachGamepadListeners(container, tool, { state }) {
     frame = requestAnimationFrame(activateVariantCycleOnShoulderButtonPresses);
   }
 
-  function cancelGamepadAnimationFrame() {
-    cancelAnimationFrame(frame);
-    frame = null;
-  }
-
   requestGamepadAnimationFrame();
-
-  return function dispose() {
-    cancelGamepadAnimationFrame();
-  };
 }
 
-function attachKeyboardListeners(container, tool, { state }) {
+function attachKeyboardListeners(container, tool, { state, signal }) {
   const buttons = getVariantButtons(container);
 
   function onKeyDown(event) {
@@ -225,17 +212,14 @@ function attachKeyboardListeners(container, tool, { state }) {
     }
   }
 
-  window.addEventListener("keydown", onKeyDown);
-
-  return function dispose() {
-    window.removeEventListener("keydown", onKeyDown);
-  };
+  window.addEventListener("keydown", onKeyDown, {
+    once: true,
+    signal,
+  });
 }
 
-function renderToolVariants(tool, state) {
+export function buildToolVariants(tool, { state, signal }) {
   const variantsContainer = getPanelToolVariants();
-
-  const listeners = {};
 
   const activatedVariant = state.get((prevState) =>
     prevState.activatedVariants.get(tool.id),
@@ -268,6 +252,7 @@ function renderToolVariants(tool, state) {
     const variantButton = new VariantButton({
       ...variant,
       onClick,
+      signal,
     });
 
     variantsContainer.appendChild(variantButton);
@@ -275,62 +260,19 @@ function renderToolVariants(tool, state) {
     if (variant.id === activatedVariant.id) {
       updateActivatedButton(variantsContainer, variant.id.description);
     }
-
-    listeners[variantButton.button.dataset.value] = onClick;
   });
 
-  const keyboardListenersDisposeCallback = attachKeyboardListeners(
-    variantsContainer,
-    tool,
-    { state },
-  );
-  const gamepadListenersDisposeCallback = attachGamepadListeners(
-    variantsContainer,
-    tool,
-    { state },
-  );
+  attachKeyboardListeners(variantsContainer, tool, { state, signal });
 
-  return function dispose() {
-    keyboardListenersDisposeCallback();
-    gamepadListenersDisposeCallback();
+  attachGamepadListeners(variantsContainer, tool, { state });
 
+  function dispose() {
     getVariantButtons(variantsContainer).forEach((variantButton) => {
-      disposeCallback(variantButton.button, listeners);
       variantButton.remove();
     });
 
-    ensureCallbacksRemoved(listeners);
-
     variantsContainer.innerHTML = "";
-  };
-}
-
-export function buildToolVariants(tool, state) {
-  let disposeVariantsCallback = null;
-
-  function onToolChange(nextState, prevState) {
-    if (nextState.customVariants === prevState.customVariants) {
-      return;
-    }
-
-    if (disposeVariantsCallback) {
-      disposeVariantsCallback();
-      disposeVariantsCallback = null;
-    }
-
-    disposeVariantsCallback = renderToolVariants(tool, state);
   }
 
-  disposeVariantsCallback = renderToolVariants(tool, state);
-
-  state.addListener(onToolChange);
-
-  return function dispose() {
-    state.removeListener(onToolChange);
-
-    if (disposeVariantsCallback) {
-      disposeVariantsCallback();
-      disposeVariantsCallback = null;
-    }
-  };
+  signal.addEventListener("abort", dispose, { once: true });
 }

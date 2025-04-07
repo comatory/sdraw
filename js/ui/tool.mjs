@@ -4,13 +4,14 @@ import { UiButton } from "./button.mjs";
  * Represents tool/action button.
  */
 export class ToolButton extends HTMLElement {
-  constructor({ id, iconUrl, onClick }) {
+  constructor({ id, iconUrl, onClick, signal }) {
     super();
 
     this.#description = id.description;
     this.#iconUrl = iconUrl;
     this.id = id;
     this.#onClick = onClick;
+    this.#signal = signal;
     this.attachShadow({ mode: "open" });
   }
 
@@ -18,6 +19,7 @@ export class ToolButton extends HTMLElement {
   #iconUrl = "";
   #description = "";
   #onClick = () => {};
+  #signal = null;
 
   connectedCallback() {
     const button = new UiButton({
@@ -28,6 +30,7 @@ export class ToolButton extends HTMLElement {
       },
       iconUrl: this.#iconUrl,
       onClick: this.#onClick,
+      signal: this.#signal,
     });
 
     this.shadowRoot.appendChild(button);

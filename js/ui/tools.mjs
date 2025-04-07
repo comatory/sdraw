@@ -8,32 +8,39 @@ import { ToolButton } from "./tool.mjs";
 
 export function createToolPanel({ state }) {
   const tools = getPanelTools();
-  let disposeVariantsCallback = null;
-  let disposeActionsCallback = null;
+  let actionsController = new AbortController();
+  let variantsController = new AbortController();
 
   state.addListener((updatedState, prevState) => {
     if (updatedState.tool === prevState.tool) {
       return;
     }
 
-    if (disposeVariantsCallback) {
-      disposeVariantsCallback();
-      disposeVariantsCallback = null;
+    if (!variantsController.signal.aborted) {
+      variantsController.abort();
     }
 
-    if (disposeActionsCallback) {
-      disposeActionsCallback();
-      disposeActionsCallback = null;
+    if (!actionsController.signal.aborted) {
+      actionsController.abort();
     }
+
+    variantsController = new AbortController();
+    actionsController = new AbortController();
 
     updateActivatedButton(tools, updatedState.tool.id.description);
 
     if (updatedState.tool.variants) {
-      disposeVariantsCallback = buildToolVariants(updatedState.tool, state);
+      buildToolVariants(updatedState.tool, {
+        state,
+        signal: variantsController.signal,
+      });
     }
 
     if (updatedState.tool.actions) {
-      disposeActionsCallback = buildToolActions(updatedState.tool, state);
+      buildToolActions(updatedState.tool, {
+        state,
+        signal: actionsController.signal,
+      });
     }
   });
 
@@ -52,11 +59,17 @@ export function createToolPanel({ state }) {
     updateActivatedButton(tools, selectedTool.id.description);
 
     if (selectedTool.variants) {
-      disposeVariantsCallback = buildToolVariants(selectedTool, state);
+      buildToolVariants(selectedTool, {
+        state,
+        signal: variantsController.signal,
+      });
     }
 
     if (selectedTool.actions) {
-      disposeActionsCallback = buildToolActions(selectedTool, state);
+      buildToolActions(selectedTool, {
+        state,
+        signal: actionsController.signal,
+      });
     }
   }
 }

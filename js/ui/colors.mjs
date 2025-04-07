@@ -15,7 +15,7 @@ import { ColorButton } from "./color.mjs";
 
 const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
 
-function attachKeyboardListeners(state) {
+function attachKeyboardListeners({ state, signal }) {
   function onKeyDown(event) {
     switch (event.key) {
       case "a":
@@ -29,11 +29,7 @@ function attachKeyboardListeners(state) {
     }
   }
 
-  window.addEventListener("keydown", onKeyDown);
-
-  return function dispose() {
-    window.removeEventListener("keydown", onKeyDown);
-  };
+  window.addEventListener("keydown", onKeyDown, { signal });
 }
 
 function attachGamepadListeners(state) {
@@ -76,22 +72,12 @@ function attachGamepadListeners(state) {
     frame = requestAnimationFrame(activateColorCycleOnShoulderButtonPresses);
   }
 
-  function cancelGamepadAnimationFrame() {
-    cancelAnimationFrame(frame);
-    frame = null;
-  }
-
   requestGamepadAnimationFrame();
-
-  return function dispose() {
-    cancelGamepadAnimationFrame();
-  };
 }
 
 export function createColorPanel({ state }) {
   const colors = getPanelColors();
-  let disposeKeyboardListenersCallback = null;
-  let disposeGamepadListenersCallback = null;
+  let controller = new AbortController();
 
   state.addListener((nextState, prevState) => {
     if (nextState.color === prevState.color) {
@@ -107,18 +93,13 @@ export function createColorPanel({ state }) {
     }
 
     if (nextState.blockedInteractions) {
-      if (disposeKeyboardListenersCallback) {
-        disposeKeyboardListenersCallback();
-        disposeKeyboardListenersCallback = null;
-      }
-
-      if (disposeGamepadListenersCallback) {
-        disposeGamepadListenersCallback();
-        disposeGamepadListenersCallback = null;
+      if (!controller.signal.aborted) {
+        controller.abort();
+        controller = new AbortController();
       }
     } else {
-      disposeKeyboardListenersCallback = attachKeyboardListeners(state);
-      disposeGamepadListenersCallback = attachGamepadListeners(state);
+      attachKeyboardListeners({ state, signal: controller.signal });
+      attachGamepadListeners(state);
     }
   });
 
@@ -126,6 +107,7 @@ export function createColorPanel({ state }) {
     const button = new ColorButton({
       color,
       onClick: () => setColor(color, { state }),
+      signal: controller.signal,
     });
 
     colors.appendChild(button);
@@ -137,6 +119,6 @@ export function createColorPanel({ state }) {
     updateActivatedButton(colors, selectedColor);
   }
 
-  disposeKeyboardListenersCallback = attachKeyboardListeners(state);
-  disposeGamepadListenersCallback = attachGamepadListeners(state);
+  attachKeyboardListeners({ state, signal: controller.signal });
+  attachGamepadListeners(state);
 }

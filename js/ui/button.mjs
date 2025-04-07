@@ -8,13 +8,21 @@ import { isDataUri } from "../state/utils.mjs";
 export class UiButton extends HTMLElement {
   // Can be built also declaratively with HTML.
   constructor(options = {}) {
-    const { id, ariaLabel, dataset, iconUrl, backgroundColor, onClick } =
-      options;
+    const {
+      id,
+      ariaLabel,
+      dataset,
+      iconUrl,
+      backgroundColor,
+      onClick,
+      signal,
+    } = options;
 
     super();
 
     this.#id = id;
     this.#onClick = onClick;
+    this.#signal = signal;
     this.#ariaLabel = ariaLabel;
     this.#dataset = dataset;
     this.#iconUrl = iconUrl;
@@ -29,6 +37,7 @@ export class UiButton extends HTMLElement {
   #iconUrl = "";
   #backgroundColor = "#000000";
   #onClick = () => {};
+  #signal = null;
 
   connectedCallback() {
     this.shadowRoot.innerHTML = `
@@ -71,7 +80,9 @@ export class UiButton extends HTMLElement {
   }
 
   addClickListener(listener) {
-    this.button.addEventListener("click", listener);
+    this.button.addEventListener("click", listener, {
+      signal: this.#signal,
+    });
   }
 
   removeClickListener(listener) {

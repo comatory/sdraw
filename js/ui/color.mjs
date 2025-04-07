@@ -5,16 +5,18 @@ import { UiButton } from "./button.mjs";
  * Represents a button for selecting colors
  */
 export class ColorButton extends HTMLElement {
-  constructor({ onClick, color }) {
+  constructor({ onClick, color, signal }) {
     super();
 
     this.color = color;
     this.#onClick = onClick;
+    this.#signal = signal;
     this.attachShadow({ mode: "open" });
   }
 
   color = "#000000";
   #onClick = () => {};
+  #signal = null;
 
   connectedCallback() {
     const button = new UiButton({
@@ -26,6 +28,7 @@ export class ColorButton extends HTMLElement {
       },
       backgroundColor: this.color,
       onClick: this.#onClick,
+      signal: this.#signal,
     });
 
     this.shadowRoot.appendChild(button);

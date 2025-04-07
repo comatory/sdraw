@@ -1,9 +1,10 @@
 import { UiButton } from "./button.mjs";
 
 export class VariantButton extends HTMLElement {
-  constructor({ id, onClick, iconUrl, signal }) {
+  constructor({ id, onClick, iconUrl, signal, isActive }) {
     super();
 
+    this.#isActive = isActive;
     this.id = id;
     this.#onClick = onClick;
     this.#iconUrl = iconUrl;
@@ -12,6 +13,7 @@ export class VariantButton extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
+  #isActive = false;
   id = "";
   #onClick = () => {};
   #iconUrl = "";
@@ -29,6 +31,7 @@ export class VariantButton extends HTMLElement {
     });
 
     this.shadowRoot.appendChild(button);
+    this.isActive = this.#isActive;
   }
 
   click(e) {
@@ -45,6 +48,10 @@ export class VariantButton extends HTMLElement {
 
   set isActive(value) {
     this.shadowRoot.querySelector("ui-button").isActive = value;
+  }
+
+  get isActive() {
+    return this.shadowRoot.querySelector("ui-button").isActive;
   }
 
   static compare(id, value) {

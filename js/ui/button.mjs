@@ -9,6 +9,7 @@ export class UiButton extends HTMLElement {
   // Can be built also declaratively with HTML.
   constructor(options = {}) {
     const {
+      isActive,
       id,
       ariaLabel,
       dataset,
@@ -20,6 +21,7 @@ export class UiButton extends HTMLElement {
 
     super();
 
+    this.#isActive = isActive ?? false;
     this.#id = id;
     this.#onClick = onClick;
     this.#signal = signal;
@@ -31,6 +33,7 @@ export class UiButton extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
+  #isActive = false;
   #id = "";
   #ariaLabel = "";
   #dataset = {};
@@ -94,7 +97,12 @@ export class UiButton extends HTMLElement {
   }
 
   set isActive(value) {
+    this.#isActive = value;
     this.button.setAttribute("aria-pressed", value ? "true" : "false");
+  }
+
+  get isActive() {
+    return this.#isActive;
   }
 
   #setContents() {

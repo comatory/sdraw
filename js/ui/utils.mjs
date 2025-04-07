@@ -1,6 +1,3 @@
-import { ToolButton } from "./tool.mjs";
-import { VariantButton } from "./variant.mjs";
-
 export async function loadIcon(url) {
   const response = await fetch(url);
 
@@ -28,36 +25,6 @@ export function ensureCallbacksRemoved(listeners) {
     return;
   }
   throw new Error("Not all listeners were removed!");
-}
-
-export function updateActivatedButton(buttonContainer, value) {
-  const buttons = buttonContainer.querySelectorAll("button");
-
-  Array.from(buttons).forEach((button) => {
-    if (button.dataset.value === value) {
-      button.classList.add("active");
-    } else {
-      button.classList.remove("active");
-    }
-  });
-
-  const colorButtons = buttonContainer.querySelectorAll("color-button");
-
-  Array.from(colorButtons).forEach((button) => {
-    button.isActive = button.isColorEqual(value);
-  });
-
-  const toolButtons = buttonContainer.querySelectorAll("tool-button");
-
-  Array.from(toolButtons).forEach((button) => {
-    button.isActive = ToolButton.compare(button.id, value);
-  });
-
-  const variantButtons = buttonContainer.querySelectorAll("variant-button");
-
-  Array.from(variantButtons).forEach((button) => {
-    button.isActive = VariantButton.compare(button.id, value);
-  });
 }
 
 /**

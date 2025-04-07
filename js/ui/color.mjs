@@ -5,10 +5,11 @@ import { UiButton } from "./button.mjs";
  * Represents a button for selecting colors
  */
 export class ColorButton extends HTMLElement {
-  constructor({ onClick, color, signal }) {
+  constructor({ onClick, color, signal, isActive }) {
     super();
 
     this.color = color;
+    this.#isActive = isActive;
     this.#onClick = onClick;
     this.#signal = signal;
     this.attachShadow({ mode: "open" });
@@ -17,6 +18,7 @@ export class ColorButton extends HTMLElement {
   color = "#000000";
   #onClick = () => {};
   #signal = null;
+  #isActive = false;
 
   connectedCallback() {
     const button = new UiButton({
@@ -32,6 +34,7 @@ export class ColorButton extends HTMLElement {
     });
 
     this.shadowRoot.appendChild(button);
+    this.isActive = this.#isActive;
   }
 
   click(e) {
@@ -42,11 +45,11 @@ export class ColorButton extends HTMLElement {
     this.shadowRoot.querySelector("ui-button").isActive = value;
   }
 
-  get #button() {
-    return this.shadowRoot.querySelector("ui-button").button;
+  get isActive() {
+    return this.shadowRoot.querySelector("ui-button").isActive;
   }
 
-  isColorEqual(color) {
-    return this.color === color;
+  get #button() {
+    return this.shadowRoot.querySelector("ui-button").button;
   }
 }

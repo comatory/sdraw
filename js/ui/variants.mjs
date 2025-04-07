@@ -1,12 +1,15 @@
 import { setTool, setCustomVariant } from "../state/actions/tool.mjs";
 import { TOOLS } from "../state/constants.mjs";
-import { getPanelToolVariants } from "../dom.mjs";
+import {
+  getPanelToolVariants,
+  getVariantButtons,
+  getVariantButtonById,
+} from "../dom.mjs";
 import {
   isLeftTriggerGamepadButtonPressed,
   isRightTriggerGamepadButtonPressed,
   getGamepad,
 } from "../controls/gamepad.mjs";
-import { updateActivatedButton } from "./utils.mjs";
 import {
   createSvgDataUri,
   serializeSvg,
@@ -77,10 +80,6 @@ function customStampOnClick({ tool, variant, state }) {
       iconUrl: event.detail.iconDataUri,
       value: event.detail.dataUri,
     };
-    updateActivatedButton(
-      getPanelToolVariants(),
-      updatedVariant.id.description,
-    );
     setTool(tool, { state, variant: updatedVariant });
     setCustomVariant(tool, updatedVariant, { state });
   });
@@ -94,11 +93,6 @@ function customStampOnClick({ tool, variant, state }) {
 
 function defaultOnClick({ tool, variant, state }) {
   setTool(tool, { state, variant });
-  updateActivatedButton(getPanelToolVariants(), variant.id.description);
-}
-
-function getVariantButtons(container) {
-  return Array.from(container.querySelectorAll("button,variant-button"));
 }
 
 // do not bubble event to avoid clicks on canvas
@@ -112,11 +106,17 @@ function dispatchButtonClick(element) {
 }
 
 function getNextButton(buttons, index) {
-  return index + 1 < buttons.length ? buttons[index + 1] : buttons[0];
+  const variantButtons = Array.from(buttons);
+  return index + 1 < buttons.length
+    ? variantButtons[index + 1]
+    : variantButtons[0];
 }
 
 function getPreviousButton(buttons, index) {
-  return index - 1 >= 0 ? buttons[index - 1] : buttons[buttons.length - 1];
+  const variantButtons = Array.from(buttons);
+  return index - 1 >= 0
+    ? variantButtons[index - 1]
+    : variantButtons[buttons.length - 1];
 }
 
 function getButtonIndex(variantButtons, { state, tool }) {
@@ -124,7 +124,7 @@ function getButtonIndex(variantButtons, { state, tool }) {
     prevState.activatedVariants.get(tool.id),
   );
 
-  const index = variantButtons.findIndex(
+  const index = Array.from(variantButtons).findIndex(
     (variantButton) =>
       variantButton.button.dataset.value === activatedVariant.id.description,
   );
@@ -132,7 +132,7 @@ function getButtonIndex(variantButtons, { state, tool }) {
   return index;
 }
 
-function attachGamepadListeners(container, tool, { state }) {
+function attachGamepadListeners(tool, { state }) {
   let frame = null;
   let buttonPressedTimestamp = null;
 
@@ -146,7 +146,7 @@ function attachGamepadListeners(container, tool, { state }) {
 
     const buttonPressedDelta = timestamp - buttonPressedTimestamp;
 
-    const index = getButtonIndex(getVariantButtons(container), {
+    const index = getButtonIndex(getVariantButtons(), {
       state,
       tool,
     });
@@ -159,14 +159,14 @@ function attachGamepadListeners(container, tool, { state }) {
       isLeftTriggerGamepadButtonPressed(gamepad) &&
       buttonPressedDelta > GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS
     ) {
-      const prevButton = getPreviousButton(getVariantButtons(container), index);
+      const prevButton = getPreviousButton(getVariantButtons(), index);
       dispatchButtonClick(prevButton);
       buttonPressedTimestamp = timestamp;
     } else if (
       isRightTriggerGamepadButtonPressed(gamepad) &&
       buttonPressedDelta > GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS
     ) {
-      const nextButton = getNextButton(getVariantButtons(container), index);
+      const nextButton = getNextButton(getVariantButtons(), index);
       dispatchButtonClick(nextButton);
       buttonPressedTimestamp = timestamp;
     }
@@ -186,8 +186,8 @@ function attachGamepadListeners(container, tool, { state }) {
   requestGamepadAnimationFrame();
 }
 
-function attachKeyboardListeners(container, tool, { state, signal }) {
-  const buttons = getVariantButtons(container);
+function attachKeyboardListeners(tool, { state, signal }) {
+  const buttons = getVariantButtons();
 
   function onKeyDown(event) {
     const index = getButtonIndex(buttons, { state, tool });
@@ -213,7 +213,6 @@ function attachKeyboardListeners(container, tool, { state, signal }) {
   }
 
   window.addEventListener("keydown", onKeyDown, {
-    once: true,
     signal,
   });
 }
@@ -221,9 +220,33 @@ function attachKeyboardListeners(container, tool, { state, signal }) {
 export function buildToolVariants(tool, { state, signal }) {
   const variantsContainer = getPanelToolVariants();
 
-  const activatedVariant = state.get((prevState) =>
-    prevState.activatedVariants.get(tool.id),
-  );
+  state.addListener((updatedState, prevState) => {
+    if (
+      prevState.activatedVariants.get(tool.id) ===
+      updatedState.activatedVariants.get(tool.id)
+    ) {
+      return;
+    }
+
+    const variantButtons = Array.from(getVariantButtons());
+    const prevActiveVariantButton = variantButtons.find((b) => b.isActive);
+
+    if (prevActiveVariantButton) {
+      prevActiveVariantButton.isActive = false;
+    }
+
+    const nextActiveVariantButton =
+      getVariantButtonById(updatedState.activatedVariants.get(tool.id)?.id) ||
+      variantButtons?.[0];
+
+    if (!nextActiveVariantButton) {
+      throw new Error(
+        `Variant button not found for variant: ${updatedState.tool.activatedVariant.id}`,
+      );
+    }
+
+    nextActiveVariantButton.isActive = true;
+  });
 
   const customVariants = state.get(
     (prevState) => prevState.customVariants.get(tool.id) ?? new Set(),
@@ -249,25 +272,25 @@ export function buildToolVariants(tool, { state, signal }) {
       }
     }
 
+    const activatedVariant = state.get((prevState) =>
+      prevState.activatedVariants.get(tool.id),
+    );
     const variantButton = new VariantButton({
       ...variant,
+      isActive: activatedVariant?.id.description === variant.id.description,
       onClick,
       signal,
     });
 
     variantsContainer.appendChild(variantButton);
-
-    if (variant.id === activatedVariant.id) {
-      updateActivatedButton(variantsContainer, variant.id.description);
-    }
   });
 
-  attachKeyboardListeners(variantsContainer, tool, { state, signal });
+  attachKeyboardListeners(tool, { state, signal });
 
-  attachGamepadListeners(variantsContainer, tool, { state });
+  attachGamepadListeners(tool, { state });
 
   function dispose() {
-    getVariantButtons(variantsContainer).forEach((variantButton) => {
+    Array.from(getVariantButtons()).forEach((variantButton) => {
       variantButton.remove();
     });
 

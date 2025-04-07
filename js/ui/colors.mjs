@@ -9,8 +9,11 @@ import {
   isLeftShoulderGamepadButtonPressed,
   getGamepad,
 } from "../controls/gamepad.mjs";
-import { getPanelColors } from "../dom.mjs";
-import { updateActivatedButton } from "./utils.mjs";
+import {
+  getPanelColors,
+  getColorButtons,
+  getColorButtonByColor,
+} from "../dom.mjs";
 import { ColorButton } from "./color.mjs";
 
 const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
@@ -84,7 +87,18 @@ export function createColorPanel({ state }) {
       return;
     }
 
-    updateActivatedButton(colors, nextState.color);
+    const prevActiveButton = Array.from(getColorButtons()).find(
+      (b) => b.isActive,
+    );
+    prevActiveButton.isActive = false;
+
+    const nextActiveButton = getColorButtonByColor(nextState.color);
+
+    if (!nextActiveButton) {
+      throw new Error(`Color button not found for color: ${nextState.color}`);
+    }
+
+    nextActiveButton.isActive = true;
   });
 
   state.addListener((nextState, prevState) => {
@@ -104,20 +118,15 @@ export function createColorPanel({ state }) {
   });
 
   COLOR_LIST.forEach((color) => {
-    const button = new ColorButton({
+    const colorButton = new ColorButton({
       color,
       onClick: () => setColor(color, { state }),
       signal: controller.signal,
+      isActive: state.get((prevState) => prevState.color) === color,
     });
 
-    colors.appendChild(button);
+    colors.appendChild(colorButton);
   });
-
-  const selectedColor = state.get((prevState) => prevState.color);
-
-  if (selectedColor) {
-    updateActivatedButton(colors, selectedColor);
-  }
 
   attachKeyboardListeners({ state, signal: controller.signal });
   attachGamepadListeners(state);

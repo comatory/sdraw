@@ -1,7 +1,6 @@
-import { getPanelTools } from "../dom.mjs";
+import { getPanelTools, getToolButtons, getToolButtonById } from "../dom.mjs";
 import { setTool } from "../state/actions/tool.mjs";
 import { TOOL_LIST } from "../state/constants.mjs";
-import { updateActivatedButton } from "./utils.mjs";
 import { buildToolActions } from "./actions.mjs";
 import { buildToolVariants } from "./variants.mjs";
 import { ToolButton } from "./tool.mjs";
@@ -27,7 +26,19 @@ export function createToolPanel({ state }) {
     variantsController = new AbortController();
     actionsController = new AbortController();
 
-    updateActivatedButton(tools, updatedState.tool.id.description);
+    const prevActiveButton = Array.from(getToolButtons()).find(
+      (b) => b.isActive,
+    );
+    prevActiveButton.isActive = false;
+
+    const toolId = updatedState.tool.id;
+    const nextActiveButton = getToolButtonById(toolId);
+
+    if (!nextActiveButton) {
+      throw new Error(`Tool button not found for tool: ${toolId}`);
+    }
+
+    nextActiveButton.isActive = true;
 
     if (updatedState.tool.variants) {
       buildToolVariants(updatedState.tool, {
@@ -44,20 +55,19 @@ export function createToolPanel({ state }) {
     }
   });
 
+  const selectedTool = state.get((prevState) => prevState.tool);
+
   TOOL_LIST.forEach((tool) => {
     const button = new ToolButton({
       ...tool,
       onClick: () => setTool(tool, { state }),
+      isActive: selectedTool.id === tool.id,
     });
 
     tools.appendChild(button);
   });
 
-  const selectedTool = state.get((prevState) => prevState.tool);
-
   if (selectedTool) {
-    updateActivatedButton(tools, selectedTool.id.description);
-
     if (selectedTool.variants) {
       buildToolVariants(selectedTool, {
         state,

@@ -4,9 +4,10 @@ import { UiButton } from "./button.mjs";
  * Represents tool/action button.
  */
 export class ToolButton extends HTMLElement {
-  constructor({ id, iconUrl, onClick, signal }) {
+  constructor({ id, iconUrl, onClick, signal, isActive }) {
     super();
 
+    this.#isActive = isActive;
     this.#description = id.description;
     this.#iconUrl = iconUrl;
     this.id = id;
@@ -15,6 +16,7 @@ export class ToolButton extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
+  #isActive = false;
   id = "";
   #iconUrl = "";
   #description = "";
@@ -34,6 +36,7 @@ export class ToolButton extends HTMLElement {
     });
 
     this.shadowRoot.appendChild(button);
+    button.isActive = this.#isActive;
   }
 
   click(e) {
@@ -42,6 +45,10 @@ export class ToolButton extends HTMLElement {
 
   set isActive(value) {
     this.shadowRoot.querySelector("ui-button").isActive = value;
+  }
+
+  get isActive() {
+    return this.shadowRoot.querySelector("ui-button").isActive;
   }
 
   get #button() {

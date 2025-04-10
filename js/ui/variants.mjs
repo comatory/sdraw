@@ -1,4 +1,3 @@
-import { setTool, setCustomVariant } from "../state/actions/tool.mjs";
 import { TOOLS } from "../state/constants.mjs";
 import {
   getPanelToolVariants,
@@ -10,90 +9,10 @@ import {
   isRightTriggerGamepadButtonPressed,
   getGamepad,
 } from "../controls/gamepad.mjs";
-import {
-  createSvgDataUri,
-  serializeSvg,
-  deserializeSvgFromDataURI,
-  normalizeSvgSize,
-} from "../svg-utils.mjs";
 import { VariantButton } from "./variant.mjs";
+import { VariantStampButton } from "./variant-stamp.mjs";
 
 const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
-
-function readUploadedSVG(event, fileInput) {
-  const file = event.target.files[0];
-  const failureEvent = new CustomEvent("stamp-custom-slot-failure");
-
-  if (!file) {
-    fileInput.dispatchEvent(failureEvent);
-    throw new Error("No file selected!");
-  }
-
-  const fileReader = new FileReader();
-  fileReader.addEventListener("load", (fileEvent) => {
-    const parsedSvgElement = deserializeSvgFromDataURI(
-      fileEvent.srcElement.result,
-    );
-    const iconSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
-    const stampSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
-    const iconSvgElement = normalizeSvgSize(iconSvgDocument);
-    const stampSvgElement = normalizeSvgSize(stampSvgDocument, 50);
-
-    fileInput.dispatchEvent(
-      new CustomEvent("stamp-custom-slot-success", {
-        detail: {
-          iconDataUri: createSvgDataUri(serializeSvg(iconSvgElement)),
-          dataUri: createSvgDataUri(serializeSvg(stampSvgElement)),
-        },
-      }),
-    );
-  });
-  fileReader.addEventListener("error", () => {
-    fileInput.dispatchEvent(failureEvent);
-  });
-
-  fileReader.readAsDataURL(file);
-}
-
-function createFileInputForUpload() {
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/svg+xml";
-  fileInput.style.display = "none";
-
-  return fileInput;
-}
-
-function customStampOnClick({ tool, variant, state }) {
-  const fileInput = createFileInputForUpload();
-
-  function handleFileUpload(event) {
-    readUploadedSVG(event, fileInput);
-  }
-
-  fileInput.addEventListener("stamp-custom-slot-success", async (event) => {
-    fileInput.removeEventListener("change", handleFileUpload);
-    fileInput.remove();
-
-    const updatedVariant = {
-      ...variant,
-      iconUrl: event.detail.iconDataUri,
-      value: event.detail.dataUri,
-    };
-    setTool(tool, { state, variant: updatedVariant });
-    setCustomVariant(tool, updatedVariant, { state });
-  });
-  fileInput.addEventListener("stamp-custom-slot-failure", () => {
-    alert("Something went wrong with uploading the image!");
-  });
-  fileInput.addEventListener("change", handleFileUpload);
-
-  fileInput.click();
-}
-
-function defaultOnClick({ tool, variant, state }) {
-  setTool(tool, { state, variant });
-}
 
 // do not bubble event to avoid clicks on canvas
 function dispatchButtonClick(element) {
@@ -254,36 +173,29 @@ export function buildToolVariants(tool, { state, signal }) {
 
   const allVariants = [...tool.variants, ...customVariants];
 
-  allVariants.forEach((variant) => {
-    function onClick() {
-      switch (tool.id) {
-        case TOOLS.STAMP.id:
-          {
-            if (!variant.value) {
-              customStampOnClick({ tool, variant, state });
-            } else {
-              defaultOnClick({ tool, variant, state });
-            }
-          }
-          break;
-        default:
-          defaultOnClick({ tool, variant, state });
-          break;
-      }
-    }
-
+  for (const variant of allVariants) {
     const activatedVariant = state.get((prevState) =>
       prevState.activatedVariants.get(tool.id),
     );
-    const variantButton = new VariantButton({
+
+    const options = {
       ...variant,
       isActive: activatedVariant?.id.description === variant.id.description,
-      onClick,
       signal,
-    });
+      tool,
+      state,
+      variant,
+    };
 
-    variantsContainer.appendChild(variantButton);
-  });
+    switch (tool.id) {
+      case TOOLS.STAMP.id:
+        variantsContainer.appendChild(new VariantStampButton(options));
+        break;
+      default:
+        variantsContainer.appendChild(new VariantButton(options));
+        break;
+    }
+  }
 
   attachKeyboardListeners(tool, { state, signal });
 

@@ -25,6 +25,7 @@ import { initializeCursor } from "./cursor.mjs";
 import { ColorButton } from "./ui/color.mjs";
 import { ToolButton } from "./ui/tool.mjs";
 import { VariantButton } from "./ui/variant.mjs";
+import { VariantStampButton } from "./ui/variant-stamp.mjs";
 import { UiButton } from "./ui/button.mjs";
 
 function registerComponents() {
@@ -32,6 +33,7 @@ function registerComponents() {
   customElements.define("color-button", ColorButton);
   customElements.define("tool-button", ToolButton);
   customElements.define("variant-button", VariantButton);
+  customElements.define("variant-stamp-button", VariantStampButton);
 }
 
 function attachResizeListeners() {

@@ -40,14 +40,16 @@
 .panel-row ui-button,
 .panel-row color-button,
 .panel-row tool-button,
-.panel-row variant-button {
+.panel-row variant-button,
+.panel-row variant-stamp-button {
   margin-right: var(--button-space);
 }
 
 .panel-row ui-button:last-child,
 .panel-row color-button:last-child,
 .panel-row tool-button:last-child,
-.panel-row variant-button:last-child {
+.panel-row variant-button:last-child,
+.panel-row variant-stamp-button:last-child {
   margin-right: 0px;
 }
 

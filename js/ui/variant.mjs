@@ -1,12 +1,15 @@
 import { UiButton } from "./button.mjs";
+import { setTool } from "../state/actions/tool.mjs";
 
 export class VariantButton extends HTMLElement {
-  constructor({ id, onClick, iconUrl, signal, isActive }) {
+  constructor({ id, iconUrl, signal, isActive, tool, state, variant }) {
     super();
 
     this.#isActive = isActive;
     this.id = id;
-    this.#onClick = onClick;
+    this.#tool = tool;
+    this.#state = state;
+    this.#variant = variant;
     this.#iconUrl = iconUrl;
     this.#signal = signal;
 
@@ -15,9 +18,11 @@ export class VariantButton extends HTMLElement {
 
   #isActive = false;
   id = "";
-  #onClick = () => {};
   #iconUrl = "";
   #signal = null;
+  #tool = null;
+  #state = null;
+  #variant = null;
 
   connectedCallback() {
     const button = new UiButton({
@@ -26,7 +31,7 @@ export class VariantButton extends HTMLElement {
         value: this.id.description,
       },
       iconUrl: this.#iconUrl,
-      onClick: this.#onClick,
+      onClick: this.click,
       signal: this.#signal,
     });
 
@@ -34,16 +39,16 @@ export class VariantButton extends HTMLElement {
     this.isActive = this.#isActive;
   }
 
-  click(e) {
-    this.#button.click(e);
-  }
+  click = () => {
+    setTool(this.#tool, { state: this.#state, variant: this.#variant });
+  };
 
-  get #button() {
+  get button() {
     return this.shadowRoot.querySelector("ui-button").button;
   }
 
-  get button() {
-    return this.#button;
+  get uiButton() {
+    return this.shadowRoot.querySelector("ui-button");
   }
 
   set isActive(value) {

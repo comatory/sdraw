@@ -7,11 +7,12 @@ import { isCursorWithinPanelBounds } from "./utils.mjs";
 import { ColorButton } from "./color.mjs";
 import { ToolButton } from "./tool.mjs";
 import { VariantButton } from "./variant.mjs";
+import { VariantStampButton } from "./variant-stamp.mjs";
 import { UiButton } from "./button.mjs";
 
 function getPanelButtonByCoordinates(x, y, panel) {
   const buttons = panel.querySelectorAll(
-    "ui-button,color-button,tool-button,variant-button",
+    "ui-button,color-button,tool-button,variant-button,variant-stamp-button",
   );
 
   for (let i = 0; i < buttons.length; i++) {
@@ -53,7 +54,9 @@ function activatePanelButtonOnCoordinates(x, y) {
     button instanceof UiButton ||
     button instanceof ColorButton ||
     button instanceof ToolButton ||
-    button instanceof VariantButton
+    button instanceof VariantButton ||
+    // TODO should be enough to inherit from VariantButton or even UiButton
+    button instanceof VariantStampButton
   ) {
     button.click(clickEvent);
 

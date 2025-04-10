@@ -25,7 +25,9 @@ export function getPanelToolVariants() {
 }
 
 export function getVariantButtons() {
-  return getPanelToolVariants().querySelectorAll("variant-button");
+  return getPanelToolVariants().querySelectorAll(
+    "variant-button,variant-stamp-button",
+  );
 }
 
 export function getVariantButtonById(id) {

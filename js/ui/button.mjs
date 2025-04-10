@@ -35,9 +35,9 @@ export class UiButton extends HTMLElement {
 
   #isActive = false;
   #id = "";
+  #iconUrl = null;
   #ariaLabel = "";
   #dataset = {};
-  #iconUrl = "";
   #backgroundColor = "#000000";
   #onClick = () => {};
   #signal = null;
@@ -74,8 +74,19 @@ export class UiButton extends HTMLElement {
     if (this.#onClick) {
       this.addClickListener(this.#onClick);
     }
+    this.iconUrl = this.#iconUrl || this.getAttribute("icon-url");
     this.isActive = false;
-    this.#setContents();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case "icon-url":
+        if (oldValue === newValue) {
+          break;
+        }
+        this.iconUrl = newValue;
+        break;
+    }
   }
 
   click(e) {
@@ -105,18 +116,17 @@ export class UiButton extends HTMLElement {
     return this.#isActive;
   }
 
-  #setContents() {
-    const iconUrl = this.#iconUrl ?? this.getAttribute("icon-url");
-    const dataset = this.#dataset ?? this.dataset;
-
-    if (!iconUrl) {
+  set iconUrl(value) {
+    if (!value) {
       return;
     }
 
-    if (isDataUri(iconUrl)) {
-      this.button.innerHTML = serializeSvg(deserializeSvgFromDataURI(iconUrl));
+    const dataset = this.#dataset ?? this.dataset;
+
+    if (isDataUri(value)) {
+      this.button.innerHTML = serializeSvg(deserializeSvgFromDataURI(value));
     } else {
-      loadIcon(iconUrl)
+      loadIcon(value)
         .then((icon) => {
           this.button.innerHTML = icon;
         })
@@ -126,6 +136,8 @@ export class UiButton extends HTMLElement {
         });
     }
   }
+
+  static observedAttributes = ["icon-url"];
 
   static #createDataSetAttributesString(dataset) {
     return Object.entries(dataset ?? {})

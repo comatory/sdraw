@@ -46,9 +46,7 @@ function activatePanelButtonOnCoordinates(x, y) {
     bubbles: false,
   });
 
-  if (
-    button instanceof UiButton
-  ) {
+  if (button instanceof UiButton) {
     button.click(clickEvent);
 
     return;

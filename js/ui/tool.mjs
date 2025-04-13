@@ -52,5 +52,5 @@ export class ToolButton extends UiButton {
 
   #onClick = () => {
     setTool(this.#tool, { state: this.#state });
-  }
+  };
 }

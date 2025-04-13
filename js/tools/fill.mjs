@@ -49,7 +49,7 @@ function colorsMatch(a, b) {
 }
 
 // taken from SO: https://stackoverflow.com/a/56221940/3056783
-function floodFill(ctx, x, y, fillColor, { state }) {
+function floodFill(ctx, x, y, fillColor) {
   showLoader();
   // read the pixels in the canvas
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);

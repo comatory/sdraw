@@ -1,7 +1,7 @@
 import { UiButton } from "./button.mjs";
 import { setTool } from "../state/actions/tool.mjs";
 
-export class VariantButton extends HTMLElement {
+export class VariantButton extends UiButton {
   constructor({ id, iconUrl, signal, isActive, tool, state, variant }) {
     super();
 
@@ -12,8 +12,6 @@ export class VariantButton extends HTMLElement {
     this.#variant = variant;
     this.#iconUrl = iconUrl;
     this.#signal = signal;
-
-    this.attachShadow({ mode: "open" });
   }
 
   #isActive = false;

@@ -4,7 +4,7 @@ import { setTool } from "../state/actions/tool.mjs";
 /**
  * Represents tool/action button.
  */
-export class ToolButton extends HTMLElement {
+export class ToolButton extends UiButton {
   constructor({ tool, state, isActive }) {
     super();
 
@@ -12,7 +12,6 @@ export class ToolButton extends HTMLElement {
     this.#isActive = isActive;
     this.#tool = tool;
     this.#state = state;
-    this.attachShadow({ mode: "open" });
   }
 
   #isActive = false;

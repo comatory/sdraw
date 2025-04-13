@@ -4,10 +4,6 @@ import {
 } from "../controls/gamepad.mjs";
 import { getPanel } from "../dom.mjs";
 import { isCursorWithinPanelBounds } from "./utils.mjs";
-import { ColorButton } from "./color.mjs";
-import { ToolButton } from "./tool.mjs";
-import { VariantButton } from "./variant.mjs";
-import { VariantStampButton } from "./variant-stamp.mjs";
 import { UiButton } from "./button.mjs";
 
 function getPanelButtonByCoordinates(x, y, panel) {
@@ -51,12 +47,7 @@ function activatePanelButtonOnCoordinates(x, y) {
   });
 
   if (
-    button instanceof UiButton ||
-    button instanceof ColorButton ||
-    button instanceof ToolButton ||
-    button instanceof VariantButton ||
-    // TODO should be enough to inherit from VariantButton or even UiButton
-    button instanceof VariantStampButton
+    button instanceof UiButton
   ) {
     button.click(clickEvent);
 

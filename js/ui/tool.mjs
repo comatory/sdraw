@@ -1,38 +1,34 @@
 import { UiButton } from "./button.mjs";
+import { setTool } from "../state/actions/tool.mjs";
 
 /**
  * Represents tool/action button.
  */
 export class ToolButton extends HTMLElement {
-  constructor({ id, iconUrl, onClick, signal, isActive }) {
+  constructor({ tool, state, isActive }) {
     super();
 
+    this.id = tool.id;
     this.#isActive = isActive;
-    this.#description = id.description;
-    this.#iconUrl = iconUrl;
-    this.id = id;
-    this.#onClick = onClick;
-    this.#signal = signal;
+    this.#tool = tool;
+    this.#state = state;
     this.attachShadow({ mode: "open" });
   }
 
   #isActive = false;
   id = "";
-  #iconUrl = "";
-  #description = "";
-  #onClick = () => {};
-  #signal = null;
+  #state = null;
+  #tool = null;
 
   connectedCallback() {
     const button = new UiButton({
-      ariaLabel: this.#description,
+      ariaLabel: this.#tool.id.description,
       dataset: {
         id: this.id.description,
-        value: this.#description,
+        value: this.#tool.id.description,
       },
-      iconUrl: this.#iconUrl,
+      iconUrl: this.#tool.iconUrl,
       onClick: this.#onClick,
-      signal: this.#signal,
     });
 
     this.shadowRoot.appendChild(button);
@@ -55,7 +51,7 @@ export class ToolButton extends HTMLElement {
     return this.shadowRoot.querySelector("ui-button").button;
   }
 
-  static compare(id, description) {
-    return id.description === description;
+  #onClick = () => {
+    setTool(this.#tool, { state: this.#state });
   }
 }

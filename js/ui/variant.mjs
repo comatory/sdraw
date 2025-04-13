@@ -58,8 +58,4 @@ export class VariantButton extends HTMLElement {
   get isActive() {
     return this.shadowRoot.querySelector("ui-button").isActive;
   }
-
-  static compare(id, value) {
-    return id.description === value;
-  }
 }

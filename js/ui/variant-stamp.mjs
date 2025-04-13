@@ -97,8 +97,4 @@ export class VariantStampButton extends VariantButton {
 
     fileReader.readAsDataURL(file);
   };
-
-  static compare(id, value) {
-    return VariantButton.compare(id, value);
-  }
 }

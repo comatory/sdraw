@@ -1,5 +1,4 @@
 import { getPanelTools, getToolButtons, getToolButtonById } from "../dom.mjs";
-import { setTool } from "../state/actions/tool.mjs";
 import { TOOL_LIST } from "../state/constants.mjs";
 import { buildToolActions } from "./actions.mjs";
 import { buildToolVariants } from "./variants.mjs";
@@ -59,8 +58,8 @@ export function createToolPanel({ state }) {
 
   TOOL_LIST.forEach((tool) => {
     const button = new ToolButton({
-      ...tool,
-      onClick: () => setTool(tool, { state }),
+      tool,
+      state,
       isActive: selectedTool.id === tool.id,
     });
 

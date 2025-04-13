@@ -1,110 +1,18 @@
-import { setTool, setCustomVariant } from "../state/actions/tool.mjs";
 import { TOOLS } from "../state/constants.mjs";
-import { isDataUri } from "../state/utils.mjs";
-import { getPanelToolVariants } from "../dom.mjs";
+import {
+  getPanelToolVariants,
+  getVariantButtons,
+  getVariantButtonById,
+} from "../dom.mjs";
 import {
   isLeftTriggerGamepadButtonPressed,
   isRightTriggerGamepadButtonPressed,
   getGamepad,
 } from "../controls/gamepad.mjs";
-import {
-  loadIcon,
-  disposeCallback,
-  ensureCallbacksRemoved,
-  updateActivatedButton,
-} from "./utils.mjs";
-import {
-  createSvgDataUri,
-  serializeSvg,
-  deserializeSvgFromDataURI,
-  normalizeSvgSize,
-} from "../svg-utils.mjs";
+import { VariantButton } from "./variant.mjs";
+import { VariantStampButton } from "./variant-stamp.mjs";
 
 const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
-
-function readUploadedSVG(event, fileInput) {
-  const file = event.target.files[0];
-  const failureEvent = new CustomEvent("stamp-custom-slot-failure");
-
-  if (!file) {
-    fileInput.dispatchEvent(failureEvent);
-    throw new Error("No file selected!");
-  }
-
-  const fileReader = new FileReader();
-  fileReader.addEventListener("load", (fileEvent) => {
-    const parsedSvgElement = deserializeSvgFromDataURI(
-      fileEvent.srcElement.result,
-    );
-    const iconSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
-    const stampSvgDocument = parsedSvgElement.documentElement.cloneNode(true);
-    const iconSvgElement = normalizeSvgSize(iconSvgDocument);
-    const stampSvgElement = normalizeSvgSize(stampSvgDocument, 50);
-
-    fileInput.dispatchEvent(
-      new CustomEvent("stamp-custom-slot-success", {
-        detail: {
-          iconDataUri: createSvgDataUri(serializeSvg(iconSvgElement)),
-          dataUri: createSvgDataUri(serializeSvg(stampSvgElement)),
-        },
-      }),
-    );
-  });
-  fileReader.addEventListener("error", () => {
-    fileInput.dispatchEvent(failureEvent);
-  });
-
-  fileReader.readAsDataURL(file);
-}
-
-function createFileInputForUpload() {
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/svg+xml";
-  fileInput.style.display = "none";
-
-  return fileInput;
-}
-
-function customStampOnClick({ tool, variant, state }) {
-  const fileInput = createFileInputForUpload();
-
-  function handleFileUpload(event) {
-    readUploadedSVG(event, fileInput);
-  }
-
-  fileInput.addEventListener("stamp-custom-slot-success", async (event) => {
-    fileInput.removeEventListener("change", handleFileUpload);
-    fileInput.remove();
-
-    const updatedVariant = {
-      ...variant,
-      iconUrl: event.detail.iconDataUri,
-      value: event.detail.dataUri,
-    };
-    updateActivatedButton(
-      getPanelToolVariants(),
-      updatedVariant.id.description,
-    );
-    setTool(tool, { state, variant: updatedVariant });
-    setCustomVariant(tool, updatedVariant, { state });
-  });
-  fileInput.addEventListener("stamp-custom-slot-failure", () => {
-    alert("Something went wrong with uploading the image!");
-  });
-  fileInput.addEventListener("change", handleFileUpload);
-
-  fileInput.click();
-}
-
-function defaultOnClick({ tool, variant, state }) {
-  setTool(tool, { state, variant });
-  updateActivatedButton(getPanelToolVariants(), variant.id.description);
-}
-
-function getVariantButtons(container) {
-  return Array.from(container.querySelectorAll("button"));
-}
 
 // do not bubble event to avoid clicks on canvas
 function dispatchButtonClick(element) {
@@ -117,26 +25,33 @@ function dispatchButtonClick(element) {
 }
 
 function getNextButton(buttons, index) {
-  return index + 1 < buttons.length ? buttons[index + 1] : buttons[0];
+  const variantButtons = Array.from(buttons);
+  return index + 1 < buttons.length
+    ? variantButtons[index + 1]
+    : variantButtons[0];
 }
 
 function getPreviousButton(buttons, index) {
-  return index - 1 >= 0 ? buttons[index - 1] : buttons[buttons.length - 1];
+  const variantButtons = Array.from(buttons);
+  return index - 1 >= 0
+    ? variantButtons[index - 1]
+    : variantButtons[buttons.length - 1];
 }
 
-function getButtonIndex(buttons, { state, tool }) {
+function getButtonIndex(variantButtons, { state, tool }) {
   const activatedVariant = state.get((prevState) =>
     prevState.activatedVariants.get(tool.id),
   );
 
-  const index = buttons.findIndex(
-    (button) => button.dataset.value === activatedVariant.id.description,
+  const index = Array.from(variantButtons).findIndex(
+    (variantButton) =>
+      variantButton.button.dataset.value === activatedVariant.id.description,
   );
 
   return index;
 }
 
-function attachGamepadListeners(container, tool, { state }) {
+function attachGamepadListeners(tool, { state }) {
   let frame = null;
   let buttonPressedTimestamp = null;
 
@@ -150,7 +65,7 @@ function attachGamepadListeners(container, tool, { state }) {
 
     const buttonPressedDelta = timestamp - buttonPressedTimestamp;
 
-    const index = getButtonIndex(getVariantButtons(container), {
+    const index = getButtonIndex(getVariantButtons(), {
       state,
       tool,
     });
@@ -163,14 +78,14 @@ function attachGamepadListeners(container, tool, { state }) {
       isLeftTriggerGamepadButtonPressed(gamepad) &&
       buttonPressedDelta > GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS
     ) {
-      const prevButton = getPreviousButton(getVariantButtons(container), index);
+      const prevButton = getPreviousButton(getVariantButtons(), index);
       dispatchButtonClick(prevButton);
       buttonPressedTimestamp = timestamp;
     } else if (
       isRightTriggerGamepadButtonPressed(gamepad) &&
       buttonPressedDelta > GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS
     ) {
-      const nextButton = getNextButton(getVariantButtons(container), index);
+      const nextButton = getNextButton(getVariantButtons(), index);
       dispatchButtonClick(nextButton);
       buttonPressedTimestamp = timestamp;
     }
@@ -187,20 +102,11 @@ function attachGamepadListeners(container, tool, { state }) {
     frame = requestAnimationFrame(activateVariantCycleOnShoulderButtonPresses);
   }
 
-  function cancelGamepadAnimationFrame() {
-    cancelAnimationFrame(frame);
-    frame = null;
-  }
-
   requestGamepadAnimationFrame();
-
-  return function dispose() {
-    cancelGamepadAnimationFrame();
-  };
 }
 
-function attachKeyboardListeners(container, tool, { state }) {
-  const buttons = getVariantButtons(container);
+function attachKeyboardListeners(tool, { state, signal }) {
+  const buttons = getVariantButtons();
 
   function onKeyDown(event) {
     const index = getButtonIndex(buttons, { state, tool });
@@ -212,12 +118,12 @@ function attachKeyboardListeners(container, tool, { state }) {
     switch (event.key) {
       case ".": {
         const nextButton = getNextButton(buttons, index);
-        dispatchButtonClick(nextButton);
+        dispatchButtonClick(nextButton.button);
         break;
       }
       case ",": {
         const prevButton = getPreviousButton(buttons, index);
-        dispatchButtonClick(prevButton);
+        dispatchButtonClick(prevButton.button);
         break;
       }
       default:
@@ -225,21 +131,41 @@ function attachKeyboardListeners(container, tool, { state }) {
     }
   }
 
-  window.addEventListener("keydown", onKeyDown);
-
-  return function dispose() {
-    window.removeEventListener("keydown", onKeyDown);
-  };
+  window.addEventListener("keydown", onKeyDown, {
+    signal,
+  });
 }
 
-function renderToolVariants(tool, state) {
+export function buildToolVariants(tool, { state, signal }) {
   const variantsContainer = getPanelToolVariants();
 
-  const listeners = {};
+  state.addListener((updatedState, prevState) => {
+    if (
+      prevState.activatedVariants.get(tool.id) ===
+      updatedState.activatedVariants.get(tool.id)
+    ) {
+      return;
+    }
 
-  const activatedVariant = state.get((prevState) =>
-    prevState.activatedVariants.get(tool.id),
-  );
+    const variantButtons = Array.from(getVariantButtons());
+    const prevActiveVariantButton = variantButtons.find((b) => b.isActive);
+
+    if (prevActiveVariantButton) {
+      prevActiveVariantButton.isActive = false;
+    }
+
+    const nextActiveVariantButton =
+      getVariantButtonById(updatedState.activatedVariants.get(tool.id)?.id) ||
+      variantButtons?.[0];
+
+    if (!nextActiveVariantButton) {
+      throw new Error(
+        `Variant button not found for variant: ${updatedState.tool.activatedVariant.id}`,
+      );
+    }
+
+    nextActiveVariantButton.isActive = true;
+  });
 
   const customVariants = state.get(
     (prevState) => prevState.customVariants.get(tool.id) ?? new Set(),
@@ -247,106 +173,41 @@ function renderToolVariants(tool, state) {
 
   const allVariants = [...tool.variants, ...customVariants];
 
-  allVariants.forEach((variant) => {
-    const button = document.createElement("button");
+  for (const variant of allVariants) {
+    const activatedVariant = state.get((prevState) =>
+      prevState.activatedVariants.get(tool.id),
+    );
 
-    function onClick() {
-      switch (tool.id) {
-        case TOOLS.STAMP.id:
-          {
-            if (!variant.value) {
-              customStampOnClick({ tool, variant, state });
-            } else {
-              defaultOnClick({ tool, variant, state });
-            }
-          }
-          break;
-        default:
-          defaultOnClick({ tool, variant, state });
-          break;
-      }
+    const options = {
+      ...variant,
+      isActive: activatedVariant?.id.description === variant.id.description,
+      signal,
+      tool,
+      state,
+      variant,
+    };
+
+    switch (tool.id) {
+      case TOOLS.STAMP.id:
+        variantsContainer.appendChild(new VariantStampButton(options));
+        break;
+      default:
+        variantsContainer.appendChild(new VariantButton(options));
+        break;
     }
-
-    button.addEventListener("click", onClick);
-
-    button.dataset.value = variant.id.description;
-
-    if (isDataUri(variant.iconUrl)) {
-      button.innerHTML = serializeSvg(
-        deserializeSvgFromDataURI(variant.iconUrl),
-      );
-    } else {
-      loadIcon(variant.iconUrl)
-        .then((icon) => {
-          button.innerHTML = icon;
-        })
-        .catch((error) => {
-          console.error(error);
-          button.innerText = variant.id.description;
-        });
-    }
-
-    variantsContainer.appendChild(button);
-
-    if (variant.id === activatedVariant.id) {
-      updateActivatedButton(variantsContainer, variant.id.description);
-    }
-
-    listeners[button.dataset.value] = onClick;
-  });
-
-  const keyboardListenersDisposeCallback = attachKeyboardListeners(
-    variantsContainer,
-    tool,
-    { state },
-  );
-  const gamepadListenersDisposeCallback = attachGamepadListeners(
-    variantsContainer,
-    tool,
-    { state },
-  );
-
-  return function dispose() {
-    keyboardListenersDisposeCallback();
-    gamepadListenersDisposeCallback();
-
-    getVariantButtons(variantsContainer).forEach((button) => {
-      disposeCallback(button, listeners);
-      button.remove();
-    });
-
-    ensureCallbacksRemoved(listeners);
-
-    variantsContainer.innerHTML = "";
-  };
-}
-
-export function buildToolVariants(tool, state) {
-  let disposeVariantsCallback = null;
-
-  function onToolChange(nextState, prevState) {
-    if (nextState.customVariants === prevState.customVariants) {
-      return;
-    }
-
-    if (disposeVariantsCallback) {
-      disposeVariantsCallback();
-      disposeVariantsCallback = null;
-    }
-
-    disposeVariantsCallback = renderToolVariants(tool, state);
   }
 
-  disposeVariantsCallback = renderToolVariants(tool, state);
+  attachKeyboardListeners(tool, { state, signal });
 
-  state.addListener(onToolChange);
+  attachGamepadListeners(tool, { state });
 
-  return function dispose() {
-    state.removeListener(onToolChange);
+  function dispose() {
+    Array.from(getVariantButtons()).forEach((variantButton) => {
+      variantButton.remove();
+    });
 
-    if (disposeVariantsCallback) {
-      disposeVariantsCallback();
-      disposeVariantsCallback = null;
-    }
-  };
+    variantsContainer.innerHTML = "";
+  }
+
+  signal.addEventListener("abort", dispose, { once: true });
 }

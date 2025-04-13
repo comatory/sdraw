@@ -12,8 +12,26 @@ export function getPanelTools() {
   return document.getElementById("tools");
 }
 
+export function getToolButtons() {
+  return getPanelTools().querySelectorAll("tool-button");
+}
+
+export function getToolButtonById(id) {
+  return Array.from(getToolButtons()).find((button) => button.id === id);
+}
+
 export function getPanelToolVariants() {
   return document.getElementById("variants");
+}
+
+export function getVariantButtons() {
+  return getPanelToolVariants().querySelectorAll(
+    "variant-button,variant-stamp-button",
+  );
+}
+
+export function getVariantButtonById(id) {
+  return Array.from(getVariantButtons()).find((button) => button.id === id);
 }
 
 export function getPanelToolActions() {
@@ -22,6 +40,14 @@ export function getPanelToolActions() {
 
 export function getPanelColors() {
   return document.getElementById("colors");
+}
+
+export function getColorButtons() {
+  return getPanelColors().querySelectorAll("color-button");
+}
+
+export function getColorButtonByColor(color) {
+  return Array.from(getColorButtons()).find((button) => button.color === color);
 }
 
 export function getPanel() {

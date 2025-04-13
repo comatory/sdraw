@@ -22,5 +22,6 @@ module.exports = {
   rules: {
     quotes: ["error", "double"],
     "no-shadow": ["error", { hoist: "functions", allow: [] }],
+    "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
 };

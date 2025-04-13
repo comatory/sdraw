@@ -1,15 +1,11 @@
 import { takePhoto, removePhoto } from "../state/actions/cam.mjs";
 import { getPanelToolActions } from "../dom.mjs";
-import { disposeCallback, ensureCallbacksRemoved, loadIcon } from "./utils.mjs";
+import { UiButton } from "./button.mjs";
 
-export function buildToolActions(tool, state) {
+export function buildToolActions(tool, { state, signal }) {
   const actionsContainer = getPanelToolActions();
 
-  const listeners = {};
-
   tool.actions.forEach((action) => {
-    const button = document.createElement("button");
-
     function onCamTakePhotoClick() {
       takePhoto({ state });
     }
@@ -18,45 +14,48 @@ export function buildToolActions(tool, state) {
       removePhoto({ state });
     }
 
+    let button = null;
+
     switch (action.id.description) {
       case "cam-take-photo": {
-        listeners[action.id.description] = onCamTakePhotoClick;
-        button.addEventListener("click", onCamTakePhotoClick);
+        button = new UiButton({
+          ariaLabel: action.id.description,
+          dataset: {
+            value: action.id.description,
+          },
+          iconUrl: action.iconUrl,
+          onClick: onCamTakePhotoClick,
+          signal,
+        });
+
         break;
       }
       case "cam-cancel": {
-        listeners[action.id.description] = onCamCancelClick;
-        button.addEventListener("click", onCamCancelClick);
+        button = new UiButton({
+          ariaLabel: action.id.description,
+          dataset: {
+            value: action.id.description,
+          },
+          iconUrl: action.iconUrl,
+          onClick: onCamCancelClick,
+          signal,
+        });
         break;
       }
     }
 
-    button.dataset.value = action.id.description;
-    button.innerText = action.id.description;
-
-    loadIcon(action.iconUrl)
-      .then((icon) => {
-        button.innerHTML = icon;
-      })
-      .catch((error) => {
-        console.error(error);
-        button.innerText = action.id.description;
-      });
-
     actionsContainer.appendChild(button);
   });
 
-  return function dispose() {
+  function dispose() {
     Array.from(actionsContainer.querySelectorAll("button")).forEach(
       (button) => {
-        disposeCallback(button, listeners);
-
         button.remove();
       },
     );
 
-    ensureCallbacksRemoved(listeners);
-
     actionsContainer.innerHTML = "";
-  };
+  }
+
+  signal.addEventListener("abort", dispose, { once: true });
 }

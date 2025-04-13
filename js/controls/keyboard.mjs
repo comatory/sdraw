@@ -39,15 +39,7 @@ export function attachKeyboardListeners(state) {
   let accelerationTimer = null;
   let keysPressed = NO_KEYS_PRESSED;
 
-  function shouldBlockInteractions() {
-    return state.get((prevState) => prevState.blockedInteractions);
-  }
-
   window.addEventListener("keyup", (event) => {
-    if (shouldBlockInteractions()) {
-      return;
-    }
-
     switch (event.key) {
       case "ArrowUp":
         keysPressed = produceMovementKeysPressed(keysPressed, "up", false);
@@ -67,10 +59,6 @@ export function attachKeyboardListeners(state) {
   });
 
   window.addEventListener("keydown", (event) => {
-    if (shouldBlockInteractions()) {
-      return;
-    }
-
     if (event.key === "p") {
       setTool(TOOLS.PEN, { state });
     } else if (event.key === "f") {

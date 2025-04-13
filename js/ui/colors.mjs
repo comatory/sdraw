@@ -9,12 +9,16 @@ import {
   isLeftShoulderGamepadButtonPressed,
   getGamepad,
 } from "../controls/gamepad.mjs";
-import { getPanelColors } from "../dom.mjs";
-import { updateActivatedButton } from "./utils.mjs";
+import {
+  getPanelColors,
+  getColorButtons,
+  getColorButtonByColor,
+} from "../dom.mjs";
+import { ColorButton } from "./color.mjs";
 
 const GAMEPAD_BUTTON_ACTIVATION_DELAY_IN_MS = 300;
 
-function attachKeyboardListeners(state) {
+function attachKeyboardListeners({ state, signal }) {
   function onKeyDown(event) {
     switch (event.key) {
       case "a":
@@ -28,11 +32,7 @@ function attachKeyboardListeners(state) {
     }
   }
 
-  window.addEventListener("keydown", onKeyDown);
-
-  return function dispose() {
-    window.removeEventListener("keydown", onKeyDown);
-  };
+  window.addEventListener("keydown", onKeyDown, { signal });
 }
 
 function attachGamepadListeners(state) {
@@ -75,72 +75,43 @@ function attachGamepadListeners(state) {
     frame = requestAnimationFrame(activateColorCycleOnShoulderButtonPresses);
   }
 
-  function cancelGamepadAnimationFrame() {
-    cancelAnimationFrame(frame);
-    frame = null;
-  }
-
   requestGamepadAnimationFrame();
-
-  return function dispose() {
-    cancelGamepadAnimationFrame();
-  };
 }
 
 export function createColorPanel({ state }) {
   const colors = getPanelColors();
-  let disposeKeyboardListenersCallback = null;
-  let disposeGamepadListenersCallback = null;
+  let controller = new AbortController();
 
   state.addListener((nextState, prevState) => {
     if (nextState.color === prevState.color) {
       return;
     }
 
-    updateActivatedButton(colors, nextState.color);
-  });
+    const prevActiveButton = Array.from(getColorButtons()).find(
+      (b) => b.isActive,
+    );
+    prevActiveButton.isActive = false;
 
-  state.addListener((nextState, prevState) => {
-    if (nextState.blockedInteractions === prevState.blockedInteractions) {
-      return;
+    const nextActiveButton = getColorButtonByColor(nextState.color);
+
+    if (!nextActiveButton) {
+      throw new Error(`Color button not found for color: ${nextState.color}`);
     }
 
-    if (nextState.blockedInteractions) {
-      if (disposeKeyboardListenersCallback) {
-        disposeKeyboardListenersCallback();
-        disposeKeyboardListenersCallback = null;
-      }
-
-      if (disposeGamepadListenersCallback) {
-        disposeGamepadListenersCallback();
-        disposeGamepadListenersCallback = null;
-      }
-    } else {
-      disposeKeyboardListenersCallback = attachKeyboardListeners(state);
-      disposeGamepadListenersCallback = attachGamepadListeners(state);
-    }
+    nextActiveButton.isActive = true;
   });
 
   COLOR_LIST.forEach((color) => {
-    const button = document.createElement("button");
-    button.style.backgroundColor = color;
-
-    button.addEventListener("click", () => {
-      setColor(color, { state });
+    const colorButton = new ColorButton({
+      color,
+      onClick: () => setColor(color, { state }),
+      signal: controller.signal,
+      isActive: state.get((prevState) => prevState.color) === color,
     });
 
-    button.dataset.value = color;
-    button.style.backgroundColor = color;
-
-    colors.appendChild(button);
+    colors.appendChild(colorButton);
   });
 
-  const selectedColor = state.get((prevState) => prevState.color);
-
-  if (selectedColor) {
-    updateActivatedButton(colors, selectedColor);
-  }
-
-  disposeKeyboardListenersCallback = attachKeyboardListeners(state);
-  disposeGamepadListenersCallback = attachGamepadListeners(state);
+  attachKeyboardListeners({ state, signal: controller.signal });
+  attachGamepadListeners(state);
 }

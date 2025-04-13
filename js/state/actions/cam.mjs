@@ -6,7 +6,6 @@ import {
   getCountdownAnimationLengthInSeconds,
   getFlashAnimationLengthInSeconds,
 } from "../../dom.mjs";
-import { blockInteractions, unblockInteractions } from "../actions/ui.mjs";
 
 function memorizePhoto({ state }) {
   state.set(() => ({
@@ -29,7 +28,6 @@ export function takePhoto({ state }) {
   const flashAnimationLength = getFlashAnimationLengthInSeconds() * 1000;
 
   insertCountdown();
-  blockInteractions({ state });
 
   const videoSettings = cam.srcObject.getVideoTracks()[0]?.getSettings();
   const height = canvas.height;
@@ -39,7 +37,6 @@ export function takePhoto({ state }) {
     ctx.drawImage(cam, canvas.width / 2 - width / 2, 0, width, height);
     memorizePhoto({ state });
     removeCountdown();
-    unblockInteractions({ state });
   }, countdownAnimationLength + flashAnimationLength);
 }
 

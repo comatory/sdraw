@@ -37,21 +37,25 @@
   justify-content: space-between;
 }
 
-.panel-row button {
+.panel-row ui-button,
+.panel-row color-button,
+.panel-row tool-button,
+.panel-row variant-button,
+.panel-row variant-stamp-button {
   margin-right: var(--button-space);
-  width: var(--button-size);
-  height: var(--button-size);
-  border: 2px solid black;
-  border-radius: 6px;
 }
 
-.panel-row button:last-child {
+.panel-row ui-button:last-child,
+.panel-row color-button:last-child,
+.panel-row tool-button:last-child,
+.panel-row variant-button:last-child,
+.panel-row variant-stamp-button:last-child {
   margin-right: 0px;
 }
 
-.panel-row button.active {
-  border: 2px solid white;
-  box-shadow: 0px 0px 0px 4px orange;
+#tools {
+  display: flex;
+  flex: 1;
 }
 
 #actions {

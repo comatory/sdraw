@@ -1,77 +1,84 @@
-import { getPanelTools } from "../dom.mjs";
-import { setTool } from "../state/actions/tool.mjs";
+import { getPanelTools, getToolButtons, getToolButtonById } from "../dom.mjs";
 import { TOOL_LIST } from "../state/constants.mjs";
-import { loadIcon, updateActivatedButton } from "./utils.mjs";
 import { buildToolActions } from "./actions.mjs";
 import { buildToolVariants } from "./variants.mjs";
+import { ToolButton } from "./tool.mjs";
 
 export function createToolPanel({ state }) {
   const tools = getPanelTools();
-  let disposeVariantsCallback = null;
-  let disposeActionsCallback = null;
+  let actionsController = new AbortController();
+  let variantsController = new AbortController();
 
   state.addListener((updatedState, prevState) => {
     if (updatedState.tool === prevState.tool) {
       return;
     }
 
-    if (disposeVariantsCallback) {
-      disposeVariantsCallback();
-      disposeVariantsCallback = null;
+    if (!variantsController.signal.aborted) {
+      variantsController.abort();
     }
 
-    if (disposeActionsCallback) {
-      disposeActionsCallback();
-      disposeActionsCallback = null;
+    if (!actionsController.signal.aborted) {
+      actionsController.abort();
     }
 
-    updateActivatedButton(tools, updatedState.tool.id.description);
+    variantsController = new AbortController();
+    actionsController = new AbortController();
+
+    const prevActiveButton = Array.from(getToolButtons()).find(
+      (b) => b.isActive,
+    );
+    prevActiveButton.isActive = false;
+
+    const toolId = updatedState.tool.id;
+    const nextActiveButton = getToolButtonById(toolId);
+
+    if (!nextActiveButton) {
+      throw new Error(`Tool button not found for tool: ${toolId}`);
+    }
+
+    nextActiveButton.isActive = true;
 
     if (updatedState.tool.variants) {
-      disposeVariantsCallback = buildToolVariants(updatedState.tool, state);
+      buildToolVariants(updatedState.tool, {
+        state,
+        signal: variantsController.signal,
+      });
     }
 
     if (updatedState.tool.actions) {
-      disposeActionsCallback = buildToolActions(updatedState.tool, state);
-    }
-  });
-
-  TOOL_LIST.forEach((tool) => {
-    const button = document.createElement("button");
-
-    button.addEventListener(
-      "click",
-      () => {
-        setTool(tool, { state });
-      },
-      true,
-    );
-
-    button.dataset.value = tool.id.description;
-
-    loadIcon(tool.iconUrl)
-      .then((icon) => {
-        button.innerHTML = icon;
-      })
-      .catch((error) => {
-        console.error(error);
-        button.innerText = tool.id.description;
+      buildToolActions(updatedState.tool, {
+        state,
+        signal: actionsController.signal,
       });
-
-    tools.appendChild(button);
+    }
   });
 
   const selectedTool = state.get((prevState) => prevState.tool);
 
-  if (selectedTool) {
-    updateActivatedButton(tools, selectedTool.id.description);
+  TOOL_LIST.forEach((tool) => {
+    const button = new ToolButton({
+      tool,
+      state,
+      isActive: selectedTool.id === tool.id,
+    });
 
+    tools.appendChild(button);
+  });
+
+  if (selectedTool) {
     if (selectedTool.variants) {
-      disposeVariantsCallback = buildToolVariants(selectedTool, state);
+      buildToolVariants(selectedTool, {
+        state,
+        signal: variantsController.signal,
+      });
     }
 
     if (selectedTool.actions) {
-      disposeActionsCallback = buildToolActions(selectedTool, state);
+      buildToolActions(selectedTool, {
+        state,
+        signal: actionsController.signal,
+      });
     }
   }
 }

@@ -4,10 +4,6 @@ import {
   isPrimaryGamepadButtonPressed,
 } from "../controls/gamepad.mjs";
 import { isWithinCanvasBounds } from "../canvas.mjs";
-import {
-  blockInteractions,
-  unblockInteractions,
-} from "../state/actions/ui.mjs";
 
 function hexToRGB(h) {
   let r = 0,
@@ -53,9 +49,8 @@ function colorsMatch(a, b) {
 }
 
 // taken from SO: https://stackoverflow.com/a/56221940/3056783
-function floodFill(ctx, x, y, fillColor, { state }) {
+function floodFill(ctx, x, y, fillColor) {
   showLoader();
-  blockInteractions({ state });
   // read the pixels in the canvas
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -83,7 +78,6 @@ function floodFill(ctx, x, y, fillColor, { state }) {
     ctx.putImageData(imageData, 0, 0);
   }
 
-  unblockInteractions({ state });
   hideLoader();
 }
 
@@ -131,18 +125,6 @@ export function activateFill({ state }) {
     window.removeEventListener("keydown", keyDown);
   }
 
-  function onBlockInteractionsChange(nextState, prevState) {
-    if (nextState.blockedInteractions === prevState.blockedInteractions) {
-      return;
-    }
-
-    if (nextState.blockedInteractions) {
-      deactivateListeners();
-    } else {
-      activateListeners();
-    }
-  }
-
   let wasPressed = false;
   function activateFillOnGamepadButtonPress() {
     const gamepad = getGamepad(state);
@@ -187,20 +169,9 @@ export function activateFill({ state }) {
     frame = null;
   }
 
-  const blockedInteractions = state.get(
-    (prevState) => prevState.blockedInteractions,
-  );
-
-  if (blockedInteractions) {
-    deactivateListeners();
-  } else {
-    activateListeners();
-  }
-
-  state.addListener(onBlockInteractionsChange);
+  activateListeners();
 
   return function dispose() {
     deactivateListeners();
-    state.removeListener(onBlockInteractionsChange);
   };
 }

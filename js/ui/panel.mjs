@@ -4,9 +4,12 @@ import {
 } from "../controls/gamepad.mjs";
 import { getPanel } from "../dom.mjs";
 import { isCursorWithinPanelBounds } from "./utils.mjs";
+import { UiButton } from "./button.mjs";
 
 function getPanelButtonByCoordinates(x, y, panel) {
-  const buttons = panel.querySelectorAll("button");
+  const buttons = panel.querySelectorAll(
+    "ui-button,color-button,tool-button,variant-button,variant-stamp-button",
+  );
 
   for (let i = 0; i < buttons.length; i++) {
     const button = buttons[i];
@@ -42,6 +45,12 @@ function activatePanelButtonOnCoordinates(x, y) {
     view: window,
     bubbles: false,
   });
+
+  if (button instanceof UiButton) {
+    button.click(clickEvent);
+
+    return;
+  }
 
   button.dispatchEvent(clickEvent);
 }
@@ -151,37 +160,6 @@ export function attachPanelListeners({ state }) {
 
     disposeGamepadListenersCallback = attachGamepadListeners(state);
   }
-
-  function deactivateListeners() {
-    if (disposeMouseListenersCallback) {
-      disposeMouseListenersCallback();
-      disposeMouseListenersCallback = null;
-    }
-
-    if (disposeKeyboardListenersCallback) {
-      disposeKeyboardListenersCallback();
-      disposeKeyboardListenersCallback = null;
-    }
-
-    if (disposeGamepadListenersCallback) {
-      disposeGamepadListenersCallback();
-      disposeGamepadListenersCallback = null;
-    }
-  }
-
-  function onBlockedInteractionsChange(nextState, prevState) {
-    if (nextState.blockedInteractions === prevState.blockedInteractions) {
-      return;
-    }
-
-    if (nextState.blockedInteractions) {
-      deactivateListeners();
-    } else {
-      activateListeners();
-    }
-  }
-
-  state.addListener(onBlockedInteractionsChange);
 
   activateListeners();
 }

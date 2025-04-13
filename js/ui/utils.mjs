@@ -27,18 +27,6 @@ export function ensureCallbacksRemoved(listeners) {
   throw new Error("Not all listeners were removed!");
 }
 
-export function updateActivatedButton(buttonContainer, value) {
-  const buttons = buttonContainer.querySelectorAll("button");
-
-  Array.from(buttons).forEach((button) => {
-    if (button.dataset.value === value) {
-      button.classList.add("active");
-    } else {
-      button.classList.remove("active");
-    }
-  });
-}
-
 /**
  * Is cursor located on UI panel?
  *

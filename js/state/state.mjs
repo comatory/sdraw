@@ -17,7 +17,6 @@ export function createState() {
     color: loadColor(),
     gamepad: null,
     photoMemorized: false,
-    blockedInteractions: false,
     gamepadBlocked: false,
   };
 

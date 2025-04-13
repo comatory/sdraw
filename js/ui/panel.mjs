@@ -172,36 +172,5 @@ export function attachPanelListeners({ state }) {
     disposeGamepadListenersCallback = attachGamepadListeners(state);
   }
 
-  function deactivateListeners() {
-    if (disposeMouseListenersCallback) {
-      disposeMouseListenersCallback();
-      disposeMouseListenersCallback = null;
-    }
-
-    if (disposeKeyboardListenersCallback) {
-      disposeKeyboardListenersCallback();
-      disposeKeyboardListenersCallback = null;
-    }
-
-    if (disposeGamepadListenersCallback) {
-      disposeGamepadListenersCallback();
-      disposeGamepadListenersCallback = null;
-    }
-  }
-
-  function onBlockedInteractionsChange(nextState, prevState) {
-    if (nextState.blockedInteractions === prevState.blockedInteractions) {
-      return;
-    }
-
-    if (nextState.blockedInteractions) {
-      deactivateListeners();
-    } else {
-      activateListeners();
-    }
-  }
-
-  state.addListener(onBlockedInteractionsChange);
-
   activateListeners();
 }

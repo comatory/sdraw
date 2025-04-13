@@ -201,27 +201,7 @@ export function activatePen({ state, variant }) {
     cancelGamepadAnimationFrame();
   }
 
-  function onBlockInteractionsChange(nextState, prevState) {
-    if (nextState.blockedInteractions === prevState.blockedInteractions) {
-      return;
-    }
-
-    if (nextState.blockedInteractions) {
-      deactivateListeners();
-    } else {
-      activateListeners();
-    }
-  }
-
-  const blockInteractions = state.get(
-    (prevState) => prevState.blockedInteractions,
-  );
-
-  if (blockInteractions) {
-    deactivateListeners();
-  } else {
-    activateListeners();
-  }
+  activateListeners();
 
   function updateColor(nextState, prevState) {
     if (nextState.color === prevState.color) {
@@ -243,13 +223,11 @@ export function activatePen({ state, variant }) {
     draw(nextState.cursor.x, nextState.cursor.y);
   }
 
-  state.addListener(onBlockInteractionsChange);
   state.addListener(updateColor);
   state.addListener(updatePath);
 
   return function dispose() {
     deactivateListeners();
-    state.removeListener(onBlockInteractionsChange);
     state.removeListener(updateColor);
     state.removeListener(updatePath);
   };

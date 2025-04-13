@@ -101,22 +101,6 @@ export function createColorPanel({ state }) {
     nextActiveButton.isActive = true;
   });
 
-  state.addListener((nextState, prevState) => {
-    if (nextState.blockedInteractions === prevState.blockedInteractions) {
-      return;
-    }
-
-    if (nextState.blockedInteractions) {
-      if (!controller.signal.aborted) {
-        controller.abort();
-        controller = new AbortController();
-      }
-    } else {
-      attachKeyboardListeners({ state, signal: controller.signal });
-      attachGamepadListeners(state);
-    }
-  });
-
   COLOR_LIST.forEach((color) => {
     const colorButton = new ColorButton({
       color,

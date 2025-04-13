@@ -1,5 +1,5 @@
 const STATIC_CACHE_NAME = "static";
-const STATIC_CACHE_VERSION = "v42";
+const STATIC_CACHE_VERSION = "v43";
 const STATIC_CACHE_ID = `${STATIC_CACHE_NAME}-${STATIC_CACHE_VERSION}`;
 
 // All the files need to be added here manually. I want to avoid
@@ -49,6 +49,7 @@ const STATIC_ASSETS = [
   "js/ui/toast.mjs",
   "js/ui/utils.mjs",
   "js/ui/variant.mjs",
+  "js/ui/variant-stamp.mjs",
   "js/ui/variants.mjs",
 
   /* CSS */
